@@ -75,7 +75,7 @@ export function AnimatedKnowledgeGraph() {
               </div>
             </div>
             <div className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              "Great progress on JavaScript! Ready for React?"
+              "Great progress on JavaScript! Ready for React or Next?"
             </div>
           </div>
         </div>
