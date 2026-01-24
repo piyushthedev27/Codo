@@ -39,10 +39,40 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={inter.className}>
+      <html lang="en" suppressHydrationWarning className="dark">
+        <head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                try {
+                  const root = document.documentElement;
+                  const body = document.body;
+                  
+                  // Force dark theme always
+                  root.classList.add('dark');
+                  root.classList.remove('light');
+                  root.style.colorScheme = 'dark';
+                  root.setAttribute('data-theme', 'dark');
+                  
+                  // Apply landing page gradient background
+                  body.style.background = 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%)';
+                  body.style.backgroundAttachment = 'fixed';
+                  body.style.color = 'hsl(210 40% 98%)';
+                  body.style.minHeight = '100vh';
+                } catch (e) {
+                  // Fallback to dark theme
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.style.colorScheme = 'dark';
+                  document.body.style.background = 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%)';
+                  document.body.style.color = 'hsl(210 40% 98%)';
+                }
+              `,
+            }}
+          />
+        </head>
+        <body className={`${inter.className} text-foreground transition-colors duration-300`}>
           <ThemeProvider
-            defaultTheme="system"
+            defaultTheme="dark"
             storageKey="codo-ui-theme"
           >
             <Header />

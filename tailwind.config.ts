@@ -69,6 +69,11 @@ const config: Config = {
       screens: {
         'xs': '475px',
       },
+      backgroundImage: {
+        'gradient-landing': 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%)',
+        'gradient-card': 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+      },
     },
   },
   plugins: [],

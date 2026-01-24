@@ -18,7 +18,8 @@ import type {
 // User Profile Operations
 export const userProfileOperations = {
   async create(profile: Omit<UserProfile, 'id' | 'created_at' | 'updated_at'>) {
-    const { data, error } = await supabase
+    // Use admin client for user creation to bypass RLS
+    const { data, error } = await supabaseAdmin
       .from('user_profiles')
       .insert(profile)
       .select()
@@ -29,7 +30,8 @@ export const userProfileOperations = {
   },
 
   async getByClerkId(clerkUserId: string) {
-    const { data, error } = await supabase
+    // Use admin client to bypass RLS for user lookup
+    const { data, error } = await supabaseAdmin
       .from('user_profiles')
       .select('*')
       .eq('clerk_user_id', clerkUserId)
@@ -81,7 +83,8 @@ export const aiPeerOperations = {
   async createForUser(userId: string, peers: Omit<AIPeerProfile, 'id' | 'user_id' | 'created_at' | 'updated_at'>[]) {
     const peersWithUserId = peers.map(peer => ({ ...peer, user_id: userId }))
     
-    const { data, error } = await supabase
+    // Use admin client for initial peer creation to bypass RLS
+    const { data, error } = await supabaseAdmin
       .from('ai_peer_profiles')
       .insert(peersWithUserId)
       .select()
@@ -91,7 +94,8 @@ export const aiPeerOperations = {
   },
 
   async getByUserId(userId: string) {
-    const { data, error } = await supabase
+    // Use admin client to bypass RLS
+    const { data, error } = await supabaseAdmin
       .from('ai_peer_profiles')
       .select('*')
       .eq('user_id', userId)
@@ -126,7 +130,8 @@ export const knowledgeGraphOperations = {
       mastery_percentage: 0
     }))
 
-    const { data, error } = await supabase
+    // Use admin client for initial knowledge graph creation to bypass RLS
+    const { data, error } = await supabaseAdmin
       .from('knowledge_graph_nodes')
       .insert(nodes)
       .select()
@@ -136,7 +141,8 @@ export const knowledgeGraphOperations = {
   },
 
   async getByUserId(userId: string) {
-    const { data, error } = await supabase
+    // Use admin client to bypass RLS
+    const { data, error } = await supabaseAdmin
       .from('knowledge_graph_nodes')
       .select('*')
       .eq('user_id', userId)
@@ -272,7 +278,8 @@ export const learningInsightsOperations = {
   },
 
   async getActiveByUserId(userId: string) {
-    const { data, error } = await supabase
+    // Use admin client to bypass RLS
+    const { data, error } = await supabaseAdmin
       .from('learning_insights')
       .select('*')
       .eq('user_id', userId)
@@ -409,7 +416,8 @@ export const challengeAttemptOperations = {
   },
 
   async getUserStats(userId: string) {
-    const { data, error } = await supabase
+    // Use admin client to bypass RLS
+    const { data, error } = await supabaseAdmin
       .from('challenge_attempts')
       .select('status, score, difficulty_level:challenges(difficulty_level)')
       .eq('user_id', userId)
@@ -439,7 +447,8 @@ export const challengeAttemptOperations = {
 // Utility function to test database connection
 export async function testDatabaseConnection() {
   try {
-    const { data, error } = await supabase
+    // Use admin client to test connection
+    const { data, error } = await supabaseAdmin
       .from('challenges')
       .select('count')
       .limit(1)

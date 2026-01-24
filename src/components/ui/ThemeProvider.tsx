@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 
-type Theme = 'dark' | 'light' | 'system'
+type Theme = 'dark'
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -16,7 +16,7 @@ type ThemeProviderState = {
 }
 
 const initialState: ThemeProviderState = {
-  theme: 'system',
+  theme: 'dark',
   setTheme: () => null,
 }
 
@@ -24,11 +24,11 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'system',
+  defaultTheme = 'dark',
   storageKey = 'codo-ui-theme',
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme)
+  const [theme] = useState<Theme>('dark') // Always dark
   const [mounted, setMounted] = useState(false)
 
   // Handle mounting state to prevent hydration mismatch
@@ -39,53 +39,39 @@ export function ThemeProvider({
   useEffect(() => {
     if (!mounted) return
 
-    // Only access localStorage on the client side after mounting
-    try {
-      const storedTheme = localStorage.getItem(storageKey) as Theme
-      if (storedTheme && ['dark', 'light', 'system'].includes(storedTheme)) {
-        setTheme(storedTheme)
-      }
-    } catch (error) {
-      console.warn('Failed to access localStorage for theme:', error)
-    }
-  }, [storageKey, mounted])
-
-  useEffect(() => {
-    if (!mounted) return
-
     const root = window.document.documentElement
-    root.classList.remove('light', 'dark')
-
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
-        ? 'dark'
-        : 'light'
-
-      root.classList.add(systemTheme)
-      return
-    }
-
-    root.classList.add(theme)
-  }, [theme, mounted])
+    
+    // Always apply dark theme
+    root.classList.remove('light')
+    root.classList.add('dark')
+    root.setAttribute('data-theme', 'dark')
+    root.style.colorScheme = 'dark'
+    
+    // Force dark background
+    document.body.style.background = 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%)'
+    document.body.style.backgroundAttachment = 'fixed'
+    document.body.style.color = 'hsl(210 40% 98%)'
+    document.body.style.minHeight = '100vh'
+    
+  }, [mounted])
 
   const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      if (!mounted) return
-      
-      try {
-        localStorage.setItem(storageKey, theme)
-      } catch (error) {
-        console.warn('Failed to save theme to localStorage:', error)
-      }
-      setTheme(theme)
+    theme: 'dark' as Theme,
+    setTheme: () => {
+      // Do nothing - theme is always dark
     },
   }
 
   // Prevent flash of unstyled content during hydration
   if (!mounted) {
-    return <div style={{ visibility: 'hidden' }}>{children}</div>
+    return (
+      <div className="min-h-screen" style={{ 
+        background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%)',
+        color: 'hsl(210 40% 98%)'
+      }}>
+        <div style={{ visibility: 'hidden' }}>{children}</div>
+      </div>
+    )
   }
 
   return (

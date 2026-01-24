@@ -3,6 +3,206 @@
 
 @layer base {
   :root {
+    /* Dark theme colors matching the landing page */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 217.2 32.6% 17.5%;
+    --card-foreground: 210 40% 98%;
+    --popover: 217.2 32.6% 17.5%;
+    --popover-foreground: 210 40% 98%;
+    --primary: #3b82f6 ;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+    --radius: 0.75rem;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+  
+  html {
+    color-scheme: dark;
+  }
+  
+  body {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%);
+    background-attachment: fixed;
+    color: hsl(var(--foreground));
+    min-height: 100vh;
+  }
+}
+
+/* Force dark theme for all elements */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+/* Landing page gradient background */
+.bg-gradient-landing {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%);
+}
+
+/* Custom styles for consistent dark theme */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Custom scrollbar - dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgb(31 41 55);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(75 85 99);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(107 114 128);
+}
+
+/* Animation utilities */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Override any light theme classes */
+.bg-white {
+  background-color: hsl(var(--card)) !important;
+}
+
+.text-gray-900 {
+  color: hsl(var(--foreground)) !important;
+}
+
+.text-gray-800 {
+  color: rgb(229 231 235) !important;
+}
+
+.text-gray-700 {
+  color: rgb(209 213 219) !important;
+}
+
+.text-gray-600 {
+  color: rgb(156 163 175) !important;
+}
+
+.bg-gray-50 {
+  background-color: hsl(var(--muted)) !important;
+}
+
+.bg-gray-100 {
+  background-color: hsl(var(--muted)) !important;
+}
+
+.border-gray-200 {
+  border-color: hsl(var(--border)) !important;
+}
+
+.border-gray-300 {
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Card and component styling */
+.card-dark {
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Gradient backgrounds for cards */
+.gradient-card {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* Button styling */
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .bg-gradient-to-r {
+    background: currentColor;
+  }
+}
+
+/* Force dark theme application */
+[data-theme="dark"],
+[data-theme="light"],
+html {
+  color-scheme: dark;
+}
+
+/* Remove any light theme remnants */
+.light {
+  color-scheme: dark;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+@layer base {
+  :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -46,6 +246,24 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 94.1%;
   }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+  
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}
+
+/* Ensure proper theme transitions */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Custom styles for the landing page */
@@ -78,28 +296,28 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgb(243 244 246);
+  background-color: rgb(243 244 246);
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: rgb(31 41 55);
+  background-color: rgb(31 41 55);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgb(209 213 219);
+  background-color: rgb(209 213 219);
   border-radius: 9999px;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: rgb(75 85 99);
+  background-color: rgb(75 85 99);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(156 163 175);
+  background-color: rgb(156 163 175);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgb(107 114 128);
+  background-color: rgb(107 114 128);
 }
 
 /* Animation utilities */
@@ -121,6 +339,36 @@ body {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+/* Dark mode specific improvements */
+.dark {
+  color-scheme: dark;
+}
+
+.light {
+  color-scheme: light;
+}
+
+/* Ensure cards and components respect theme */
+.dark .bg-white {
+  background-color: rgb(17 24 39);
+}
+
+.dark .text-gray-900 {
+  color: rgb(243 244 246);
+}
+
+.dark .text-gray-800 {
+  color: rgb(229 231 235);
+}
+
+.dark .text-gray-700 {
+  color: rgb(209 213 219);
+}
+
+.dark .text-gray-600 {
+  color: rgb(156 163 175);
+}
+
 /* Reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -138,4 +386,13 @@ body {
   .bg-gradient-to-r {
     background: currentColor;
   }
+}
+
+/* Force theme application */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
 }

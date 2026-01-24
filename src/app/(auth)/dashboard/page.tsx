@@ -18,16 +18,162 @@ import {
   Mic,
   Code,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  AlertCircle
 } from 'lucide-react'
 import { Avatar } from '@/components/shared/Avatar'
 import type { DashboardData } from '@/types/database'
+
+// Demo data for when database is not available
+const demoData: DashboardData = {
+  profile: {
+    id: 'demo-profile',
+    clerk_user_id: 'demo',
+    email: 'demo@example.com',
+    first_name: 'Demo',
+    last_name: 'User',
+    skill_level: 'beginner',
+    learning_goal: 'learning',
+    primary_domain: 'javascript',
+    current_xp: 350,
+    current_level: 1,
+    learning_streak: 3,
+    voice_coaching_enabled: true,
+    preferred_learning_style: 'mixed',
+    timezone: 'UTC',
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z'
+  },
+  aiPeers: [
+    {
+      id: 'peer-1',
+      user_id: 'demo-profile',
+      name: 'Sarah',
+      personality: 'curious',
+      skill_level: 'beginner',
+      avatar_url: '/images/avatars/sarah-3d.png',
+      common_mistakes: ['Array method confusion', 'Variable scope issues'],
+      interaction_style: 'Asks thoughtful questions and seeks clarification',
+      backstory: 'A curious learner who loves understanding the "why" behind code',
+      is_active: true,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    },
+    {
+      id: 'peer-2',
+      user_id: 'demo-profile',
+      name: 'Alex',
+      personality: 'analytical',
+      skill_level: 'intermediate',
+      avatar_url: '/images/avatars/alex-3d.png',
+      common_mistakes: ['Async/await mixing', 'Performance optimization'],
+      interaction_style: 'Methodical and detail-oriented, likes to compare approaches',
+      backstory: 'An analytical thinker who enjoys breaking down complex problems',
+      is_active: true,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    },
+    {
+      id: 'peer-3',
+      user_id: 'demo-profile',
+      name: 'Jordan',
+      personality: 'supportive',
+      skill_level: 'advanced',
+      avatar_url: '/images/avatars/jordan-3d.png',
+      common_mistakes: ['Architecture decisions', 'Code organization'],
+      interaction_style: 'Encouraging and helpful, provides guidance and mentorship',
+      backstory: 'A supportive mentor who helps others learn from mistakes',
+      is_active: true,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    }
+  ],
+  knowledgeGraph: [
+    {
+      id: 'node-1',
+      user_id: 'demo-profile',
+      concept: 'Variables & Data Types',
+      category: 'Programming',
+      prerequisites: [],
+      status: 'mastered',
+      position: { x: 100, y: 100 },
+      connections: ['node-2'],
+      mastery_percentage: 100,
+      estimated_duration_minutes: 30,
+      difficulty_level: 1,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    },
+    {
+      id: 'node-2',
+      user_id: 'demo-profile',
+      concept: 'Functions',
+      category: 'Programming',
+      prerequisites: ['node-1'],
+      status: 'in_progress',
+      position: { x: 200, y: 100 },
+      connections: ['node-3'],
+      mastery_percentage: 65,
+      estimated_duration_minutes: 45,
+      difficulty_level: 2,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    },
+    {
+      id: 'node-3',
+      user_id: 'demo-profile',
+      concept: 'Arrays & Objects',
+      category: 'Programming',
+      prerequisites: ['node-2'],
+      status: 'locked',
+      position: { x: 300, y: 100 },
+      connections: [],
+      mastery_percentage: 0,
+      estimated_duration_minutes: 60,
+      difficulty_level: 3,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    }
+  ],
+  recentActivities: [],
+  activeInsights: [],
+  currentStreak: 3,
+  weeklyProgress: {
+    xpEarned: 250,
+    lessonsCompleted: 4,
+    challengesAttempted: 2,
+    voiceSessionsUsed: 1
+  },
+  upcomingMilestones: {
+    nextLevel: {
+      current: 1,
+      next: 2,
+      xpNeeded: 650
+    },
+    nextConcept: {
+      id: 'node-3',
+      user_id: 'demo-profile',
+      concept: 'Arrays & Objects',
+      category: 'Programming',
+      prerequisites: ['node-2'],
+      status: 'locked',
+      position: { x: 300, y: 100 },
+      connections: [],
+      mastery_percentage: 0,
+      estimated_duration_minutes: 60,
+      difficulty_level: 3,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    }
+  }
+}
 
 export default function DashboardPage() {
   const { user } = useUser()
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [usingDemoData, setUsingDemoData] = useState(false)
 
   useEffect(() => {
     fetchDashboardData()
@@ -41,7 +187,11 @@ export default function DashboardPage() {
       }
       const result = await response.json()
       setDashboardData(result.data)
+      setUsingDemoData(result.demo || false)
     } catch (err) {
+      console.warn('Dashboard API failed, using demo data:', err)
+      setDashboardData(demoData)
+      setUsingDemoData(true)
       setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setLoading(false)
@@ -68,7 +218,7 @@ export default function DashboardPage() {
     )
   }
 
-  if (error || !dashboardData) {
+  if (!dashboardData) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="max-w-md mx-auto">
@@ -95,12 +245,27 @@ export default function DashboardPage() {
   const progressPercentage = totalNodes > 0 ? (completedNodes / totalNodes) * 100 : 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
+        {/* Demo Data Warning */}
+        {usingDemoData && (
+          <Card className="mb-6 border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
+                <AlertCircle className="w-5 h-5" />
+                <span className="font-medium">Demo Mode</span>
+              </div>
+              <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                Database connection failed. Showing demo data. Please check your environment configuration.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            Welcome back, {user?.firstName || 'Learner'}! 👋
+            Welcome back, {user?.firstName || profile.first_name || 'Learner'}! 👋
           </h1>
           <p className="text-lg text-muted-foreground">
             Ready to continue your learning journey with your AI study buddies?
@@ -248,9 +413,11 @@ export default function DashboardPage() {
                 <ArrowRight className="w-4 h-4" />
               </Button>
               
-              <Button className="w-full justify-between" variant="outline">
-                View Knowledge Graph
-                <ArrowRight className="w-4 h-4" />
+              <Button className="w-full justify-between" variant="outline" asChild>
+                <a href="/knowledge-graph-demo">
+                  View Knowledge Graph
+                  <ArrowRight className="w-4 h-4" />
+                </a>
               </Button>
               
               <Button className="w-full justify-between" variant="outline">

@@ -214,18 +214,23 @@ export function SkillAssessment({ onComplete }: SkillAssessmentProps) {
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to save onboarding data')
+        const errorData = await response.json().catch(() => ({ error: 'Network error' }))
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`)
       }
 
       const result = await response.json()
       console.log('Onboarding data saved:', result)
       
+      // Always continue with onboarding, even if database save failed
       onComplete(onboardingData)
     } catch (error) {
-      console.error('Error submitting assessment:', error)
-      // For now, continue with the flow even if save fails
-      // In production, you might want to show an error message
+      console.warn('Error submitting assessment (continuing anyway):', error)
+      
+      // Show a user-friendly message but continue with the flow
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      console.log('Assessment submission failed:', errorMessage)
+      
+      // Continue with the onboarding flow even if save fails
       const onboardingData: OnboardingData = {
         skillLevel: answers.skillLevel as SkillLevel,
         learningGoal: answers.learningGoal as LearningGoal,

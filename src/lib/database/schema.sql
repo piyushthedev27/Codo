@@ -1,9 +1,6 @@
 -- Codo Database Schema
 -- This file contains the complete database schema for the Codo AI-powered learning platform
 
--- Enable Row Level Security
-ALTER DATABASE postgres SET "app.jwt_secret" TO 'your-jwt-secret';
-
 -- Create custom types
 CREATE TYPE skill_level AS ENUM ('beginner', 'intermediate', 'advanced');
 CREATE TYPE learning_goal AS ENUM ('learning', 'projects', 'placement', 'productivity');
@@ -252,111 +249,111 @@ ALTER TABLE voice_coaching_sessions ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for user_profiles
 CREATE POLICY "Users can view own profile" ON user_profiles
-  FOR SELECT USING (clerk_user_id = auth.jwt() ->> 'sub');
+  FOR SELECT USING (clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id'));
 
 CREATE POLICY "Users can update own profile" ON user_profiles
-  FOR UPDATE USING (clerk_user_id = auth.jwt() ->> 'sub');
+  FOR UPDATE USING (clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id'));
 
 CREATE POLICY "Users can insert own profile" ON user_profiles
-  FOR INSERT WITH CHECK (clerk_user_id = auth.jwt() ->> 'sub');
+  FOR INSERT WITH CHECK (clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id'));
 
 -- RLS Policies for ai_peer_profiles
 CREATE POLICY "Users can view own AI peers" ON ai_peer_profiles
   FOR SELECT USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 CREATE POLICY "Users can manage own AI peers" ON ai_peer_profiles
   FOR ALL USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 -- RLS Policies for knowledge_graph_nodes
 CREATE POLICY "Users can view own knowledge graph" ON knowledge_graph_nodes
   FOR SELECT USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 CREATE POLICY "Users can manage own knowledge graph" ON knowledge_graph_nodes
   FOR ALL USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 -- RLS Policies for mistake_patterns
 CREATE POLICY "Users can view own mistake patterns" ON mistake_patterns
   FOR SELECT USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 CREATE POLICY "Users can manage own mistake patterns" ON mistake_patterns
   FOR ALL USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 -- RLS Policies for lessons
 CREATE POLICY "Users can view own lessons" ON lessons
   FOR SELECT USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 CREATE POLICY "Users can manage own lessons" ON lessons
   FOR ALL USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 -- RLS Policies for collaborative_coding_sessions
 CREATE POLICY "Users can view own coding sessions" ON collaborative_coding_sessions
   FOR SELECT USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 CREATE POLICY "Users can manage own coding sessions" ON collaborative_coding_sessions
   FOR ALL USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 -- RLS Policies for learning_insights
 CREATE POLICY "Users can view own insights" ON learning_insights
   FOR SELECT USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 CREATE POLICY "Users can manage own insights" ON learning_insights
   FOR ALL USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 -- RLS Policies for learning_activities
 CREATE POLICY "Users can view own activities" ON learning_activities
   FOR SELECT USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 CREATE POLICY "Users can manage own activities" ON learning_activities
   FOR ALL USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 -- RLS Policies for challenge_attempts
 CREATE POLICY "Users can view own challenge attempts" ON challenge_attempts
   FOR SELECT USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 CREATE POLICY "Users can manage own challenge attempts" ON challenge_attempts
   FOR ALL USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 -- RLS Policies for voice_coaching_sessions
 CREATE POLICY "Users can view own voice sessions" ON voice_coaching_sessions
   FOR SELECT USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 CREATE POLICY "Users can manage own voice sessions" ON voice_coaching_sessions
   FOR ALL USING (user_id IN (
-    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub'
+    SELECT id FROM user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub' OR clerk_user_id = (auth.jwt() ->> 'https://clerk.dev/user_id')
   ));
 
 -- Public read access for challenges (no RLS needed)
