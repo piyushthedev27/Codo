@@ -1,0 +1,179 @@
+/**
+ * Custom Avatar Animations for Enhanced Visual Identity
+ * Provides engaging animations for AI peer interactions
+ */
+
+/* Custom wiggle animation for playful interactions */
+@keyframes wiggle {
+  0%, 7% { transform: rotateZ(0); }
+  15% { transform: rotateZ(-15deg); }
+  20% { transform: rotateZ(10deg); }
+  25% { transform: rotateZ(-10deg); }
+  30% { transform: rotateZ(6deg); }
+  35% { transform: rotateZ(-4deg); }
+  40%, 100% { transform: rotateZ(0); }
+}
+
+/* Custom glow animation for active states */
+@keyframes glow {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(99, 102, 241, 0.5);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.8), 0 0 30px rgba(99, 102, 241, 0.6);
+  }
+}
+
+/* Breathing animation for thinking states */
+@keyframes breathe {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+/* Typing indicator animation */
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Personality-based ring pulse animations */
+@keyframes ring-pulse-curious {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
+  }
+  70% { 
+    box-shadow: 0 0 0 10px rgba(236, 72, 153, 0);
+  }
+}
+
+@keyframes ring-pulse-analytical {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  70% { 
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+}
+
+@keyframes ring-pulse-supportive {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  70% { 
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+}
+
+/* Utility classes */
+.animate-wiggle {
+  animation: wiggle 1s ease-in-out;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.animate-typing {
+  animation: typing 1.4s ease-in-out infinite;
+}
+
+.animate-ring-pulse-curious {
+  animation: ring-pulse-curious 2s infinite;
+}
+
+.animate-ring-pulse-analytical {
+  animation: ring-pulse-analytical 2s infinite;
+}
+
+.animate-ring-pulse-supportive {
+  animation: ring-pulse-supportive 2s infinite;
+}
+
+/* Interactive hover effects */
+.avatar-hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.avatar-hover-lift:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Personality-based gradient overlays */
+.personality-overlay-curious {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(236, 72, 153, 0.05) 100%);
+}
+
+.personality-overlay-analytical {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+}
+
+.personality-overlay-supportive {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+}
+
+/* Status indicator animations */
+.status-online {
+  background-color: #22c55e;
+  animation: pulse 2s infinite;
+}
+
+.status-typing {
+  background-color: #3b82f6;
+  animation: bounce 1s infinite;
+}
+
+.status-thinking {
+  background-color: #eab308;
+  animation: breathe 2s infinite;
+}
+
+.status-offline {
+  background-color: #6b7280;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-wiggle,
+  .animate-glow,
+  .animate-breathe,
+  .animate-typing,
+  .animate-ring-pulse-curious,
+  .animate-ring-pulse-analytical,
+  .animate-ring-pulse-supportive {
+    animation: none;
+  }
+  
+  .avatar-hover-lift {
+    transition: none;
+  }
+  
+  .avatar-hover-lift:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .personality-overlay-curious,
+  .personality-overlay-analytical,
+  .personality-overlay-supportive {
+    background: none;
+    border: 2px solid currentColor;
+  }
+}
