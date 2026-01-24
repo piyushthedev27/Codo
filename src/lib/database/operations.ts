@@ -463,6 +463,8 @@ export async function initializeUserData(clerkUserId: string, userData: {
   skillLevel: 'beginner' | 'intermediate' | 'advanced'
   learningGoal: 'learning' | 'projects' | 'placement' | 'productivity'
   primaryDomain: string
+  preferredLearningStyle?: string
+  voiceCoachingEnabled?: boolean
 }) {
   try {
     // Create user profile
@@ -477,8 +479,8 @@ export async function initializeUserData(clerkUserId: string, userData: {
       current_xp: 0,
       current_level: 1,
       learning_streak: 0,
-      voice_coaching_enabled: true,
-      preferred_learning_style: 'mixed',
+      voice_coaching_enabled: userData.voiceCoachingEnabled ?? true,
+      preferred_learning_style: userData.preferredLearningStyle || 'mixed',
       timezone: 'UTC'
     })
 

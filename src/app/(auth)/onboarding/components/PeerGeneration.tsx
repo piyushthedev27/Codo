@@ -1,264 +1,227 @@
-/**
- * Peer Generation Component for Onboarding
- * Generates and displays AI peer profiles with 3D avatars during onboarding
- */
-
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Users, Sparkles, ArrowRight, CheckCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Sparkles, Users, ArrowRight } from 'lucide-react'
 import { Avatar } from '@/components/shared/Avatar'
-import { getAllPeers, type AIPeerProfile } from '@/lib/avatars'
+import { getAllPeers } from '@/lib/avatars'
+import type { OnboardingData } from '@/types/database'
 
-export function PeerGeneration() {
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedPeers, setGeneratedPeers] = useState<AIPeerProfile[]>([])
+interface PeerGenerationProps {
+  onboardingData: OnboardingData
+  onComplete: () => void
+}
+
+export function PeerGeneration({ onboardingData, onComplete }: PeerGenerationProps) {
+  const [isGenerating, setIsGenerating] = useState(true)
   const [currentStep, setCurrentStep] = useState(0)
+  const [isComplete, setIsComplete] = useState(false)
 
   const allPeers = getAllPeers()
-
-  const generatePeers = async () => {
-    setIsGenerating(true)
-    setCurrentStep(0)
-
-    // Simulate AI peer generation process
-    const steps = [
-      'Analyzing your learning style...',
-      'Matching personality types...',
-      'Generating peer profiles...',
-      'Customizing interactions...'
-    ]
-
-    for (let i = 0; i < steps.length; i++) {
-      setCurrentStep(i)
-      await new Promise(resolve => setTimeout(resolve, 1500))
-    }
-
-    // "Generate" the peers (use our predefined ones)
-    setGeneratedPeers(allPeers)
-    setIsGenerating(false)
-  }
+  
+  const steps = [
+    'Analyzing your learning preferences...',
+    'Selecting compatible AI personalities...',
+    'Customizing peer interactions...',
+    'Finalizing your study group...'
+  ]
 
   useEffect(() => {
-    // Auto-start generation when component mounts
-    generatePeers()
+    // Simulate AI peer generation process
+    const timer = setInterval(() => {
+      setCurrentStep(prev => {
+        if (prev < steps.length - 1) {
+          return prev + 1
+        } else {
+          setIsGenerating(false)
+          setIsComplete(true)
+          clearInterval(timer)
+          return prev
+        }
+      })
+    }, 1500)
+
+    return () => clearInterval(timer)
   }, [])
 
-  const getPersonalityDescription = (personality: string) => {
-    switch (personality) {
-      case 'curious':
-        return 'Asks thoughtful questions and loves exploring new concepts'
-      case 'analytical':
-        return 'Methodical problem-solver who enjoys breaking down complex topics'
-      case 'supportive':
-        return 'Encouraging mentor who helps others learn from mistakes'
-      default:
-        return 'Helpful learning companion'
-    }
-  }
-
-  const getPersonalityColor = (personality: string) => {
-    switch (personality) {
-      case 'curious': return 'from-pink-400 to-red-500'
-      case 'analytical': return 'from-blue-400 to-indigo-500'
-      case 'supportive': return 'from-green-400 to-teal-500'
-      default: return 'from-gray-400 to-gray-500'
-    }
+  const handleContinue = () => {
+    onComplete()
   }
 
   if (isGenerating) {
     return (
       <div className="max-w-2xl mx-auto text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700"
-        >
-          <div className="mb-8">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              className="w-16 h-16 mx-auto mb-6"
-            >
-              <Sparkles className="w-full h-full text-blue-500" />
-            </motion.div>
-            
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              Generating Your AI Study Buddies
-            </h3>
-            
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              We're creating personalized AI peers based on your learning style and goals
-            </p>
+        <div className="mb-8">
+          <div className="mx-auto mb-6 p-4 bg-purple-100 dark:bg-purple-900/20 rounded-full w-fit animate-pulse">
+            <Sparkles className="w-12 h-12 text-purple-600 dark:text-purple-400" />
+          </div>
+          <h2 className="text-2xl font-bold mb-4">
+            Generating Your AI Study Buddies
+          </h2>
+          <p className="text-muted-foreground mb-8">
+            We're creating personalized AI peers based on your learning preferences
+          </p>
+        </div>
 
-            {/* Progress Steps */}
-            <div className="space-y-4">
-              {[
-                'Analyzing your learning style...',
-                'Matching personality types...',
-                'Generating peer profiles...',
-                'Customizing interactions...'
-              ].map((step, index) => (
-                <motion.div
+        <Card className="mb-8">
+          <CardContent className="pt-6">
+            <div className="space-y-6">
+              {steps.map((step, index) => (
+                <div 
                   key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ 
-                    opacity: currentStep >= index ? 1 : 0.5,
-                    x: 0 
-                  }}
-                  className={`flex items-center gap-3 p-3 rounded-lg ${
-                    currentStep >= index 
-                      ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' 
-                      : 'bg-gray-50 dark:bg-gray-700'
+                  className={`flex items-center gap-4 p-4 rounded-lg transition-all duration-500 ${
+                    index <= currentStep 
+                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-900 dark:text-blue-100' 
+                      : 'bg-gray-50 dark:bg-gray-800/50 text-gray-500'
                   }`}
                 >
-                  {currentStep > index ? (
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                  ) : currentStep === index ? (
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full"
-                    />
-                  ) : (
-                    <div className="w-5 h-5 border-2 border-gray-300 rounded-full" />
-                  )}
-                  <span className={`text-sm ${
-                    currentStep >= index 
-                      ? 'text-gray-900 dark:text-white font-medium' 
-                      : 'text-gray-500'
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    index < currentStep 
+                      ? 'bg-green-500 text-white' 
+                      : index === currentStep 
+                      ? 'bg-blue-500 text-white animate-pulse' 
+                      : 'bg-gray-300 text-gray-600'
                   }`}>
-                    {step}
-                  </span>
-                </motion.div>
+                    {index < currentStep ? '✓' : index + 1}
+                  </div>
+                  <span className="font-medium">{step}</span>
+                  {index === currentStep && (
+                    <div className="ml-auto">
+                      <div className="flex gap-1">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </div>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
-          </div>
-        </motion.div>
+          </CardContent>
+        </Card>
+
+        <p className="text-sm text-muted-foreground">
+          This process is tailored to your {onboardingData.skillLevel} level and {onboardingData.primaryDomain} focus
+        </p>
       </div>
     )
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
-      >
-        <div className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-4 py-2 rounded-full text-sm font-medium mb-4">
-          <CheckCircle className="w-4 h-4" />
-          AI Peers Generated Successfully
+    <div className="max-w-3xl mx-auto text-center">
+      <div className="mb-8">
+        <div className="mx-auto mb-6 p-4 bg-green-100 dark:bg-green-900/20 rounded-full w-fit animate-bounce">
+          <Users className="w-12 h-12 text-green-600 dark:text-green-400" />
         </div>
-        
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          Meet Your AI Study Buddies
+        <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+          Meet Your AI Study Buddies! 🎉
         </h2>
-        
-        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          These AI companions will learn alongside you, ask questions, and help you master programming concepts faster.
+        <p className="text-lg text-muted-foreground">
+          Your personalized learning companions are ready to help you succeed
         </p>
-      </motion.div>
+      </div>
 
-      {/* Generated Peers */}
       <div className="grid md:grid-cols-3 gap-6 mb-8">
-        <AnimatePresence>
-          {generatedPeers.map((peer, index) => (
-            <motion.div
-              key={peer.id}
-              initial={{ opacity: 0, scale: 0.8, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ delay: index * 0.2 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300"
-            >
-              {/* Avatar */}
-              <div className="text-center mb-4">
-                <div className="relative inline-block">
-                  <Avatar 
-                    peerId={peer.id} 
-                    size="xl" 
-                    className="mx-auto mb-3"
-                    priority={true}
-                  />
-                  
-                  {/* Personality Badge */}
-                  <div className={`absolute -bottom-2 -right-2 px-3 py-1 bg-gradient-to-r ${getPersonalityColor(peer.personality)} text-white text-xs font-medium rounded-full shadow-lg`}>
-                    {peer.personality}
+        {allPeers.map((peer, index) => (
+          <Card key={peer.id} className="text-left transform hover:scale-105 transition-transform duration-300">
+            <CardHeader className="text-center pb-4">
+              <div className="mx-auto mb-4">
+                <Avatar 
+                  peerId={peer.id} 
+                  size="lg" 
+                  showRing={true}
+                  animated={true}
+                  priority={true}
+                />
+              </div>
+              <CardTitle className="text-xl">{peer.name}</CardTitle>
+              <CardDescription className="capitalize">
+                {peer.personality} • {peer.skill_level} level
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                  <h4 className="font-medium text-sm mb-1">Personality</h4>
+                  <p className="text-xs text-muted-foreground">
+                    {peer.interaction_style}
+                  </p>
+                </div>
+                
+                <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                  <h4 className="font-medium text-sm mb-1">Common Mistakes</h4>
+                  <div className="flex flex-wrap gap-1">
+                    {peer.common_mistakes.slice(0, 2).map((mistake, idx) => (
+                      <span 
+                        key={idx}
+                        className="text-xs bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-2 py-1 rounded"
+                      >
+                        {mistake}
+                      </span>
+                    ))}
                   </div>
                 </div>
                 
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                  {peer.name}
-                </h3>
-                
-                <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
-                  {peer.skill_level} Level
-                </p>
-              </div>
-
-              {/* Description */}
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 dark:text-gray-300 text-center leading-relaxed">
-                  {getPersonalityDescription(peer.personality)}
-                </p>
-              </div>
-
-              {/* Backstory */}
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-4">
-                <p className="text-xs text-gray-600 dark:text-gray-400 italic text-center">
-                  "{peer.backstory}"
-                </p>
-              </div>
-
-              {/* Common Mistakes */}
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium text-gray-900 dark:text-white">
-                  Will help you with:
-                </h4>
-                <div className="flex flex-wrap gap-1">
-                  {peer.common_mistakes.slice(0, 2).map((mistake, mistakeIndex) => (
-                    <span
-                      key={mistakeIndex}
-                      className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-full"
-                    >
-                      {mistake}
-                    </span>
-                  ))}
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <p className="text-xs text-blue-700 dark:text-blue-300">
+                    {peer.backstory}
+                  </p>
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      {/* Action Buttons */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-        className="text-center space-y-4"
-      >
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="group bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 flex items-center justify-center gap-2">
-            <Users className="w-5 h-5" />
-            Start Learning with AI Peers
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
-          
-          <button 
-            onClick={generatePeers}
-            className="group bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-8 py-4 rounded-xl font-semibold text-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
-          >
+      <Card className="mb-8 text-left">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5" />
-            Regenerate Peers
-          </button>
-        </div>
-        
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          💡 Your AI peers will adapt their teaching style as they learn more about you
-        </p>
-      </motion.div>
+            How Your AI Peers Will Help
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10 rounded-lg">
+              <h4 className="font-medium mb-2">🤔 Ask Questions</h4>
+              <p className="text-sm text-muted-foreground">
+                Your peers will ask thoughtful questions during lessons to help reinforce learning
+              </p>
+            </div>
+            
+            <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10 rounded-lg">
+              <h4 className="font-medium mb-2">🎯 Make Mistakes</h4>
+              <p className="text-sm text-muted-foreground">
+                They'll make common errors for you to spot and correct, earning bonus XP
+              </p>
+            </div>
+            
+            <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/10 rounded-lg">
+              <h4 className="font-medium mb-2">🤝 Collaborate</h4>
+              <p className="text-sm text-muted-foreground">
+                Code together in real-time and compare different approaches to problems
+              </p>
+            </div>
+            
+            <div className="p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/10 rounded-lg">
+              <h4 className="font-medium mb-2">🏆 Compete</h4>
+              <p className="text-sm text-muted-foreground">
+                Challenge you in coding duels and celebrate your achievements
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Button 
+        size="lg" 
+        onClick={handleContinue}
+        className="px-8 py-3 text-lg font-medium bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+      >
+        Start Learning with My AI Peers
+        <ArrowRight className="w-5 h-5 ml-2" />
+      </Button>
     </div>
   )
 }

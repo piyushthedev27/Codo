@@ -50,10 +50,10 @@ Build an AI-powered learning platform with 8 unique features including a profess
 ## Phase 2: Core Features
 
 ### 5. User Onboarding
-- [ ] 5. Create skill assessment questionnaire (5 questions)
-- [ ] 5.2 Build onboarding flow UI
-- [ ] 5.3 Save user preferences to database
-- [ ] 5.4 Create user dashboard with basic stats
+- [x] 5. Create skill assessment questionnaire (5 questions)
+- [x] 5.2 Build onboarding flow UI
+- [x] 5.3 Save user preferences to database
+- [x] 5.4 Create user dashboard with basic stats
 
 ### 6. Knowledge Graph
 - [ ] 6. Create D3.js knowledge graph component
