@@ -29,7 +29,24 @@ export default clerkMiddleware(async (auth, req) => {
 
   // Protect authenticated routes
   if (isProtectedRoute(req)) {
-    await auth.protect()
+    try {
+      await auth.protect()
+    } catch (error) {
+      // Log the error for debugging
+      console.warn('Clerk auth error:', error.message)
+      
+      // If it's a JWT timing issue, redirect to sign-in
+      if (error.message.includes('token-not-active-yet') || 
+          error.message.includes('nbf') ||
+          error.message.includes('infinite redirect')) {
+        const signInUrl = new URL('/sign-in', req.url)
+        signInUrl.searchParams.set('redirect_url', req.url)
+        return Response.redirect(signInUrl)
+      }
+      
+      // Re-throw other errors
+      throw error
+    }
   }
 })
 

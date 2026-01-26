@@ -1,6 +1,7 @@
 /**
  * Dashboard Peer Interactions Component
  * Displays AI peer interactions with 3D avatars
+ * Note: This component is now replaced by AIPeerCards.tsx for the modernized dashboard
  */
 
 'use client'
@@ -74,7 +75,7 @@ export function PeerInteractions() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+              className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <Avatar peerId={interaction.peerId} size="sm" />
               
@@ -100,7 +101,7 @@ export function PeerInteractions() {
                   </span>
                   
                   {interaction.status === 'pending' && (
-                    <button className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
+                    <button className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">
                       Respond
                     </button>
                   )}
@@ -112,7 +113,7 @@ export function PeerInteractions() {
       </div>
 
       <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
-        <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 px-4 rounded-lg font-medium hover:shadow-lg transition-all duration-200">
+        <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 px-4 rounded-lg font-medium hover:shadow-lg hover:from-blue-600 hover:to-purple-600 transition-all duration-200">
           Start New Collaboration Session
         </button>
       </div>

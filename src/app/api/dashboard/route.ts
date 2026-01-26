@@ -9,18 +9,19 @@ import {
   testDatabaseConnection,
   initializeUserData
 } from '@/lib/database/operations'
+import { generateEnhancedStats } from '@/lib/utils/stats-calculations'
 import type { DashboardData } from '@/types/database'
 
 // Demo data for fallback
-const createDemoData = (userId?: string): DashboardData => ({
-  profile: {
+const createDemoData = (userId?: string): DashboardData => {
+  const demoProfile = {
     id: 'demo-profile',
     clerk_user_id: userId || 'demo',
     email: 'demo@example.com',
     first_name: 'Demo',
     last_name: 'User',
-    skill_level: 'beginner',
-    learning_goal: 'learning',
+    skill_level: 'beginner' as const,
+    learning_goal: 'learning' as const,
     primary_domain: 'javascript',
     current_xp: 350,
     current_level: 1,
@@ -30,7 +31,79 @@ const createDemoData = (userId?: string): DashboardData => ({
     timezone: 'UTC',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
-  },
+  }
+
+  const demoKnowledgeGraph = [
+    {
+      id: 'node-1',
+      user_id: 'demo-profile',
+      concept: 'Variables & Data Types',
+      category: 'Programming',
+      prerequisites: [],
+      status: 'mastered' as const,
+      position: { x: 100, y: 100 },
+      connections: ['node-2'],
+      mastery_percentage: 100,
+      estimated_duration_minutes: 30,
+      difficulty_level: 1,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    },
+    {
+      id: 'node-2',
+      user_id: 'demo-profile',
+      concept: 'Functions',
+      category: 'Programming',
+      prerequisites: ['node-1'],
+      status: 'in_progress' as const,
+      position: { x: 200, y: 100 },
+      connections: ['node-3'],
+      mastery_percentage: 65,
+      estimated_duration_minutes: 45,
+      difficulty_level: 2,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    },
+    {
+      id: 'node-3',
+      user_id: 'demo-profile',
+      concept: 'Arrays & Objects',
+      category: 'Programming',
+      prerequisites: ['node-2'],
+      status: 'locked' as const,
+      position: { x: 300, y: 100 },
+      connections: [],
+      mastery_percentage: 0,
+      estimated_duration_minutes: 60,
+      difficulty_level: 3,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    }
+  ]
+
+  const demoActivities = [
+    {
+      id: 'activity-1',
+      type: 'lesson_completed' as const,
+      title: 'Completed: "React Hooks Deep Dive"',
+      description: 'With Sarah • 2 hours ago',
+      xpEarned: 150,
+      peerInvolved: 'sarah',
+      rating: 5,
+      timestamp: '2 hours ago'
+    },
+    {
+      id: 'activity-2',
+      type: 'achievement' as const,
+      title: 'Achieved: "10 Day Streak" Badge',
+      description: '5 hours ago • Celebrated with all peers!',
+      xpEarned: 100,
+      timestamp: '5 hours ago'
+    }
+  ]
+
+  return {
+  profile: demoProfile,
   aiPeers: [
     {
       id: 'peer-1',
@@ -75,54 +148,8 @@ const createDemoData = (userId?: string): DashboardData => ({
       updated_at: '2024-01-01T00:00:00Z'
     }
   ],
-  knowledgeGraph: [
-    {
-      id: 'node-1',
-      user_id: 'demo-profile',
-      concept: 'Variables & Data Types',
-      category: 'Programming',
-      prerequisites: [],
-      status: 'mastered',
-      position: { x: 100, y: 100 },
-      connections: ['node-2'],
-      mastery_percentage: 100,
-      estimated_duration_minutes: 30,
-      difficulty_level: 1,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z'
-    },
-    {
-      id: 'node-2',
-      user_id: 'demo-profile',
-      concept: 'Functions',
-      category: 'Programming',
-      prerequisites: ['node-1'],
-      status: 'in_progress',
-      position: { x: 200, y: 100 },
-      connections: ['node-3'],
-      mastery_percentage: 65,
-      estimated_duration_minutes: 45,
-      difficulty_level: 2,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z'
-    },
-    {
-      id: 'node-3',
-      user_id: 'demo-profile',
-      concept: 'Arrays & Objects',
-      category: 'Programming',
-      prerequisites: ['node-2'],
-      status: 'locked',
-      position: { x: 300, y: 100 },
-      connections: [],
-      mastery_percentage: 0,
-      estimated_duration_minutes: 60,
-      difficulty_level: 3,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z'
-    }
-  ],
-  recentActivities: [],
+  knowledgeGraph: demoKnowledgeGraph,
+  recentActivities: demoActivities,
   activeInsights: [],
   currentStreak: 3,
   weeklyProgress: {
@@ -137,23 +164,41 @@ const createDemoData = (userId?: string): DashboardData => ({
       next: 2,
       xpNeeded: 650
     },
-    nextConcept: {
-      id: 'node-3',
-      user_id: 'demo-profile',
-      concept: 'Arrays & Objects',
-      category: 'Programming',
-      prerequisites: ['node-2'],
-      status: 'locked',
-      position: { x: 300, y: 100 },
-      connections: [],
-      mastery_percentage: 0,
-      estimated_duration_minutes: 60,
-      difficulty_level: 3,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z'
+    nextConcept: demoKnowledgeGraph[2]
+  },
+  // Enhanced dashboard data
+  enhancedStats: generateEnhancedStats(demoProfile, demoKnowledgeGraph, demoActivities),
+  recommendedLessons: [
+    {
+      id: 'lesson-1',
+      title: 'Advanced React Patterns',
+      duration: '2.5 hours',
+      difficulty: 'intermediate',
+      description: 'Master hooks, context, and custom patterns...',
+      recommendedBy: 'sarah',
+      thumbnail: '/lessons/react-advanced.png'
+    },
+    {
+      id: 'lesson-2',
+      title: 'Data Structures Masterclass',
+      duration: '3 hours',
+      difficulty: 'advanced',
+      description: 'Trees, graphs, and hash tables...',
+      recommendedBy: 'alex',
+      thumbnail: '/lessons/data-structures.png'
+    },
+    {
+      id: 'lesson-3',
+      title: 'System Design Fundamentals',
+      duration: '4 hours',
+      difficulty: 'advanced',
+      description: 'Scalability, databases, caching...',
+      recommendedBy: 'jordan',
+      thumbnail: '/lessons/system-design.png'
     }
-  }
-})
+  ]
+}
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -263,6 +308,83 @@ export async function GET(request: NextRequest) {
       voiceSessionsUsed: Math.floor(Math.random() * 5) + 1
     }
 
+    // Enhanced recent activities
+    const enhancedActivities = [
+      {
+        id: 'activity-1',
+        type: 'lesson_completed' as const,
+        title: 'Completed: "React Hooks Deep Dive"',
+        description: 'With Sarah • 2 hours ago',
+        xpEarned: 150,
+        peerInvolved: 'sarah',
+        rating: 5,
+        timestamp: '2 hours ago'
+      },
+      {
+        id: 'activity-2',
+        type: 'achievement' as const,
+        title: 'Achieved: "10 Day Streak" Badge',
+        description: '5 hours ago • Celebrated with all peers!',
+        xpEarned: 100,
+        timestamp: '5 hours ago'
+      },
+      {
+        id: 'activity-3',
+        type: 'collaboration' as const,
+        title: 'Collaborated: "Build a Todo App"',
+        description: 'With Alex & Jordan • Yesterday',
+        xpEarned: 200,
+        peerInvolved: 'alex',
+        timestamp: 'Yesterday'
+      },
+      {
+        id: 'activity-4',
+        type: 'practice' as const,
+        title: 'Practice: Solved 5 algorithm challenges',
+        description: '2 days ago',
+        xpEarned: 100,
+        timestamp: '2 days ago'
+      }
+    ]
+
+    // Enhanced stats for new dashboard
+    const enhancedStats = generateEnhancedStats(
+      profile,
+      knowledgeGraph,
+      enhancedActivities
+    )
+
+    // Mock recommended lessons
+    const recommendedLessons = [
+      {
+        id: 'lesson-1',
+        title: 'Advanced React Patterns',
+        duration: '2.5 hours',
+        difficulty: 'intermediate',
+        description: 'Master hooks, context, and custom patterns...',
+        recommendedBy: 'sarah',
+        thumbnail: '/lessons/react-advanced.png'
+      },
+      {
+        id: 'lesson-2',
+        title: 'Data Structures Masterclass',
+        duration: '3 hours',
+        difficulty: 'advanced',
+        description: 'Trees, graphs, and hash tables...',
+        recommendedBy: 'alex',
+        thumbnail: '/lessons/data-structures.png'
+      },
+      {
+        id: 'lesson-3',
+        title: 'System Design Fundamentals',
+        duration: '4 hours',
+        difficulty: 'advanced',
+        description: 'Scalability, databases, caching...',
+        recommendedBy: 'jordan',
+        thumbnail: '/lessons/system-design.png'
+      }
+    ]
+
     // Calculate next level info
     const xpPerLevel = 1000
     const currentLevelXP = profile.current_xp % xpPerLevel
@@ -275,7 +397,7 @@ export async function GET(request: NextRequest) {
       profile,
       aiPeers,
       knowledgeGraph,
-      recentActivities: [], // Will be implemented later
+      recentActivities: enhancedActivities,
       activeInsights,
       currentStreak: profile.learning_streak,
       weeklyProgress,
@@ -286,7 +408,10 @@ export async function GET(request: NextRequest) {
           xpNeeded
         },
         nextConcept
-      }
+      },
+      // Enhanced dashboard data
+      enhancedStats,
+      recommendedLessons
     }
 
     return NextResponse.json({

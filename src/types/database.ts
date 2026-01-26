@@ -283,7 +283,7 @@ export interface DashboardData {
   profile: UserProfile
   aiPeers: AIPeerProfile[]
   knowledgeGraph: KnowledgeGraphNode[]
-  recentActivities: LearningActivity[]
+  recentActivities: EnhancedActivity[]
   activeInsights: LearningInsight[]
   currentStreak: number
   weeklyProgress: {
@@ -300,6 +300,54 @@ export interface DashboardData {
     }
     nextConcept: KnowledgeGraphNode | null
   }
+  // Enhanced dashboard data
+  enhancedStats?: {
+    learningProgress: {
+      percentage: number
+      lessonsCompleted: number
+      totalLessons: number
+      weeklyChange: number
+    }
+    currentStreak: {
+      days: number
+      bestStreak: number
+      message: string
+    }
+    skillsMastered: {
+      count: number
+      recentSkills: string[]
+      monthlyProgress: number
+    }
+    codingTime: {
+      weeklyHours: number
+      dailyAverage: number
+      weeklyChange: number
+    }
+  }
+  recommendedLessons?: RecommendedLesson[]
+}
+
+// Enhanced activity type for dashboard
+export interface EnhancedActivity {
+  id: string
+  type: 'lesson_completed' | 'achievement' | 'collaboration' | 'practice'
+  title: string
+  description: string
+  xpEarned?: number
+  peerInvolved?: string
+  rating?: number
+  timestamp: string
+}
+
+// Recommended lesson type
+export interface RecommendedLesson {
+  id: string
+  title: string
+  duration: string
+  difficulty: string
+  description: string
+  recommendedBy: string
+  thumbnail: string
 }
 
 // Learning statistics

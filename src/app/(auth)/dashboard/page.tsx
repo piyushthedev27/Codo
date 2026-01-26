@@ -19,9 +19,22 @@ import {
   Code,
   ArrowRight,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  MessageCircle,
+  Clock,
+  Star,
+  Trophy,
+  Play,
+  ExternalLink,
+  Settings
 } from 'lucide-react'
 import { Avatar } from '@/components/shared/Avatar'
+import { AIPeerCards } from './components/AIPeerCards'
+import { LearningPath } from './components/LearningPath'
+import { RecommendedLessons } from './components/RecommendedLessons'
+import { HeroWelcomeSection } from './components/HeroWelcomeSection'
+import { EnhancedStatsGrid } from './components/EnhancedStatsGrid'
+import { generateEnhancedStats } from '@/lib/utils/stats-calculations'
 import type { DashboardData } from '@/types/database'
 
 // Demo data for when database is not available
@@ -236,7 +249,7 @@ export default function DashboardPage() {
     )
   }
 
-  const { profile, aiPeers, knowledgeGraph, weeklyProgress, upcomingMilestones, currentStreak } = dashboardData
+  const { profile, aiPeers, knowledgeGraph, weeklyProgress, upcomingMilestones, currentStreak, recentActivities } = dashboardData
 
   // Calculate knowledge graph stats
   const totalNodes = knowledgeGraph.length
@@ -244,8 +257,85 @@ export default function DashboardPage() {
   const inProgressNodes = knowledgeGraph.filter(node => node.status === 'in_progress').length
   const progressPercentage = totalNodes > 0 ? (completedNodes / totalNodes) * 100 : 0
 
+  // Generate enhanced stats using the calculation utilities
+  const enhancedStats = generateEnhancedStats(
+    profile,
+    knowledgeGraph,
+    recentActivities || []
+  )
+
+  // Mock recommended lessons
+  const recommendedLessons = [
+    {
+      id: 'lesson-1',
+      title: 'Advanced React Patterns',
+      duration: '2.5 hours',
+      difficulty: 'intermediate',
+      description: 'Master hooks, context, and custom patterns...',
+      recommendedBy: 'sarah',
+      thumbnail: '/lessons/react-advanced.png'
+    },
+    {
+      id: 'lesson-2', 
+      title: 'Data Structures Masterclass',
+      duration: '3 hours',
+      difficulty: 'advanced',
+      description: 'Trees, graphs, and hash tables...',
+      recommendedBy: 'alex',
+      thumbnail: '/lessons/data-structures.png'
+    },
+    {
+      id: 'lesson-3',
+      title: 'System Design Fundamentals', 
+      duration: '4 hours',
+      difficulty: 'advanced',
+      description: 'Scalability, databases, caching...',
+      recommendedBy: 'jordan',
+      thumbnail: '/lessons/system-design.png'
+    }
+  ]
+
+  // Enhanced recent activities with AI peer involvement
+  const enhancedActivities = [
+    {
+      id: 'activity-1',
+      type: 'lesson_completed',
+      title: 'Completed: "React Hooks Deep Dive"',
+      description: 'With Sarah • 2 hours ago',
+      xpEarned: 150,
+      peerInvolved: 'sarah',
+      rating: 5,
+      timestamp: '2 hours ago'
+    },
+    {
+      id: 'activity-2',
+      type: 'achievement',
+      title: 'Achieved: "10 Day Streak" Badge',
+      description: '5 hours ago • Celebrated with all peers!',
+      xpEarned: 100,
+      timestamp: '5 hours ago'
+    },
+    {
+      id: 'activity-3',
+      type: 'collaboration',
+      title: 'Collaborated: "Build a Todo App"',
+      description: 'With Alex & Jordan • Yesterday',
+      xpEarned: 200,
+      peerInvolved: 'alex',
+      timestamp: 'Yesterday'
+    },
+    {
+      id: 'activity-4',
+      type: 'practice',
+      title: 'Practice: Solved 5 algorithm challenges',
+      description: '2 days ago',
+      xpEarned: 100,
+      timestamp: '2 days ago'
+    }
+  ]
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20">
       <div className="container mx-auto px-4 py-8">
         {/* Demo Data Warning */}
         {usingDemoData && (
@@ -262,249 +352,97 @@ export default function DashboardPage() {
           </Card>
         )}
 
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">
-            Welcome back, {user?.firstName || profile.first_name || 'Learner'}! 👋
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Ready to continue your learning journey with your AI study buddies?
-          </p>
-        </div>
+        {/* Hero Welcome Section */}
+        <HeroWelcomeSection 
+          user={user}
+          profile={profile}
+          aiPeers={aiPeers}
+          learningProgress={{
+            percentage: Math.round(progressPercentage),
+            lessonsCompleted: completedNodes,
+            totalLessons: totalNodes
+          }}
+          currentStreak={currentStreak}
+        />
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Level & XP */}
-          <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Award className="w-5 h-5" />
-                Level {profile.current_level}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold mb-2">{profile.current_xp} XP</div>
-              <div className="text-sm opacity-90">
-                {upcomingMilestones.nextLevel.xpNeeded} XP to Level {upcomingMilestones.nextLevel.next}
-              </div>
-              <Progress 
-                value={(profile.current_xp % 1000) / 10} 
-                className="mt-2 bg-blue-400"
-              />
-            </CardContent>
-          </Card>
+        {/* Enhanced Stats Cards Grid */}
+        <EnhancedStatsGrid stats={enhancedStats} />
 
-          {/* Learning Streak */}
-          <Card className="bg-gradient-to-br from-orange-500 to-red-500 text-white border-0">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Zap className="w-5 h-5" />
-                Learning Streak
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold mb-2">{currentStreak} days</div>
-              <div className="text-sm opacity-90">
-                {currentStreak > 0 ? 'Keep it up!' : 'Start your streak today!'}
-              </div>
-            </CardContent>
-          </Card>
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column (2/3 width) */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* AI Peers Section */}
+            <AIPeerCards peers={aiPeers} />
 
-          {/* Knowledge Progress */}
-          <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Brain className="w-5 h-5" />
-                Knowledge Graph
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold mb-2">{Math.round(progressPercentage)}%</div>
-              <div className="text-sm opacity-90">
-                {completedNodes} of {totalNodes} concepts mastered
-              </div>
-              <Progress 
-                value={progressPercentage} 
-                className="mt-2 bg-green-400"
-              />
-            </CardContent>
-          </Card>
-
-          {/* AI Peers */}
-          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                AI Study Buddies
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold mb-2">{aiPeers.length}</div>
-              <div className="text-sm opacity-90 mb-2">Active learning companions</div>
-              <div className="flex -space-x-2">
-                {aiPeers.slice(0, 3).map((peer) => (
-                  <Avatar 
-                    key={peer.id}
-                    peerId={peer.name.toLowerCase()} 
-                    size="sm"
-                    className="border-2 border-white"
-                  />
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Weekly Progress */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" />
-                This Week's Progress
-              </CardTitle>
-              <CardDescription>
-                Your learning activity over the past 7 days
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <BookOpen className="w-6 h-6 mx-auto mb-2 text-blue-600" />
-                  <div className="text-2xl font-bold text-blue-600">{weeklyProgress.lessonsCompleted}</div>
-                  <div className="text-sm text-muted-foreground">Lessons</div>
+            {/* Enhanced Recent Activity */}
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="w-5 h-5" />
+                    Recent Activity
+                  </CardTitle>
+                  <Button variant="ghost" size="sm">
+                    View All
+                    <ExternalLink className="w-4 h-4 ml-1" />
+                  </Button>
                 </div>
-                
-                <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                  <Code className="w-6 h-6 mx-auto mb-2 text-green-600" />
-                  <div className="text-2xl font-bold text-green-600">{weeklyProgress.challengesAttempted}</div>
-                  <div className="text-sm text-muted-foreground">Challenges</div>
-                </div>
-                
-                <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                  <Mic className="w-6 h-6 mx-auto mb-2 text-purple-600" />
-                  <div className="text-2xl font-bold text-purple-600">{weeklyProgress.voiceSessionsUsed}</div>
-                  <div className="text-sm text-muted-foreground">Voice Sessions</div>
-                </div>
-                
-                <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                  <Sparkles className="w-6 h-6 mx-auto mb-2 text-orange-600" />
-                  <div className="text-2xl font-bold text-orange-600">{weeklyProgress.xpEarned}</div>
-                  <div className="text-sm text-muted-foreground">XP Earned</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="w-5 h-5" />
-                Quick Actions
-              </CardTitle>
-              <CardDescription>
-                Jump back into learning
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button className="w-full justify-between" variant="outline">
-                Continue Learning
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-              
-              <Button className="w-full justify-between" variant="outline" asChild>
-                <a href="/knowledge-graph-demo">
-                  View Knowledge Graph
-                  <ArrowRight className="w-4 h-4" />
-                </a>
-              </Button>
-              
-              <Button className="w-full justify-between" variant="outline">
-                Practice Challenges
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-              
-              <Button className="w-full justify-between" variant="outline">
-                Voice Coaching Session
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* AI Peers Status */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                Your AI Study Buddies
-              </CardTitle>
-              <CardDescription>
-                Your personalized learning companions are ready to help
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {aiPeers.map((peer) => (
-                  <div key={peer.id} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                    <Avatar 
-                      peerId={peer.name.toLowerCase()} 
-                      size="md" 
-                      showStatus={true}
-                      status="online"
-                    />
-                    <div className="flex-1">
-                      <h4 className="font-medium">{peer.name}</h4>
-                      <p className="text-sm text-muted-foreground capitalize">
-                        {peer.personality} • {peer.skill_level} level
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {peer.interaction_style}
-                      </p>
+                <CardDescription>
+                  Your learning journey with AI peers
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {enhancedActivities.map((activity) => (
+                    <div key={activity.id} className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                      <div className="flex-shrink-0">
+                        {activity.type === 'lesson_completed' && <BookOpen className="w-5 h-5 text-blue-600" />}
+                        {activity.type === 'achievement' && <Trophy className="w-5 h-5 text-yellow-600" />}
+                        {activity.type === 'collaboration' && <Users className="w-5 h-5 text-purple-600" />}
+                        {activity.type === 'practice' && <Code className="w-5 h-5 text-green-600" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-1">
+                          {activity.title}
+                        </h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                          {activity.description}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500">{activity.timestamp}</span>
+                          {activity.xpEarned && (
+                            <span className="text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded">
+                              +{activity.xpEarned} XP
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {activity.peerInvolved && (
+                        <Avatar peerId={activity.peerInvolved} size="sm" />
+                      )}
                     </div>
-                    <Badge variant="secondary" className="capitalize">
-                      {peer.personality}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Next Milestone */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                Next Milestone
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-                  Level {upcomingMilestones.nextLevel.next}
-                </h4>
-                <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
-                  {upcomingMilestones.nextLevel.xpNeeded} XP needed
-                </p>
-                <Progress 
-                  value={((1000 - upcomingMilestones.nextLevel.xpNeeded) / 1000) * 100}
-                  className="bg-blue-200"
-                />
-              </div>
-              
-              {upcomingMilestones.nextConcept && (
-                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                  <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">
-                    Next Concept
-                  </h4>
-                  <p className="text-sm text-green-700 dark:text-green-300">
-                    {upcomingMilestones.nextConcept.concept}
-                  </p>
+                  ))}
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column (1/3 width) */}
+          <div className="space-y-8">
+            {/* Learning Path Section */}
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-gray-200/50 dark:border-gray-700/50">
+              <LearningPath 
+                knowledgeGraph={knowledgeGraph}
+                upcomingMilestones={upcomingMilestones}
+              />
+            </div>
+
+            {/* Recommended Lessons Section */}
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-gray-200/50 dark:border-gray-700/50">
+              <RecommendedLessons lessons={recommendedLessons} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -38,39 +38,21 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      appearance={{
+        baseTheme: undefined,
+        variables: {
+          colorPrimary: '#6366f1',
+          colorBackground: '#0f172a',
+          colorText: '#f8fafc',
+        },
+      }}
+      signInFallbackRedirectUrl="/dashboard"
+      signUpFallbackRedirectUrl="/onboarding"
+    >
       <html lang="en" suppressHydrationWarning className="dark">
-        <head>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                try {
-                  const root = document.documentElement;
-                  const body = document.body;
-                  
-                  // Force dark theme always
-                  root.classList.add('dark');
-                  root.classList.remove('light');
-                  root.style.colorScheme = 'dark';
-                  root.setAttribute('data-theme', 'dark');
-                  
-                  // Apply landing page gradient background
-                  body.style.background = 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%)';
-                  body.style.backgroundAttachment = 'fixed';
-                  body.style.color = 'hsl(210 40% 98%)';
-                  body.style.minHeight = '100vh';
-                } catch (e) {
-                  // Fallback to dark theme
-                  document.documentElement.classList.add('dark');
-                  document.documentElement.style.colorScheme = 'dark';
-                  document.body.style.background = 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%)';
-                  document.body.style.color = 'hsl(210 40% 98%)';
-                }
-              `,
-            }}
-          />
-        </head>
-        <body className={`${inter.className} text-foreground transition-colors duration-300`}>
+        <body className={`${inter.className} text-foreground transition-colors duration-300 min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-purple-900/20`}>
           <ThemeProvider
             defaultTheme="dark"
             storageKey="codo-ui-theme"

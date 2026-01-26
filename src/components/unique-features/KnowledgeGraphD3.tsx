@@ -1,12 +1,28 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from 'react'
-import * as d3 from 'd3'
+import { 
+  select, 
+  forceSimulation, 
+  forceLink, 
+  forceManyBody, 
+  forceCenter, 
+  forceCollide,
+  transition,
+  easeElastic,
+  easeQuadInOut,
+  easeQuadOut,
+  easeBackOut,
+  easeBackIn,
+  Simulation,
+  SimulationNodeDatum,
+  SimulationLinkDatum
+} from 'd3'
 import { motion } from 'framer-motion'
 import { KnowledgeGraphNode } from '@/types/database'
 import '@/styles/knowledge-graph-animations.css'
 
-interface D3Node extends d3.SimulationNodeDatum {
+interface D3Node extends SimulationNodeDatum {
   id: string
   concept: string
   status: 'locked' | 'in_progress' | 'mastered'
@@ -20,7 +36,7 @@ interface D3Node extends d3.SimulationNodeDatum {
   fy?: number | null
 }
 
-interface D3Link extends d3.SimulationLinkDatum<D3Node> {
+interface D3Link extends SimulationLinkDatum<D3Node> {
   source: string | D3Node
   target: string | D3Node
   type: 'prerequisite' | 'related'
@@ -50,7 +66,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
   className = ''
 }, ref) => {
   const svgRef = useRef<SVGSVGElement>(null)
-  const simulationRef = useRef<d3.Simulation<D3Node, D3Link> | null>(null)
+  const simulationRef = useRef<Simulation<D3Node, D3Link> | null>(null)
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
   const [selectedNode, setSelectedNode] = useState<string | null>(null)
 
@@ -160,15 +176,15 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
   useEffect(() => {
     if (!svgRef.current || d3Nodes.length === 0) return
 
-    const svg = d3.select(svgRef.current)
+    const svg = select(svgRef.current)
     svg.selectAll('*').remove()
 
     // Create simulation
-    const simulation = d3.forceSimulation(d3Nodes)
-      .force('link', d3.forceLink(d3Links).id((d: any) => d.id).distance(100))
-      .force('charge', d3.forceManyBody().strength(-400))
-      .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius((d: any) => getNodeRadius(d.difficulty_level, d.status) + 5))
+    const simulation = forceSimulation(d3Nodes)
+      .force('link', forceLink(d3Links).id((d: any) => d.id).distance(100))
+      .force('charge', forceManyBody().strength(-400))
+      .force('center', forceCenter(width / 2, height / 2))
+      .force('collision', forceCollide().radius((d: any) => getNodeRadius(d.difficulty_level, d.status) + 5))
 
     simulationRef.current = simulation
 
@@ -287,7 +303,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
       selection
         .transition()
         .duration(duration)
-        .ease(d3.easeElastic.period(0.3))
+        .ease(easeElastic.period(0.3))
         .attr('r', (d: any) => getNodeRadius(d.difficulty_level, d.status))
         .attr('fill', (d: any) => getNodeColor(d.status, d.mastery_percentage))
         .attr('stroke', (d: any) => getNodeStrokeColor(d.status, false, false))
@@ -322,7 +338,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
           })
           .transition()
           .duration(800)
-          .ease(d3.easeQuadOut)
+          .ease(easeQuadOut)
           .attr('transform', (d: any) => {
             const nodeData = node.datum() as any
             const x = nodeData.x + Math.cos(angle) * distance
@@ -337,11 +353,11 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
       node.select('circle:not(.progress-ring)')
         .transition()
         .duration(300)
-        .ease(d3.easeBackOut.overshoot(1.7))
+        .ease(easeBackOut.overshoot(1.7))
         .attr('r', (d: any) => getNodeRadius(d.difficulty_level, d.status) * 1.3)
         .transition()
         .duration(300)
-        .ease(d3.easeBackIn)
+        .ease(easeBackIn)
         .attr('r', (d: any) => getNodeRadius(d.difficulty_level, d.status))
     }
 
@@ -395,13 +411,13 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
   useEffect(() => {
     if (!svgRef.current) return
 
-    const svg = d3.select(svgRef.current)
+    const svg = select(svgRef.current)
     
     // Smooth transition for stroke changes
     svg.selectAll('.node circle:not(.progress-ring)')
       .transition()
       .duration(200)
-      .ease(d3.easeQuadInOut)
+      .ease(easeQuadInOut)
       .attr('stroke', (d: any) => getNodeStrokeColor(d.status, d.id === hoveredNode, d.id === selectedNode))
       .attr('stroke-width', (d: any) => getNodeStrokeWidth(d.status, d.id === hoveredNode, d.id === selectedNode))
       .style('filter', (d: any) => {
@@ -414,7 +430,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
     svg.selectAll('.progress-ring')
       .transition()
       .duration(300)
-      .ease(d3.easeQuadInOut)
+      .ease(easeQuadInOut)
       .attr('stroke-dasharray', (d: any) => {
         const circumference = 2 * Math.PI * (getNodeRadius(d.difficulty_level, d.status) + 8)
         const progress = d.mastery_percentage / 100
@@ -425,7 +441,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
     svg.selectAll('.node')
       .transition()
       .duration(200)
-      .ease(d3.easeQuadInOut)
+      .ease(easeQuadInOut)
       .attr('transform', (d: any) => {
         const scale = d.id === hoveredNode ? 1.1 : d.id === selectedNode ? 1.05 : 1
         return `translate(${d.x}, ${d.y}) scale(${scale})`
@@ -438,7 +454,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
     animateNodeStateChange: (nodeId: string, newStatus: 'locked' | 'in_progress' | 'mastered') => {
       if (!svgRef.current) return
       
-      const svg = d3.select(svgRef.current)
+      const svg = select(svgRef.current)
       const node = svg.selectAll('.node').filter((d: any) => d.id === nodeId)
       
       // Update the node data
@@ -451,7 +467,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
       node.select('circle:not(.progress-ring)')
         .transition()
         .duration(600)
-        .ease(d3.easeElastic.period(0.3))
+        .ease(easeElastic.period(0.3))
         .attr('fill', getNodeColor(newStatus, nodeData?.mastery_percentage || 0))
         .attr('stroke', getNodeStrokeColor(newStatus, false, false))
       
@@ -469,7 +485,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
     animateNodeUnlock: (nodeId: string) => {
       if (!svgRef.current) return
       
-      const svg = d3.select(svgRef.current)
+      const svg = select(svgRef.current)
       const node = svg.selectAll('.node').filter((d: any) => d.id === nodeId)
       
       // Add unlock animation class
@@ -484,7 +500,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
     animateNodeCompletion: (nodeId: string) => {
       if (!svgRef.current) return
       
-      const svg = d3.select(svgRef.current)
+      const svg = select(svgRef.current)
       const node = svg.selectAll('.node').filter((d: any) => d.id === nodeId)
       
       // Add celebration animation
@@ -505,7 +521,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
           .attr('transform', `translate(${nodeData.x}, ${nodeData.y})`)
           .transition()
           .duration(1000)
-          .ease(d3.easeQuadOut)
+          .ease(easeQuadOut)
           .attr('transform', `translate(${nodeData.x + Math.cos(angle) * distance}, ${nodeData.y + Math.sin(angle) * distance})`)
           .attr('opacity', 0)
           .remove()

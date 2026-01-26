@@ -35,53 +35,54 @@
 4. WHEN onboarding is complete, THE Learning_System SHALL generate initial personalized recommendations based on collected data
 5. WHERE a user wants to update preferences, THE Learning_System SHALL allow modification of onboarding responses at any time
 
-### Requirement 2: Dashboard Layout and Navigation
+### Requirement 2: Enhanced Dashboard Experience and User Interface
 
-**User Story:** As a user, I want to see a clean dashboard layout after login, so that I can quickly access my learning progress and navigate to key features.
+**User Story:** As a user, I want a modernized dashboard that feels warm, collaborative, and motivating, so that I can stay engaged with my learning journey and easily access all platform features.
 
 #### Acceptance Criteria
 
-1. WHEN a user accesses the main dashboard, THE Learning_System SHALL display current focus area, level and XP status, daily mission or learning goal, and skill progress summary
-2. WHEN displaying dashboard content, THE Learning_System SHALL show AI-detected weak areas, suggested topics, and personalized recommendations
-3. WHEN presenting quick actions, THE Learning_System SHALL provide access to Continue Learning, Code Practice, Skill Scan, and AI Voice Coaching features
-4. WHEN loading dashboard data, THE Learning_System SHALL display tech news and updates relevant to the user's domain
+1. WHEN a user accesses the main dashboard, THE Learning_System SHALL display a personalized hero welcome section with user's name, wave emoji, and motivational message from AI peers
+2. WHEN showing progress highlights, THE Learning_System SHALL display current learning progress with two prominent CTAs: "Continue Learning" and "Talk to AI Peers"
+3. WHEN presenting quick stats, THE Learning_System SHALL show streak counter with fire emoji, XP points, and recent achievements count in a horizontal bar
+4. WHEN displaying the hero section, THE Learning_System SHALL use a subtle animated background gradient transitioning from blue to purple
 5. WHEN dashboard content is updated, THE Learning_System SHALL reflect changes in real-time without requiring page refresh
 
-### Requirement 2.1: Progress Visualization and Knowledge Graph
+### Requirement 2.1: Enhanced Dashboard Statistics and Progress Visualization
 
-**User Story:** As a learner, I want to see my skill progress as an interactive knowledge graph, so that I can understand how concepts connect and what I should learn next.
-
-#### Acceptance Criteria
-
-1. WHEN displaying skill progress, THE Learning_System SHALL show an interactive concept knowledge graph with nodes representing skills and edges showing dependencies
-2. WHEN presenting skill mastery, THE Learning_System SHALL use visual indicators: ✓ (mastered/green), ⚡ (in progress/yellow), 🔒 (locked/grey)
-3. WHEN a user completes a skill, THE Learning_System SHALL animate the unlocking of dependent skills with smooth transitions
-4. WHEN displaying progress indicators, THE Learning_System SHALL use visual progress bars, animated counters, and achievement badges with smooth transitions
-5. WHEN presenting learning streaks, THE Learning_System SHALL show streak counters with fire animations and milestone celebrations
-
-### Requirement 2.2: Quick Actions and Community Features
-
-**User Story:** As a user, I want quick access to learning activities and community interactions, so that I can engage with content and peers efficiently.
+**User Story:** As a learner, I want to see comprehensive statistics about my learning progress with visual trends and comparisons, so that I can understand my improvement patterns and stay motivated.
 
 #### Acceptance Criteria
 
-1. WHEN presenting action cards, THE Learning_System SHALL use hover effects, loading states, and clear call-to-action buttons with descriptive icons
-2. WHEN displaying recent activities, THE Learning_System SHALL show timeline views with activity types, timestamps, and quick access to continue learning
-3. WHEN showing daily challenges, THE Learning_System SHALL display bite-sized coding problems with difficulty indicators and completion rewards
-4. WHEN presenting synthetic peer interactions, THE Learning_System SHALL show AI-generated study buddy activities, questions, and collaborative learning opportunities
-5. WHEN displaying community features, THE Learning_System SHALL show discussion highlights, user questions, shared insights, and collaboration opportunities
+1. WHEN showing dashboard metrics, THE Learning_System SHALL replace basic stats with enhanced cards: Learning Progress (percentage + trend), Current Streak (days + best streak), Skills Mastered (count + monthly progress), and Coding Time This Week (hours + weekly comparison)
+2. WHEN displaying stats cards, THE Learning_System SHALL include colorful icons, large focal numbers, supporting text, and trend indicators for each metric
+3. WHEN presenting trend indicators, THE Learning_System SHALL use visual indicators: up arrows for improvement, down arrows for decline, and horizontal lines for stable performance
+4. WHEN calculating trends, THE Learning_System SHALL compare current period data with previous period to show meaningful progress direction
+5. WHEN displaying progress indicators, THE Learning_System SHALL use visual progress bars, animated counters, and achievement badges with smooth transitions
 
-### Requirement 2.3: Project Tracking and Learning History
+### Requirement 2.2: Enhanced AI Peer Integration and Community Features
 
-**User Story:** As a user, I want to track my active projects and access my learning history, so that I can continue where I left off and review past progress.
+**User Story:** As a user, I want enhanced AI peer interactions with visual status indicators and recent message previews, so that I can easily engage with my study companions and maintain collaborative learning momentum.
 
 #### Acceptance Criteria
 
-1. WHEN displaying learning history, THE Learning_System SHALL provide easy access to revisit past lessons, challenges, and project work with progress indicators
-2. WHEN showing project tracker, THE Learning_System SHALL display active projects with milestone progress, next steps, and collaboration features
-3. WHEN accessing learning history, THE Learning_System SHALL display a chronological timeline of all completed lessons, challenges, and projects
-4. WHEN reviewing past content, THE Learning_System SHALL provide quick access to revisit lessons with bookmarked sections and personal notes
-5. WHEN searching history, THE Learning_System SHALL provide filtering and search capabilities by topic, date, difficulty, and performance
+1. WHEN presenting AI peers, THE Learning_System SHALL enhance the existing PeerInteractions component with "Your AI Learning Companions" title and "Manage Peers" link
+2. WHEN showing peer cards, THE Learning_System SHALL display 3 peer cards side-by-side with 3D avatars, names, status indicators (online/coding/away), specialties, and level with stars
+3. WHEN enabling peer interaction, THE Learning_System SHALL provide "Chat Now" buttons with different colors per peer and recent message previews
+4. WHEN users hover over peer cards, THE Learning_System SHALL show hover animations with peer-colored glow effects
+5. WHEN displaying recent messages, THE Learning_System SHALL show preview of latest peer interactions with timestamps and message content
+
+### Requirement 2.3: Learning Path Visualization and Recommended Content
+
+**User Story:** As a user, I want to see my learning journey progress with clear lesson status indicators and AI-recommended content, so that I can easily continue my studies and discover relevant new topics.
+
+#### Acceptance Criteria
+
+1. WHEN displaying learning path, THE Learning_System SHALL create a new section titled "Your Learning Journey" with "View Full Path" link
+2. WHEN showing current progress, THE Learning_System SHALL display current track name, progress bar with gradient, and list 5-6 lessons with status icons (✅ completed, 🔵 in progress, ⚪ locked)
+3. WHEN presenting next milestone, THE Learning_System SHALL show milestone preview with reward and "Continue Current Lesson" CTA button
+4. WHEN showing recommendations, THE Learning_System SHALL create new "Recommended for You" section with "Explore More" link
+5. WHEN displaying recommended lessons, THE Learning_System SHALL show 3 AI-recommended lessons with thumbnails, titles, duration, difficulty, descriptions, and which AI peer recommends each
+6. WHEN enabling lesson access, THE Learning_System SHALL provide "Start Lesson" buttons with hover effects for recommended content
 
 ### Requirement 3: AI Learning System with Synthetic Peer Learning and 3D Avatar Integration
 
@@ -494,3 +495,75 @@ The 3D Avatar System has been successfully implemented with the following achiev
 5. WHEN measuring performance, THE Learning_System SHALL achieve page loads under 2 seconds and AI generation under 5 seconds
 6. WHEN handling failures, THE Learning_System SHALL provide graceful fallbacks that maintain demo quality even with network issues
 7. WHEN tracking usage, THE Learning_System SHALL display compelling metrics like user engagement and learning success rates
+
+### Requirement 21: Dashboard Modernization and Enhanced User Experience
+
+**User Story:** As a user, I want a modernized dashboard that feels warm, collaborative, and motivating, so that I can stay engaged with my learning journey and easily access all platform features.
+
+#### Acceptance Criteria
+
+1. WHEN a user accesses the dashboard, THE Learning_System SHALL display a personalized hero welcome section with user's name, wave emoji, and motivational message from AI peers
+2. WHEN showing progress highlights, THE Learning_System SHALL display current learning progress with two prominent CTAs: "Continue Learning" and "Talk to AI Peers"
+3. WHEN presenting quick stats, THE Learning_System SHALL show streak counter with fire emoji, XP points, and recent achievements count in a horizontal bar
+4. WHEN displaying the hero section, THE Learning_System SHALL use a subtle animated background gradient transitioning from blue to purple
+5. WHEN showing dashboard metrics, THE Learning_System SHALL replace basic stats with enhanced cards: Learning Progress (percentage + trend), Current Streak (days + best streak), Skills Mastered (count + monthly progress), and Coding Time This Week (hours + weekly comparison)
+6. WHEN displaying stats cards, THE Learning_System SHALL include colorful icons, large focal numbers, supporting text, and trend indicators for each metric
+7. WHEN presenting AI peers, THE Learning_System SHALL enhance the existing PeerInteractions component with "Your AI Learning Companions" title and "Manage Peers" link
+8. WHEN showing peer cards, THE Learning_System SHALL display 3 peer cards side-by-side with 3D avatars, names, status indicators (online/coding/away), specialties, and level with stars
+9. WHEN enabling peer interaction, THE Learning_System SHALL provide "Chat Now" buttons with different colors per peer and recent message previews
+10. WHEN users hover over peer cards, THE Learning_System SHALL show hover animations with peer-colored glow effects
+11. WHEN displaying learning path, THE Learning_System SHALL create a new section titled "Your Learning Journey" with "View Full Path" link
+12. WHEN showing current progress, THE Learning_System SHALL display current track name, progress bar with gradient, and list 5-6 lessons with status icons (✅ completed, 🔵 in progress, ⚪ locked)
+13. WHEN presenting next milestone, THE Learning_System SHALL show milestone preview with reward and "Continue Current Lesson" CTA button
+14. WHEN displaying recent activity, THE Learning_System SHALL enhance existing feed to show completed lessons with AI peer involvement, achievements with celebration, collaborative coding sessions, and XP earned per activity
+15. WHEN categorizing activities, THE Learning_System SHALL use different background colors for different activity types
+16. WHEN showing recommendations, THE Learning_System SHALL create new "Recommended for You" section with "Explore More" link
+17. WHEN displaying recommended lessons, THE Learning_System SHALL show 3 AI-recommended lessons with thumbnails, titles, duration, difficulty, descriptions, and which AI peer recommends each
+18. WHEN enabling lesson access, THE Learning_System SHALL provide "Start Lesson" buttons with hover effects for recommended content
+
+### Requirement 22: Dashboard Design System and Layout Structure
+
+**User Story:** As a user, I want the dashboard to maintain consistent design patterns and responsive layout, so that I have a cohesive experience across all devices.
+
+#### Acceptance Criteria
+
+1. WHEN applying design system, THE Learning_System SHALL use existing Tailwind classes and color variables throughout the dashboard
+2. WHEN maintaining component structure, THE Learning_System SHALL preserve current component APIs and existing responsive patterns
+3. WHEN implementing animations, THE Learning_System SHALL keep current animation styles and speeds for consistency
+4. WHEN using UI components, THE Learning_System SHALL utilize existing components from components/ui directory
+5. WHEN supporting themes, THE Learning_System SHALL preserve current dark mode support across all new dashboard elements
+6. WHEN structuring layout, THE Learning_System SHALL organize dashboard with hero section (full width), 4 stats cards (grid row), and two-column layout
+7. WHEN arranging content columns, THE Learning_System SHALL place AI Peers and Recent Activity in left column (2/3 width) and Learning Path and Recommended in right column (1/3 width)
+8. WHEN styling sections, THE Learning_System SHALL use existing Card component with rounded corners and shadows for all dashboard sections
+
+### Requirement 23: Dashboard Data Structure and API Enhancements
+
+**User Story:** As a developer, I want enhanced dashboard API responses with comprehensive data, so that the modernized dashboard can display rich, personalized content.
+
+#### Acceptance Criteria
+
+1. WHEN providing enhanced stats, THE Dashboard_API SHALL include learning progress percentage, streak data with best streak, skills mastered count with recent skills, and coding time with daily averages
+2. WHEN showing AI peer status, THE Dashboard_API SHALL provide peer availability status, recent messages, and interaction history
+3. WHEN displaying learning path, THE Dashboard_API SHALL include current track information, lesson statuses, next milestone data, and progress percentages
+4. WHEN providing recommendations, THE Dashboard_API SHALL include AI-recommended lessons with metadata, difficulty levels, and which AI peer recommends each lesson
+5. WHEN enhancing activity feed, THE Dashboard_API SHALL include XP tracking per activity, AI peer involvement data, and activity type categorization
+6. WHEN updating dashboard route, THE Learning_System SHALL modify src/app/api/dashboard/route.ts to include all new data fields
+7. WHEN maintaining compatibility, THE Learning_System SHALL preserve existing error handling and demo data fallbacks
+8. WHEN supporting real-time updates, THE Dashboard_API SHALL provide efficient data refresh mechanisms for live dashboard updates
+
+### Requirement 24: Dashboard Component Architecture and Technical Implementation
+
+**User Story:** As a developer, I want well-structured dashboard components that integrate seamlessly with existing systems, so that the modernized dashboard is maintainable and extensible.
+
+#### Acceptance Criteria
+
+1. WHEN updating dashboard layout, THE Learning_System SHALL modify src/app/(auth)/dashboard/page.tsx to implement new modernized structure
+2. WHEN creating new components, THE Learning_System SHALL build AIPeerCards.tsx, LearningPath.tsx, and RecommendedLessons.tsx components
+3. WHEN enhancing existing components, THE Learning_System SHALL update PeerInteractions component to support enhanced AI peer integration
+4. WHEN integrating avatars, THE Learning_System SHALL use existing 3D avatar system for consistent peer representation
+5. WHEN handling errors, THE Learning_System SHALL maintain current error handling patterns and loading states
+6. WHEN supporting mobile, THE Learning_System SHALL ensure mobile-responsive design works on all devices with touch-optimized interactions
+7. WHEN implementing animations, THE Learning_System SHALL use existing animation libraries and performance optimization techniques
+8. WHEN managing state, THE Learning_System SHALL integrate with existing state management patterns and data flow
+9. WHEN testing components, THE Learning_System SHALL maintain existing testing patterns and add tests for new dashboard functionality
+10. WHEN documenting changes, THE Learning_System SHALL update component documentation and maintain code quality standards
