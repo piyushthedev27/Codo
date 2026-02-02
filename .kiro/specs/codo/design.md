@@ -1587,6 +1587,109 @@ The dashboard modernization enhances the existing Codo dashboard with a warm, co
 └─────────────────────────────────────────────────────────────┘
 ```
 
+### Professional Navigation Architecture
+
+#### Sidebar Navigation System
+
+```typescript
+interface NavigationItem {
+  id: string
+  label: string
+  icon: LucideIcon
+  href: string
+  badge?: number
+  active?: boolean
+  children?: NavigationItem[]
+}
+
+const navigationItems: NavigationItem[] = [
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: Home,
+    href: '/dashboard',
+    active: true
+  },
+  {
+    id: 'knowledge-graph',
+    label: 'Knowledge Graph',
+    icon: Network,
+    href: '/knowledge-graph'
+  },
+  {
+    id: 'lessons',
+    label: 'Lessons',
+    icon: BookOpen,
+    href: '/lessons',
+    badge: 3 // New lessons available
+  },
+  {
+    id: 'challenges',
+    label: 'Code Challenges',
+    icon: Code,
+    href: '/challenges'
+  },
+  {
+    id: 'ai-peers',
+    label: 'AI Peers',
+    icon: Users,
+    href: '/ai-peers',
+    badge: 2 // Unread messages
+  },
+  {
+    id: 'analytics',
+    label: 'Progress Analytics',
+    icon: BarChart3,
+    href: '/analytics'
+  },
+  {
+    id: 'settings',
+    label: 'Settings',
+    icon: Settings,
+    href: '/settings'
+  }
+]
+```
+
+#### Top Navigation Bar
+
+```typescript
+interface TopNavigation {
+  branding: {
+    logo: string
+    title: string
+  }
+  search: {
+    placeholder: string
+    suggestions: SearchSuggestion[]
+  }
+  notifications: {
+    count: number
+    items: NotificationItem[]
+  }
+  quickActions: QuickAction[]
+  userProfile: UserProfileDropdown
+}
+
+interface NotificationItem {
+  id: string
+  type: 'message' | 'achievement' | 'system' | 'lesson'
+  title: string
+  description: string
+  timestamp: Date
+  read: boolean
+  actionUrl?: string
+}
+
+interface QuickAction {
+  id: string
+  label: string
+  icon: LucideIcon
+  action: () => void
+  variant: 'primary' | 'secondary'
+}
+```
+
 ### Component Architecture Updates
 
 #### Enhanced Dashboard Page (`src/app/(auth)/dashboard/page.tsx`)
@@ -1601,7 +1704,18 @@ export default function DashboardPage() {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
-      <div className="container mx-auto px-4 py-6 space-y-6">
+      {/* Sidebar Navigation */}
+      <SidebarNavigation items={navigationItems} />
+      
+      {/* Top Navigation Bar */}
+      <TopNavigationBar 
+        notifications={dashboardData.notifications}
+        quickActions={dashboardData.quickActions}
+        user={user}
+      />
+      
+      {/* Main Dashboard Content */}
+      <main className="ml-64 pt-16 p-6 space-y-6">
         {/* Hero Welcome Section */}
         <HeroWelcomeSection 
           user={user}
@@ -1617,7 +1731,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column (2/3) */}
           <div className="lg:col-span-2 space-y-6">
-            <AIPeerCards 
+            <EnhancedAIPeersSection 
               peers={dashboardData.aiPeers}
               recentMessages={dashboardData.recentMessages}
             />
@@ -1628,17 +1742,17 @@ export default function DashboardPage() {
           
           {/* Right Column (1/3) */}
           <div className="space-y-6">
-            <LearningPath 
+            <LearningPathSection 
               currentTrack={dashboardData.currentTrack}
               lessons={dashboardData.lessons}
               nextMilestone={dashboardData.nextMilestone}
             />
-            <RecommendedLessons 
+            <RecommendedLessonsSection 
               recommendations={dashboardData.recommendations}
             />
           </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
@@ -1647,35 +1761,694 @@ export default function DashboardPage() {
 ### Key Dashboard Components
 
 #### 1. Hero Welcome Section
-- **Personalized Greeting**: "Welcome back, [Name]! 👋"
-- **AI Peer Message**: Rotating motivational messages from Sarah, Alex, Jordan
-- **Progress Highlight**: Current learning progress with gradient progress bar
-- **Primary CTAs**: "Continue Learning" and "Talk to AI Peers" buttons
-- **Quick Stats Bar**: Streak counter 🔥, XP points, achievements count
-- **Animated Background**: Subtle gradient animation from blue to purple
 
-#### 2. Enhanced Stats Cards (4-column grid)
-- **Learning Progress**: Percentage complete with trend indicator
-- **Current Streak**: Days with best streak comparison
-- **Skills Mastered**: Count with monthly progress
-- **Coding Time**: Hours this week with daily average
-- Each card includes: colorful icon, large number, supporting text, trend arrow
+```typescript
+interface HeroWelcomeSectionProps {
+  user: User
+  progress: LearningProgress
+  aiPeerMessage: AIPeerMessage
+  stats: QuickStats
+}
 
-#### 3. AI Peer Cards Section
-- **Section Title**: "Your AI Learning Companions" with "Manage Peers" link
-- **3 Peer Cards**: Side-by-side layout with 3D avatars
-- **Status Indicators**: Online/coding/away with colored dots
-- **Peer Details**: Name, specialty, level (1-5 stars)
-- **Chat Buttons**: Peer-colored "Chat Now" buttons
-- **Hover Effects**: Glow animations with peer personality colors
-- **Recent Messages**: Preview of latest peer interactions
+export function HeroWelcomeSection({ user, progress, aiPeerMessage, stats }: HeroWelcomeSectionProps) {
+  return (
+    <Card className="relative overflow-hidden">
+      {/* Animated Background Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 animate-gradient-x" />
+      
+      <CardContent className="relative p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          {/* Left: Greeting and Progress */}
+          <div className="space-y-6">
+            {/* Personalized Greeting */}
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Welcome back, {user.firstName}! 👋
+              </h1>
+              <div className="flex items-center space-x-3">
+                <Avatar peerId={aiPeerMessage.peerId} size="sm" />
+                <p className="text-lg text-gray-600 dark:text-gray-300">
+                  {aiPeerMessage.message}
+                </p>
+              </div>
+            </div>
+            
+            {/* Progress Highlight */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Current Progress
+                </span>
+                <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                  {progress.percentage}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                <div 
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-1000 ease-out"
+                  style={{ width: `${progress.percentage}%` }}
+                />
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {progress.lessonsCompleted} of {progress.totalLessons} lessons completed
+              </p>
+            </div>
+            
+            {/* Primary CTAs */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button size="lg" className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
+                <PlayCircle className="w-5 h-5 mr-2" />
+                Continue Learning
+              </Button>
+              <Button size="lg" variant="outline">
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Talk to AI Peers
+              </Button>
+            </div>
+          </div>
+          
+          {/* Right: Quick Stats */}
+          <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-6 backdrop-blur-sm">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Today's Progress
+            </h3>
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="space-y-1">
+                <div className="flex items-center justify-center space-x-1">
+                  <Flame className="w-5 h-5 text-orange-500" />
+                  <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {stats.streak}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Day Streak</p>
+              </div>
+              
+              <div className="space-y-1">
+                <div className="flex items-center justify-center space-x-1">
+                  <Zap className="w-5 h-5 text-yellow-500" />
+                  <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {stats.xp.toLocaleString()}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">XP Points</p>
+              </div>
+              
+              <div className="space-y-1">
+                <div className="flex items-center justify-center space-x-1">
+                  <Trophy className="w-5 h-5 text-purple-500" />
+                  <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {stats.achievements}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Achievements</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+```
 
-#### 4. Learning Path Section
-- **Section Title**: "Your Learning Journey" with "View Full Path" link
-- **Current Track**: Name and progress bar with gradient
-- **Lesson List**: 5-6 lessons with status icons (✅🔵⚪)
-- **Next Milestone**: Preview with reward and "Continue" CTA
-- **Progress Visualization**: Clear indication of completed vs remaining content
+#### 2. Enhanced Stats Grid Component
+
+```typescript
+interface EnhancedStatsGridProps {
+  stats: EnhancedStats
+}
+
+export function EnhancedStatsGrid({ stats }: EnhancedStatsGridProps) {
+  const statCards = [
+    {
+      title: "Learning Progress",
+      value: `${stats.learningProgress.percentage}%`,
+      subtitle: `${stats.learningProgress.lessonsCompleted} lessons completed`,
+      icon: BookOpen,
+      color: "blue",
+      trend: stats.learningProgress.trend,
+      trendValue: `+${stats.learningProgress.trendValue}% this week`
+    },
+    {
+      title: "Current Streak",
+      value: `${stats.currentStreak.days}`,
+      subtitle: `Best: ${stats.currentStreak.bestStreak} days`,
+      icon: Flame,
+      color: "orange",
+      trend: stats.currentStreak.trend,
+      trendValue: stats.currentStreak.motivationalMessage
+    },
+    {
+      title: "Skills Mastered",
+      value: `${stats.skillsMastered.count}`,
+      subtitle: `Recent: ${stats.skillsMastered.recentSkills.join(", ")}`,
+      icon: Target,
+      color: "green",
+      trend: stats.skillsMastered.trend,
+      trendValue: `+${stats.skillsMastered.monthlyProgress} this month`
+    },
+    {
+      title: "Coding Time",
+      value: `${stats.codingTime.hoursThisWeek}h`,
+      subtitle: `Daily avg: ${stats.codingTime.dailyAverage}h`,
+      icon: Clock,
+      color: "purple",
+      trend: stats.codingTime.trend,
+      trendValue: stats.codingTime.weeklyComparison
+    }
+  ]
+  
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {statCards.map((stat, index) => (
+        <Card key={index} className="relative overflow-hidden hover:shadow-lg transition-shadow duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className={`p-3 rounded-lg bg-${stat.color}-100 dark:bg-${stat.color}-900/20`}>
+                <stat.icon className={`w-6 h-6 text-${stat.color}-600 dark:text-${stat.color}-400`} />
+              </div>
+              <div className={`flex items-center space-x-1 text-sm ${
+                stat.trend === 'up' ? 'text-green-600' : 
+                stat.trend === 'down' ? 'text-red-600' : 'text-gray-600'
+              }`}>
+                {stat.trend === 'up' && <TrendingUp className="w-4 h-4" />}
+                {stat.trend === 'down' && <TrendingDown className="w-4 h-4" />}
+                {stat.trend === 'stable' && <Minus className="w-4 h-4" />}
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                {stat.title}
+              </h3>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                {stat.value}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {stat.subtitle}
+              </p>
+              <p className={`text-xs font-medium ${
+                stat.trend === 'up' ? 'text-green-600' : 
+                stat.trend === 'down' ? 'text-red-600' : 'text-gray-600'
+              }`}>
+                {stat.trendValue}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
+}
+```
+
+### Enhanced Data Models
+
+#### Dashboard API Response Structure
+
+```typescript
+interface DashboardData {
+  // Navigation and Notifications
+  notifications: NotificationItem[]
+  quickActions: QuickAction[]
+  
+  // Hero Section Data
+  progress: {
+    percentage: number
+    currentLesson: string
+    lessonsCompleted: number
+    totalLessons: number
+  }
+  
+  aiPeerMessage: {
+    peerId: string
+    peerName: string
+    message: string
+    rotationId: number // For message rotation
+  }
+  
+  quickStats: {
+    streak: number
+    xp: number
+    achievements: number
+  }
+  
+  // Enhanced Stats Cards
+  enhancedStats: {
+    learningProgress: {
+      percentage: number
+      lessonsCompleted: number
+      trend: 'up' | 'down' | 'stable'
+      trendValue: number
+    }
+    
+    currentStreak: {
+      days: number
+      bestStreak: number
+      trend: 'up' | 'down' | 'stable'
+      motivationalMessage: string
+    }
+    
+    skillsMastered: {
+      count: number
+      recentSkills: string[]
+      monthlyProgress: number
+      trend: 'up' | 'down' | 'stable'
+    }
+    
+    codingTime: {
+      hoursThisWeek: number
+      dailyAverage: number
+      weeklyComparison: string
+      trend: 'up' | 'down' | 'stable'
+    }
+  }
+  
+  // AI Peers Section
+  aiPeers: AIPeerWithStatus[]
+  recentMessages: RecentMessage[]
+  
+  // Learning Path Section
+  currentTrack: CurrentTrack
+  lessons: LessonWithStatus[]
+  nextMilestone: Milestone
+  
+  // Recommended Lessons
+  recommendations: RecommendedLesson[]
+  
+  // Enhanced Recent Activity
+  recentActivities: EnhancedActivity[]
+}
+
+interface AIPeerWithStatus extends AIPeerProfile {
+  status: 'online' | 'coding' | 'away' | 'studying'
+  specialty: string
+  level: number // 1-5 stars
+  lastActive: Date
+  statusMessage?: string
+}
+
+interface RecentMessage {
+  id: string
+  peerId: string
+  peerName: string
+  content: string
+  timestamp: string
+  type: 'question' | 'encouragement' | 'tip' | 'celebration'
+  read: boolean
+}
+
+interface CurrentTrack {
+  id: string
+  name: string
+  description: string
+  progress: number
+  totalLessons: number
+  completedLessons: number
+  estimatedCompletion: string
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
+}
+
+interface LessonWithStatus {
+  id: string
+  title: string
+  description: string
+  duration: string
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
+  status: 'completed' | 'in_progress' | 'locked'
+  xpReward: number
+  prerequisites: string[]
+  completionDate?: Date
+}
+
+interface Milestone {
+  id: string
+  title: string
+  description: string
+  reward: string
+  progress: number
+  target: number
+  type: 'xp' | 'lessons' | 'skills' | 'streak'
+  celebrationMessage: string
+}
+
+interface RecommendedLesson {
+  id: string
+  title: string
+  description: string
+  duration: string
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
+  thumbnail: string
+  recommendedBy: {
+    id: string
+    name: string
+    reasoning: string
+  }
+  tags: string[]
+  relevanceScore: number
+  prerequisites: string[]
+}
+
+interface EnhancedActivity {
+  id: string
+  type: 'lesson_completed' | 'achievement_earned' | 'collaborative_session' | 'challenge_completed' | 'skill_mastered' | 'milestone_reached'
+  title: string
+  description: string
+  xpEarned: number
+  timestamp: Date
+  aiPeerInvolved?: {
+    id: string
+    name: string
+    role: 'teacher' | 'collaborator' | 'encourager' | 'challenger'
+  }
+  backgroundColor: string // For activity type differentiation
+  icon: string
+  celebrationLevel: 'low' | 'medium' | 'high'
+}
+```
+
+### Visual Design System
+
+#### Color Palette Enhancement
+
+```typescript
+// Enhanced color system for dashboard
+export const dashboardColors = {
+  // Primary gradients
+  primary: {
+    gradient: 'from-blue-500 to-purple-500',
+    light: 'from-blue-400 to-purple-400',
+    dark: 'from-blue-600 to-purple-600'
+  },
+  
+  // Peer personality colors
+  peers: {
+    sarah: {
+      primary: '#EC4899', // Pink
+      light: '#F9A8D4',
+      dark: '#BE185D',
+      gradient: 'from-pink-500 to-rose-500'
+    },
+    alex: {
+      primary: '#3B82F6', // Blue
+      light: '#93C5FD',
+      dark: '#1D4ED8',
+      gradient: 'from-blue-500 to-indigo-500'
+    },
+    jordan: {
+      primary: '#10B981', // Green
+      light: '#6EE7B7',
+      dark: '#047857',
+      gradient: 'from-green-500 to-emerald-500'
+    }
+  },
+  
+  // Status indicators
+  status: {
+    online: '#10B981',    // Green
+    coding: '#3B82F6',    // Blue
+    studying: '#F59E0B',  // Orange
+    away: '#6B7280'       // Gray
+  },
+  
+  // Trend indicators
+  trends: {
+    up: '#10B981',        // Green
+    down: '#EF4444',      // Red
+    stable: '#6B7280'     // Gray
+  },
+  
+  // Activity type colors
+  activities: {
+    lesson_completed: '#3B82F6',      // Blue
+    achievement_earned: '#F59E0B',    // Gold
+    collaborative_session: '#10B981', // Green
+    challenge_completed: '#8B5CF6',   // Purple
+    skill_mastered: '#EC4899',        // Pink
+    milestone_reached: '#F97316'      // Orange
+  }
+}
+
+// Typography scale
+export const typography = {
+  hero: {
+    size: 'text-3xl lg:text-4xl',
+    weight: 'font-bold',
+    spacing: 'tracking-tight'
+  },
+  cardTitle: {
+    size: 'text-lg',
+    weight: 'font-semibold'
+  },
+  statNumber: {
+    size: 'text-3xl',
+    weight: 'font-bold'
+  },
+  body: {
+    size: 'text-sm',
+    weight: 'font-medium'
+  },
+  caption: {
+    size: 'text-xs',
+    weight: 'font-normal'
+  }
+}
+
+// Spacing system
+export const spacing = {
+  section: 'space-y-6',
+  card: 'p-6',
+  cardSmall: 'p-4',
+  grid: 'gap-6',
+  gridSmall: 'gap-4'
+}
+```
+
+#### Animation Specifications
+
+```typescript
+// Dashboard-specific animations
+export const dashboardAnimations = {
+  // Hero section gradient animation
+  gradientBackground: {
+    className: 'animate-gradient-x',
+    keyframes: {
+      '0%, 100%': { backgroundPosition: '0% 50%' },
+      '50%': { backgroundPosition: '100% 50%' }
+    },
+    duration: '15s',
+    timing: 'ease',
+    iteration: 'infinite'
+  },
+  
+  // Progress bar animations
+  progressBar: {
+    className: 'transition-all duration-1000 ease-out',
+    properties: ['width']
+  },
+  
+  // Card hover effects
+  cardHover: {
+    className: 'hover:shadow-lg transition-shadow duration-200',
+    transform: 'hover:scale-[1.02]'
+  },
+  
+  // Peer card glow effects
+  peerGlow: {
+    sarah: 'hover:shadow-pink-500/25 hover:shadow-lg',
+    alex: 'hover:shadow-blue-500/25 hover:shadow-lg',
+    jordan: 'hover:shadow-green-500/25 hover:shadow-lg'
+  },
+  
+  // Trend indicator animations
+  trendIcon: {
+    up: 'animate-bounce text-green-600',
+    down: 'animate-pulse text-red-600',
+    stable: 'text-gray-600'
+  },
+  
+  // Loading states
+  skeleton: {
+    className: 'animate-pulse bg-gray-200 dark:bg-gray-700 rounded',
+    duration: '2s'
+  }
+}
+```
+
+### Responsive Design Implementation
+
+#### Breakpoint Strategy
+
+```typescript
+// Responsive breakpoints for dashboard
+export const breakpoints = {
+  mobile: '320px',    // Small phones
+  tablet: '768px',    // Tablets
+  desktop: '1024px',  // Desktop
+  large: '1280px',    // Large desktop
+  xl: '1536px'        // Extra large
+}
+
+// Layout configurations per breakpoint
+export const layoutConfigs = {
+  mobile: {
+    sidebar: 'hidden', // Hamburger menu
+    statsGrid: 'grid-cols-1',
+    mainLayout: 'grid-cols-1',
+    peerCards: 'grid-cols-1',
+    navigation: 'bottom-tabs'
+  },
+  tablet: {
+    sidebar: 'collapsible',
+    statsGrid: 'grid-cols-2',
+    mainLayout: 'grid-cols-1',
+    peerCards: 'grid-cols-2',
+    navigation: 'sidebar-collapsed'
+  },
+  desktop: {
+    sidebar: 'expanded',
+    statsGrid: 'grid-cols-4',
+    mainLayout: 'grid-cols-3',
+    peerCards: 'grid-cols-3',
+    navigation: 'sidebar-full'
+  }
+}
+```
+
+### Performance Optimization
+
+#### Loading Strategy
+
+```typescript
+// Dashboard loading optimization
+export const loadingStrategy = {
+  // Critical path - load immediately
+  critical: [
+    'HeroWelcomeSection',
+    'EnhancedStatsGrid',
+    'Navigation'
+  ],
+  
+  // Important - load after critical
+  important: [
+    'AIPeerCards',
+    'LearningPathSection'
+  ],
+  
+  // Deferred - load when visible
+  deferred: [
+    'RecommendedLessons',
+    'EnhancedActivityFeed'
+  ],
+  
+  // Lazy - load on interaction
+  lazy: [
+    'DetailedAnalytics',
+    'HistoricalData'
+  ]
+}
+
+// Caching strategy
+export const cachingStrategy = {
+  // Cache for 5 minutes
+  shortTerm: [
+    'aiPeerStatus',
+    'recentMessages',
+    'liveStats'
+  ],
+  
+  // Cache for 1 hour
+  mediumTerm: [
+    'learningPath',
+    'recommendations',
+    'userProfile'
+  ],
+  
+  // Cache for 24 hours
+  longTerm: [
+    'courseContent',
+    'staticAssets',
+    'avatarImages'
+  ]
+}
+```
+
+### Correctness Properties
+
+*A property is a characteristic or behavior that should hold true across all valid executions of a system-essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+
+Based on the prework analysis of dashboard modernization requirements, the following properties ensure the dashboard functions correctly across all user scenarios and data conditions:
+
+**Property 1: Dashboard Component Completeness (Hero Section)**
+*For any* user accessing the dashboard, the hero welcome section should contain the user's name, a wave emoji, an AI peer motivational message, current learning progress, and two prominent CTA buttons ("Continue Learning" and "Talk to AI Peers")
+**Validates: Requirements 21.1, 21.2**
+
+**Property 2: Dashboard Component Completeness (Stats Cards)**
+*For any* dashboard load, the stats grid should display exactly four enhanced cards with titles "Learning Progress", "Current Streak", "Skills Mastered", and "Coding Time This Week", each containing a colorful icon, large focal number, supporting text, and trend indicator
+**Validates: Requirements 21.5, 21.6**
+
+**Property 3: Dashboard Component Completeness (Peer Cards)**
+*For any* user with AI peers, the peer section should display exactly 3 peer cards side-by-side, each containing a 3D avatar, name, status indicator, specialty, and level represented by 1-5 stars
+**Validates: Requirements 21.8**
+
+**Property 4: Dashboard Component Completeness (Learning Path)**
+*For any* user with active learning progress, the learning path section should display current track name, progress bar with gradient, and a list of 5-6 lessons each with appropriate status icons (✅ completed, 🔵 in progress, ⚪ locked)
+**Validates: Requirements 21.12**
+
+**Property 5: Dashboard Component Completeness (Recommendations)**
+*For any* user, the recommended lessons section should display exactly 3 AI-recommended lessons, each containing thumbnail, title, duration, difficulty, description, and indication of which AI peer recommends it
+**Validates: Requirements 21.17**
+
+**Property 6: Layout Structure Consistency**
+*For any* screen size, the dashboard should maintain the specified layout structure with hero section (full width), 4 stats cards in grid formation, and two-column main content area with proper responsive adaptations
+**Validates: Requirements 22.6**
+
+**Property 7: Card Component Consistency**
+*For any* dashboard section, it should use the existing Card component with consistent styling including rounded corners, shadows, and proper spacing
+**Validates: Requirements 22.8**
+
+**Property 8: API Data Consistency**
+*For any* dashboard API response, it should include all required enhanced stats data: learning progress percentage, streak data with best streak, skills mastered count with recent skills, and coding time with daily averages
+**Validates: Requirements 23.1**
+
+**Property 9: Avatar System Integration**
+*For any* AI peer representation throughout the dashboard, it should use the existing 3D avatar system with consistent image URLs, sizing, and personality-based ring colors
+**Validates: Requirements 24.4**
+
+**Property 10: Dark Mode Theme Support**
+*For any* dashboard element, it should render correctly in both light and dark themes with appropriate color schemes and contrast ratios
+**Validates: Requirements 22.5**
+
+**Property 11: Responsive Design Compatibility**
+*For any* screen size from mobile to desktop, the dashboard should render correctly with touch-optimized interactions and appropriate layout adjustments
+**Validates: Requirements 24.6**
+
+### Error Handling and Testing Strategy
+
+**Dual Testing Approach**:
+- **Unit tests**: Verify specific dashboard components, API responses, and user interactions
+- **Property tests**: Verify universal dashboard properties across all user data and device conditions
+- Both approaches are complementary and necessary for comprehensive dashboard coverage
+
+**Property-Based Testing Configuration**:
+- Minimum 100 iterations per property test to ensure comprehensive coverage
+- Each property test references its design document property number
+- Tag format: **Feature: dashboard-modernization, Property {number}: {property_text}**
+- Tests should generate random user data, device sizes, and API responses to validate properties
+
+**Unit Testing Focus**:
+- Component rendering with various props and states
+- API endpoint responses and error conditions
+- User interaction flows and navigation
+- Responsive layout behavior at specific breakpoints
+- Theme switching and accessibility compliance
+
+**Integration Testing Requirements**:
+- End-to-end dashboard loading and data population
+- Real-time updates and state synchronization
+- Cross-browser compatibility and performance
+- Mobile device testing with touch interactions
+- Error recovery and fallback mechanismsion**: Clear indication of completed vs remaining content
 
 #### 5. Recommended Lessons Section
 - **Section Title**: "Recommended for You" with "Explore More" link

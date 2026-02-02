@@ -98,6 +98,35 @@ export function PeerGeneration({ onboardingData, onComplete }: PeerGenerationPro
                 </div>
               ))}
             </div>
+            
+            {/* Preview of AI Peers being generated */}
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <h4 className="text-sm font-medium text-center mb-4 text-muted-foreground">
+                Preparing your AI study buddies...
+              </h4>
+              <div className="flex justify-center gap-4">
+                {allPeers.map((peer, index) => (
+                  <div 
+                    key={peer.id}
+                    className={`transition-all duration-1000 ${
+                      currentStep > index ? 'opacity-100 scale-100' : 'opacity-30 scale-75'
+                    }`}
+                  >
+                    <div className="text-center">
+                      <Avatar 
+                        peerId={peer.id} 
+                        size="md" 
+                        showRing={true}
+                        animated={true}
+                        className={currentStep > index ? 'animate-pulse' : ''}
+                      />
+                      <p className="text-xs mt-2 font-medium">{peer.name}</p>
+                      <p className="text-xs text-muted-foreground capitalize">{peer.personality}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -124,38 +153,72 @@ export function PeerGeneration({ onboardingData, onComplete }: PeerGenerationPro
 
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         {allPeers.map((peer, index) => (
-          <Card key={peer.id} className="text-left transform hover:scale-105 transition-transform duration-300">
+          <Card key={peer.id} className="text-left transform hover:scale-105 transition-transform duration-300 border-2 hover:border-opacity-50" style={{
+            borderColor: peer.personality === 'curious' ? '#f472b6' : 
+                        peer.personality === 'analytical' ? '#60a5fa' : 
+                        peer.personality === 'supportive' ? '#4ade80' : '#6b7280'
+          }}>
             <CardHeader className="text-center pb-4">
-              <div className="mx-auto mb-4">
+              <div className="mx-auto mb-4 relative">
                 <Avatar 
                   peerId={peer.id} 
-                  size="lg" 
+                  size="xl" 
                   showRing={true}
                   animated={true}
                   priority={true}
+                  interactive={true}
+                  showPersonalityBadge={true}
                 />
+                {/* Personality glow effect */}
+                <div className={`absolute inset-0 rounded-full opacity-20 animate-pulse ${
+                  peer.personality === 'curious' ? 'bg-pink-400' :
+                  peer.personality === 'analytical' ? 'bg-blue-400' :
+                  peer.personality === 'supportive' ? 'bg-green-400' : 'bg-gray-400'
+                }`} />
               </div>
-              <CardTitle className="text-xl">{peer.name}</CardTitle>
-              <CardDescription className="capitalize">
+              <CardTitle className="text-xl flex items-center justify-center gap-2">
+                {peer.name}
+                <span className="text-lg">
+                  {peer.personality === 'curious' ? '🤔' :
+                   peer.personality === 'analytical' ? '🧠' :
+                   peer.personality === 'supportive' ? '🤝' : '🤖'}
+                </span>
+              </CardTitle>
+              <CardDescription className="capitalize font-medium">
                 {peer.personality} • {peer.skill_level} level
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                  <h4 className="font-medium text-sm mb-1">Personality</h4>
+                <div className={`p-3 rounded-lg ${
+                  peer.personality === 'curious' ? 'bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800' :
+                  peer.personality === 'analytical' ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' :
+                  peer.personality === 'supportive' ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' :
+                  'bg-gray-50 dark:bg-gray-800/50'
+                }`}>
+                  <h4 className="font-medium text-sm mb-1 flex items-center gap-2">
+                    <span className="text-lg">
+                      {peer.personality === 'curious' ? '💭' :
+                       peer.personality === 'analytical' ? '🔍' :
+                       peer.personality === 'supportive' ? '💪' : '🎯'}
+                    </span>
+                    Personality
+                  </h4>
                   <p className="text-xs text-muted-foreground">
                     {peer.interaction_style}
                   </p>
                 </div>
                 
-                <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                  <h4 className="font-medium text-sm mb-1">Common Mistakes</h4>
+                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <h4 className="font-medium text-sm mb-1 flex items-center gap-2">
+                    <span className="text-lg">⚠️</span>
+                    Common Learning Areas
+                  </h4>
                   <div className="flex flex-wrap gap-1">
                     {peer.common_mistakes.slice(0, 2).map((mistake, idx) => (
                       <span 
                         key={idx}
-                        className="text-xs bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-2 py-1 rounded"
+                        className="text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-1 rounded-full border border-red-200 dark:border-red-700"
                       >
                         {mistake}
                       </span>
@@ -163,8 +226,22 @@ export function PeerGeneration({ onboardingData, onComplete }: PeerGenerationPro
                   </div>
                 </div>
                 
-                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <p className="text-xs text-blue-700 dark:text-blue-300">
+                <div className={`p-3 rounded-lg ${
+                  peer.personality === 'curious' ? 'bg-pink-100 dark:bg-pink-900/30 border border-pink-300 dark:border-pink-700' :
+                  peer.personality === 'analytical' ? 'bg-blue-100 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-700' :
+                  peer.personality === 'supportive' ? 'bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700' :
+                  'bg-blue-50 dark:bg-blue-900/20'
+                }`}>
+                  <h4 className="font-medium text-sm mb-1 flex items-center gap-2">
+                    <span className="text-lg">✨</span>
+                    About {peer.name}
+                  </h4>
+                  <p className={`text-xs ${
+                    peer.personality === 'curious' ? 'text-pink-700 dark:text-pink-300' :
+                    peer.personality === 'analytical' ? 'text-blue-700 dark:text-blue-300' :
+                    peer.personality === 'supportive' ? 'text-green-700 dark:text-green-300' :
+                    'text-blue-700 dark:text-blue-300'
+                  }`}>
                     {peer.backstory}
                   </p>
                 </div>

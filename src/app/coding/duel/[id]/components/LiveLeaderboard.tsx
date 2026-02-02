@@ -212,9 +212,16 @@ export function LiveLeaderboard() {
               {/* Avatar */}
               <div className="relative">
                 {participant.isUser ? (
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                    You
-                  </div>
+                  <Avatar 
+                    peerId="sarah" 
+                    size="md" 
+                    showStatus 
+                    status="online"
+                    showPersonalityBadge
+                    interactive
+                    showTooltip
+                    className="ring-2 ring-blue-400"
+                  />
                 ) : (
                   <Avatar 
                     peerId={participant.peerId} 

@@ -169,20 +169,15 @@ export function FinalCTA() {
             
             {/* Avatars */}
             <div className="flex justify-center -space-x-2 mb-4">
-              {/* First 3 positions use Sarah, Alex, Jordan 3D avatars */}
+              {/* All positions use Sarah, Alex, Jordan 3D avatars for consistency */}
               <Avatar peerId="sarah" size="sm" className="w-10 h-10 border-2 border-white" />
               <Avatar peerId="alex" size="sm" className="w-10 h-10 border-2 border-white" />
               <Avatar peerId="jordan" size="sm" className="w-10 h-10 border-2 border-white" />
-              
-              {/* Remaining positions use letter fallbacks */}
-              {[4, 5, 6, 7, 8].map((i) => (
-                <div
-                  key={i}
-                  className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 border-2 border-white flex items-center justify-center text-white font-semibold text-sm"
-                >
-                  {String.fromCharCode(64 + i)}
-                </div>
-              ))}
+              <Avatar peerId="sarah" size="sm" className="w-10 h-10 border-2 border-white" />
+              <Avatar peerId="alex" size="sm" className="w-10 h-10 border-2 border-white" />
+              <Avatar peerId="jordan" size="sm" className="w-10 h-10 border-2 border-white" />
+              <Avatar peerId="sarah" size="sm" className="w-10 h-10 border-2 border-white" />
+              <Avatar peerId="alex" size="sm" className="w-10 h-10 border-2 border-white" />
               <div className="w-10 h-10 rounded-full bg-white/20 border-2 border-white flex items-center justify-center text-white font-semibold text-xs">
                 +2K
               </div>

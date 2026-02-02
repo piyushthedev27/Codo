@@ -68,7 +68,7 @@ export function SocialProof() {
       name: "David Kim",
       role: "Senior Developer",
       company: "Fortune 500",
-      avatar: "DK", // Keep letter fallback for non-AI peer
+      avatar: "sarah", // Use Sarah's 3D avatar for consistency
       rating: 5,
       text: "I use Codo to stay updated with new frameworks. The AI peers ask challenging questions that make me think deeper. The live insights feature is brilliant - it spots my learning patterns before I do.",
       highlight: "Spots learning patterns before I do"
@@ -189,14 +189,8 @@ export function SocialProof() {
 
                 {/* Author */}
                 <div className="flex items-center gap-4">
-                  {/* Use 3D avatar for Sarah, Alex, Jordan; letter fallback for others */}
-                  {['sarah', 'alex', 'jordan'].includes(testimonial.avatar) ? (
-                    <Avatar peerId={testimonial.avatar} size="md" />
-                  ) : (
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                      {testimonial.avatar}
-                    </div>
-                  )}
+                  {/* Use 3D avatar for all testimonials */}
+                  <Avatar peerId={testimonial.avatar} size="md" />
                   <div>
                     <div className="font-semibold text-gray-900 dark:text-white">
                       {testimonial.name}

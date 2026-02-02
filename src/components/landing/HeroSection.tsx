@@ -110,15 +110,9 @@ export function HeroSection() {
                 <Avatar peerId="alex" size="sm" className="w-10 h-10 border-2 border-white dark:border-gray-800" />
                 <Avatar peerId="jordan" size="sm" className="w-10 h-10 border-2 border-white dark:border-gray-800" />
                 
-                {/* Remaining use letter fallbacks */}
-                {[4, 5].map((i) => (
-                  <div
-                    key={i}
-                    className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 border-2 border-white dark:border-gray-800 flex items-center justify-center text-white font-semibold text-sm"
-                  >
-                    {String.fromCharCode(64 + i)}
-                  </div>
-                ))}
+                {/* Additional avatars using AI peers for consistency */}
+                <Avatar peerId="sarah" size="sm" className="w-10 h-10 border-2 border-white dark:border-gray-800" />
+                <Avatar peerId="alex" size="sm" className="w-10 h-10 border-2 border-white dark:border-gray-800" />
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 <div className="font-semibold text-gray-900 dark:text-white">2,500+ developers</div>
