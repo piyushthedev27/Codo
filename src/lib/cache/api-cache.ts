@@ -3,7 +3,7 @@
  * Handles caching of API responses with intelligent invalidation
  */
 
-import { cache, CACHE_CONFIG, withCache } from './cache-manager'
+import { cache, cacheManager, CACHE_CONFIG, withCache } from './cache-manager'
 
 // Re-export CACHE_CONFIG for convenience
 export { CACHE_CONFIG } from './cache-manager'
@@ -77,13 +77,17 @@ export function invalidateCache(pattern: keyof typeof API_CACHE_CONFIG.INVALIDAT
   const urlsToInvalidate = API_CACHE_CONFIG.INVALIDATION[pattern]
   
   urlsToInvalidate.forEach(url => {
-    // Clear all cache entries that start with this URL
-    const stats = cache.getStats?.() || { memory: { keys: [] } }
-    const keysToDelete = stats.memory.keys.filter(key => key.startsWith(`api_${url}`))
-    
-    keysToDelete.forEach(key => {
-      cache.delete(key)
-    })
+    // Clear cache entries by deleting known keys
+    if (url === '/api/dashboard') {
+      cache.clearUserData()
+    } else if (url === '/api/user/profile') {
+      cacheManager.delete(CACHE_CONFIG.KEYS.USER_PROFILE, 'LOCAL')
+    } else if (url === '/api/progress' || url === '/api/knowledge-graph' || url === '/api/insights') {
+      // Clear session data which may contain this info
+      cache.clearSessionData()
+    } else if (url === '/api/ai-peers') {
+      cacheManager.delete(CACHE_CONFIG.KEYS.AI_PEERS, 'LOCAL')
+    }
   })
 }
 
@@ -289,10 +293,10 @@ export async function batchCachedRequests<T extends Record<string, any>>(
   results.forEach((result, index) => {
     if (result.status === 'fulfilled') {
       const { key, data } = result.value
-      batchResult[key] = data
+      ;(batchResult as any)[key] = data
     } else {
       console.warn(`Batch request failed for ${requests[index].url}:`, result.reason)
-      batchResult[requests[index].key] = null
+      ;(batchResult as any)[requests[index].key] = null
     }
   })
 

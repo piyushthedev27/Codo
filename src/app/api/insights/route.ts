@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
       ? existingInsights 
       : existingInsights.filter(insight => !insight.dismissed)
 
-    let recommendations = []
-    let patterns = []
+    let recommendations: any[] = []
+    let patterns: any[] = []
 
     if (includeRecommendations) {
       try {
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
 
     // Get updated insights after potentially adding new ones
     const finalInsights = includeRecommendations 
-      ? await learningInsightsOperations.getByUserId(userId)
+      ? await learningInsightsOperations.getActiveByUserId(userId)
       : activeInsights
 
     const filteredFinalInsights = includeDismissed 
@@ -192,7 +192,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Get all current insights
-    const allInsights = await learningInsightsOperations.getByUserId(userId)
+    const allInsights = await learningInsightsOperations.getActiveByUserId(userId)
     const activeInsights = allInsights.filter(insight => !insight.dismissed)
 
     return NextResponse.json({

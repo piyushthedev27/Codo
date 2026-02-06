@@ -238,10 +238,31 @@ class OfflineManager {
         nextConcept: demoKnowledgeGraph[1]
       },
       enhancedStats: {
-        learningProgress: { percentage: 65, trend: 'up', change: '+12%' },
-        currentStreak: { days: 3, bestStreak: 7, trend: 'stable' },
-        skillsMastered: { count: 8, monthlyProgress: 3, trend: 'up' },
-        codingTime: { hours: 12.5, weeklyAverage: 10.2, trend: 'up' }
+        learningProgress: { 
+          percentage: 65, 
+          lessonsCompleted: 4,
+          totalLessons: 10,
+          weeklyChange: 2,
+          trend: 'up' as const
+        },
+        currentStreak: { 
+          days: 3, 
+          bestStreak: 7, 
+          message: 'Building momentum!',
+          trend: 'stable' as const
+        },
+        skillsMastered: { 
+          count: 8, 
+          recentSkills: ['React', 'TypeScript', 'Node.js'],
+          monthlyProgress: 3, 
+          trend: 'up' as const
+        },
+        codingTime: { 
+          weeklyHours: 12.5, 
+          dailyAverage: 1.8,
+          weeklyChange: 2.3,
+          trend: 'up' as const
+        }
       },
       recommendedLessons: [
         {

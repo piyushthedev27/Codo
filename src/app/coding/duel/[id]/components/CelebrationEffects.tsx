@@ -44,7 +44,7 @@ export function CelebrationEffects({ show, type, intensity = 'medium' }: Celebra
   }
 
   const getRandomColor = (celebrationType: string) => {
-    const colorSets = {
+    const colorSets: Record<string, string[]> = {
       victory: ['bg-yellow-400', 'bg-orange-400', 'bg-red-400', 'bg-pink-400'],
       milestone: ['bg-blue-400', 'bg-purple-400', 'bg-indigo-400', 'bg-cyan-400'],
       achievement: ['bg-green-400', 'bg-emerald-400', 'bg-teal-400', 'bg-lime-400'],
@@ -56,7 +56,7 @@ export function CelebrationEffects({ show, type, intensity = 'medium' }: Celebra
   }
 
   const getRandomIcon = (celebrationType: string) => {
-    const iconSets = {
+    const iconSets: Record<string, string[]> = {
       victory: ['🏆', '👑', '🎉', '🎊', '✨'],
       milestone: ['⭐', '💫', '🌟', '✨', '🎯'],
       achievement: ['🏅', '🎖️', '🏆', '💎', '🔥'],

@@ -33,12 +33,13 @@ export default clerkMiddleware(async (auth, req) => {
       await auth.protect()
     } catch (error) {
       // Log the error for debugging
-      console.warn('Clerk auth error:', error.message)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      console.warn('Clerk auth error:', errorMessage)
       
       // If it's a JWT timing issue, redirect to sign-in
-      if (error.message.includes('token-not-active-yet') || 
-          error.message.includes('nbf') ||
-          error.message.includes('infinite redirect')) {
+      if (errorMessage.includes('token-not-active-yet') || 
+          errorMessage.includes('nbf') ||
+          errorMessage.includes('infinite redirect')) {
         const signInUrl = new URL('/sign-in', req.url)
         signInUrl.searchParams.set('redirect_url', req.url)
         return Response.redirect(signInUrl)

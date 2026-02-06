@@ -146,7 +146,6 @@ export function LessonViewer({
 
   const handleVoiceCoachingUsage = () => {
     onProgressUpdate?.({
-      voiceCoachingUsed: true,
       timeSpent: 1
     })
   }
@@ -332,12 +331,7 @@ export function LessonViewer({
           {showVoiceCoaching && voiceCoachingEnabled && (
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
               <VoiceCoachingInterface
-                onVoiceUsage={handleVoiceCoachingUsage}
-                context={{
-                  lesson: lesson.title,
-                  section: currentSection.title,
-                  topic: lesson.topic
-                }}
+                context={`Lesson: ${lesson.title}, Section: ${currentSection.title}, Topic: ${lesson.topic}`}
               />
             </div>
           )}

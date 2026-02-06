@@ -180,7 +180,7 @@ export default function LessonPage({ params }: LessonPageProps) {
   return (
     <LessonViewer
       lesson={lesson}
-      progress={progress}
+      progress={progress || undefined}
       onProgressUpdate={handleProgressUpdate}
       onComplete={handleLessonComplete}
       voiceCoachingEnabled={user ? true : false}

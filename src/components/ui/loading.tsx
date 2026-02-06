@@ -34,11 +34,13 @@ export function LoadingSpinner({
 export function SkeletonLine({ 
   width = 'full', 
   height = 'h-4',
-  className = '' 
+  className = '',
+  style
 }: { 
   width?: string | 'full' | 'half' | 'quarter' | 'three-quarters'
   height?: string
-  className?: string 
+  className?: string
+  style?: React.CSSProperties
 }) {
   const widthClasses = {
     full: 'w-full',
@@ -52,12 +54,15 @@ export function SkeletonLine({
     : width
 
   return (
-    <div className={cn(
-      'bg-gray-200 dark:bg-gray-700 rounded animate-shimmer',
-      height,
-      widthClass,
-      className
-    )} />
+    <div 
+      className={cn(
+        'bg-gray-200 dark:bg-gray-700 rounded animate-shimmer',
+        height,
+        widthClass,
+        className
+      )}
+      style={style}
+    />
   )
 }
 

@@ -229,8 +229,8 @@ export class TouchOptimizer {
     
     // Add touch-friendly styling
     element.style.userSelect = 'none'
-    element.style.webkitUserSelect = 'none'
-    element.style.webkitTouchCallout = 'none'
+    ;(element.style as any).webkitUserSelect = 'none'
+    ;(element.style as any).webkitTouchCallout = 'none'
   }
 
   /**

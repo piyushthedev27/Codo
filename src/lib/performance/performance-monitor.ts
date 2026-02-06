@@ -163,7 +163,7 @@ class PerformanceMonitor {
   }
 
   // Get or create current metric entry
-  private getCurrentMetric(): PerformanceMetrics | null {
+  public getCurrentMetric(): PerformanceMetrics | null {
     const pageName = this.getCurrentPageName()
     let metric = this.metrics.find(m => m.pageName === pageName && !m.loadComplete)
     

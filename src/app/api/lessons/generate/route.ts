@@ -11,7 +11,7 @@ import { userProfileOperations, aiPeerOperations } from '@/lib/database/operatio
 export async function POST(request: NextRequest) {
   try {
     // Authenticate user
-    const { userId } = auth()
+    const { userId } = await auth()
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },

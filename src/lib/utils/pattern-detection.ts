@@ -278,7 +278,7 @@ function analyzeTimePreferences(activities: LearningActivity[]): LearningPattern
     .slice(0, 3)
 
   const topHour = sortedHours[0]
-  const percentage = (parseInt(topHour[1]) / activities.length) * 100
+  const percentage = (topHour[1] / activities.length) * 100
 
   if (percentage < 25) return null // Not a strong enough pattern
 

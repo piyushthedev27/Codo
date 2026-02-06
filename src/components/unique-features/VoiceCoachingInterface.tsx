@@ -202,7 +202,7 @@ export function VoiceCoachingInterface({
         <CardTitle className="flex items-center gap-2">
           <Mic className="w-5 h-5" />
           AI Voice Coaching
-          {!isSupported && (
+          {fallbackMode && (
             <Badge variant="secondary">Text Mode</Badge>
           )}
         </CardTitle>

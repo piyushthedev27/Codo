@@ -226,10 +226,10 @@ export function CollaborativeCodeEditor({
       minimap: { enabled: !isMobile }, // Disable minimap on mobile
       scrollBeyondLastLine: false,
       fontSize: isMobile ? 16 : 14, // Larger font on mobile
-      lineNumbers: isMobile ? 'off' : 'on', // Hide line numbers on mobile for space
-      renderWhitespace: 'selection',
-      cursorBlinking: 'smooth',
-      wordWrap: isMobile ? 'on' : 'off', // Enable word wrap on mobile
+      lineNumbers: (isMobile ? 'off' : 'on') as 'on' | 'off', // Hide line numbers on mobile for space
+      renderWhitespace: 'selection' as 'selection',
+      cursorBlinking: 'smooth' as 'smooth',
+      wordWrap: (isMobile ? 'on' : 'off') as 'on' | 'off', // Enable word wrap on mobile
       automaticLayout: true,
       scrollbar: {
         verticalScrollbarSize: isMobile ? 8 : 14,

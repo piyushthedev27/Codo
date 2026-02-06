@@ -3,6 +3,8 @@
  * TypeScript interfaces for all database tables and operations
  */
 
+import type { EnhancedStats } from '@/lib/utils/stats-calculations'
+
 // Enum types matching database enums
 export type SkillLevel = 'beginner' | 'intermediate' | 'advanced'
 export type LearningGoal = 'learning' | 'projects' | 'placement' | 'productivity'
@@ -301,29 +303,7 @@ export interface DashboardData {
     nextConcept: KnowledgeGraphNode | null
   }
   // Enhanced dashboard data
-  enhancedStats?: {
-    learningProgress: {
-      percentage: number
-      lessonsCompleted: number
-      totalLessons: number
-      weeklyChange: number
-    }
-    currentStreak: {
-      days: number
-      bestStreak: number
-      message: string
-    }
-    skillsMastered: {
-      count: number
-      recentSkills: string[]
-      monthlyProgress: number
-    }
-    codingTime: {
-      weeklyHours: number
-      dailyAverage: number
-      weeklyChange: number
-    }
-  }
+  enhancedStats?: EnhancedStats
   recommendedLessons?: RecommendedLesson[]
 }
 

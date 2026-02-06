@@ -37,7 +37,7 @@ export function AIPeerTypingAnimation({
   className = ''
 }: AIPeerTypingAnimationProps) {
   const [typingSessions, setTypingSessions] = useState<TypingSession[]>([])
-  const intervalRef = useRef<NodeJS.Timeout>()
+  const intervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Initialize typing sessions
   useEffect(() => {

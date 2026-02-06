@@ -314,7 +314,7 @@ export function MobileVoiceTest() {
     // Test error handling by attempting to use voice features
     try {
       // This should handle gracefully if voice is not supported
-      await speakText('Test', { volume: 0.1 })
+      await speakText('Test', { rate: 1.0 })
       updateTestResult('Error Handling', 'passed', 'Error handling working correctly')
     } catch (error) {
       // This is actually expected behavior - graceful error handling
@@ -356,9 +356,10 @@ export function MobileVoiceTest() {
     try {
       setIsSpeaking(true)
       await speakText('Hello! This is a test of speech synthesis on your mobile device.', {
-        onStart: () => setIsSpeaking(true),
-        onEnd: () => setIsSpeaking(false)
+        rate: 1.0,
+        pitch: 1.0
       })
+      setIsSpeaking(false)
     } catch (error) {
       console.error('Synthesis error:', error)
       setIsSpeaking(false)

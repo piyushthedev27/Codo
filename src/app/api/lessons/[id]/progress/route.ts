@@ -26,7 +26,7 @@ export async function GET(
   { params }: RouteParams
 ) {
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -82,7 +82,7 @@ export async function POST(
   { params }: RouteParams
 ) {
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },

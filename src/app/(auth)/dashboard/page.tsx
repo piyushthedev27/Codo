@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import '@/styles/dashboard-animations.css'
 import { 
   Brain, 
   Target, 
@@ -342,7 +343,7 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20">
+    <div className="min-h-screen dashboard-animated-bg">
       <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 mobile-safe-area">
         {/* Demo Data Warning */}
         {usingDemoData && (
@@ -387,7 +388,7 @@ export default function DashboardPage() {
             <AIPeerCards peers={aiPeers} />
 
             {/* Enhanced Recent Activity */}
-            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50">
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 card-hover-effect fade-in-delay-2">
               <CardHeader className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
@@ -405,8 +406,8 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent className="p-4 sm:p-6 pt-0">
                 <div className="space-y-3 sm:space-y-4">
-                  {enhancedActivities.map((activity) => (
-                    <div key={activity.id} className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                  {enhancedActivities.map((activity, index) => (
+                    <div key={activity.id} className={`flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg smooth-transition card-hover-effect fade-in-delay-${Math.min(index + 1, 4)}`}>
                       <div className="flex-shrink-0 mt-0.5">
                         {activity.type === 'lesson_completed' && <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />}
                         {activity.type === 'achievement' && <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />}
@@ -444,7 +445,7 @@ export default function DashboardPage() {
           {/* Right Column (1/3 width on desktop, full width on mobile) */}
           <div className="space-y-6 sm:space-y-8">
             {/* Learning Path Section */}
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-gray-200/50 dark:border-gray-700/50">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-gray-200/50 dark:border-gray-700/50 card-hover-effect fade-in-delay-3">
               <LearningPath 
                 knowledgeGraph={knowledgeGraph}
                 upcomingMilestones={upcomingMilestones}
@@ -452,7 +453,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Recommended Lessons Section */}
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-gray-200/50 dark:border-gray-700/50">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-gray-200/50 dark:border-gray-700/50 card-hover-effect fade-in-delay-4">
               <RecommendedLessons lessons={recommendedLessons} />
             </div>
           </div>
