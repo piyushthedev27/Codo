@@ -7,12 +7,19 @@
 
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
-import { LessonViewer } from '@/components/lessons/LessonViewer'
+import dynamic from 'next/dynamic'
 import { getCachedOrDemoLesson } from '@/lib/lessons/lesson-cache'
 import { getLessonProgress, initializeLessonProgress } from '@/lib/lessons/progress-tracking'
+import { LessonLoadingSkeleton, LoadingWithMessage } from '@/components/ui/loading'
+import { cachedFetch, CACHE_CONFIG } from '@/lib/cache/api-cache'
 import type { GeneratedLesson } from '@/lib/ai/lesson-generation'
 import type { LessonProgress } from '@/lib/lessons/progress-tracking'
 import { Loader2, AlertCircle, BookOpen } from 'lucide-react'
+
+// Lazy load the lesson viewer for better performance
+const LessonViewer = dynamic(() => import('@/components/lessons/LessonViewer').then(mod => ({ default: mod.LessonViewer })), {
+  loading: () => <LessonLoadingSkeleton />
+})
 
 interface LessonPageProps {
   params: {
@@ -60,18 +67,19 @@ export default function LessonPage({ params }: LessonPageProps) {
           }
         }
       } else {
-        // Try to fetch from API
-        const response = await fetch(`/api/lessons/cache?action=get-lesson&lessonId=${params.id}&topic=${params.id}`)
-        
-        if (response.ok) {
-          const data = await response.json()
-          if (data.success) {
-            setLesson(data.lesson)
-          } else {
-            throw new Error('Lesson not found')
+        // Try to fetch from API with caching
+        const data = await cachedFetch<{ success: boolean, lesson?: GeneratedLesson }>(
+          `/api/lessons/cache?action=get-lesson&lessonId=${params.id}&topic=${params.id}`,
+          {},
+          {
+            duration: CACHE_CONFIG.DURATIONS.VERY_LONG,
+            storage: 'LOCAL'
           }
+        )
+        if (data.success) {
+          setLesson(data.lesson!)
         } else {
-          throw new Error('Failed to load lesson')
+          throw new Error('Lesson not found')
         }
       }
     } catch (err) {
@@ -130,14 +138,7 @@ export default function LessonPage({ params }: LessonPageProps) {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-500" />
-          <p className="text-gray-600 dark:text-gray-400">Loading lesson...</p>
-        </div>
-      </div>
-    )
+    return <LessonLoadingSkeleton />
   }
 
   if (error) {

@@ -1,5 +1,8 @@
 @import "tailwindcss";
 @import "../styles/avatar-animations.css";
+@import "../styles/knowledge-graph-animations.css";
+@import "../styles/optimized-animations.css";
+@import "../styles/mobile-optimizations.css";
 
 @layer base {
   :root {

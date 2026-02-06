@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useUser } from '@clerk/nextjs'
+import dynamic from 'next/dynamic'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
@@ -29,13 +30,34 @@ import {
   Settings
 } from 'lucide-react'
 import { Avatar } from '@/components/shared/Avatar'
-import { AIPeerCards } from './components/AIPeerCards'
-import { LearningPath } from './components/LearningPath'
-import { RecommendedLessons } from './components/RecommendedLessons'
 import { HeroWelcomeSection } from './components/HeroWelcomeSection'
-import { EnhancedStatsGrid } from './components/EnhancedStatsGrid'
 import { generateEnhancedStats } from '@/lib/utils/stats-calculations'
+import { DashboardLoadingSkeleton, AIPeerLoadingSkeleton, SkeletonCard } from '@/components/ui/loading'
+import { cachedFetch, CACHE_CONFIG } from '@/lib/cache/api-cache'
 import type { DashboardData } from '@/types/database'
+
+// Lazy load dashboard components for better performance
+const AIPeerCards = dynamic(() => import('./components/AIPeerCards').then(mod => ({ default: mod.AIPeerCards })), {
+  loading: () => <AIPeerLoadingSkeleton />
+})
+
+const LearningPath = dynamic(() => import('./components/LearningPath').then(mod => ({ default: mod.LearningPath })), {
+  loading: () => <SkeletonCard lines={4} />
+})
+
+const RecommendedLessons = dynamic(() => import('./components/RecommendedLessons').then(mod => ({ default: mod.RecommendedLessons })), {
+  loading: () => <SkeletonCard lines={3} />
+})
+
+const EnhancedStatsGrid = dynamic(() => import('./components/EnhancedStatsGrid').then(mod => ({ default: mod.EnhancedStatsGrid })), {
+  loading: () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <SkeletonCard key={i} showHeader={false} lines={2} />
+      ))}
+    </div>
+  )
+})
 
 // Demo data for when database is not available
 const demoData: DashboardData = {
@@ -194,11 +216,12 @@ export default function DashboardPage() {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch('/api/dashboard')
-      if (!response.ok) {
-        throw new Error('Failed to fetch dashboard data')
-      }
-      const result = await response.json()
+      // Use cached API fetch with automatic caching
+      const result = await cachedFetch<{ data: DashboardData, demo?: boolean }>('/api/dashboard', {}, {
+        duration: CACHE_CONFIG.DURATIONS.MEDIUM,
+        storage: 'MEMORY'
+      })
+      
       setDashboardData(result.data)
       setUsingDemoData(result.demo || false)
     } catch (err) {
@@ -212,23 +235,7 @@ export default function DashboardPage() {
   }
 
   if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded"></div>
-            ))}
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-64 bg-gray-200 rounded"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
+    return <DashboardLoadingSkeleton />
   }
 
   if (!dashboardData) {
@@ -336,16 +343,16 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 mobile-safe-area">
         {/* Demo Data Warning */}
         {usingDemoData && (
-          <Card className="mb-6 border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20">
-            <CardContent className="p-4">
+          <Card className="mb-4 sm:mb-6 border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
-                <AlertCircle className="w-5 h-5" />
-                <span className="font-medium">Demo Mode</span>
+                <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="font-medium text-sm sm:text-base">Demo Mode</span>
               </div>
-              <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+              <p className="text-xs sm:text-sm text-yellow-700 dark:text-yellow-300 mt-1">
                 Database connection failed. Showing demo data. Please check your environment configuration.
               </p>
             </CardContent>
@@ -353,60 +360,64 @@ export default function DashboardPage() {
         )}
 
         {/* Hero Welcome Section */}
-        <HeroWelcomeSection 
-          user={user}
-          profile={profile}
-          aiPeers={aiPeers}
-          learningProgress={{
-            percentage: Math.round(progressPercentage),
-            lessonsCompleted: completedNodes,
-            totalLessons: totalNodes
-          }}
-          currentStreak={currentStreak}
-        />
+        <div className="mb-6 sm:mb-8">
+          <HeroWelcomeSection 
+            user={user ? { firstName: user.firstName } : undefined}
+            profile={profile}
+            aiPeers={aiPeers}
+            learningProgress={{
+              percentage: Math.round(progressPercentage),
+              lessonsCompleted: completedNodes,
+              totalLessons: totalNodes
+            }}
+            currentStreak={currentStreak}
+          />
+        </div>
 
         {/* Enhanced Stats Cards Grid */}
-        <EnhancedStatsGrid stats={enhancedStats} />
+        <div className="mb-6 sm:mb-8">
+          <EnhancedStatsGrid stats={enhancedStats} />
+        </div>
 
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column (2/3 width) */}
-          <div className="lg:col-span-2 space-y-8">
+        {/* Two Column Layout - Stack on Mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+          {/* Left Column (2/3 width on desktop, full width on mobile) */}
+          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
             {/* AI Peers Section */}
             <AIPeerCards peers={aiPeers} />
 
             {/* Enhanced Recent Activity */}
             <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50">
-              <CardHeader>
+              <CardHeader className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <BookOpen className="w-5 h-5" />
+                  <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                    <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
                     Recent Activity
                   </CardTitle>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
                     View All
-                    <ExternalLink className="w-4 h-4 ml-1" />
+                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
                   </Button>
                 </div>
-                <CardDescription>
+                <CardDescription className="text-sm">
                   Your learning journey with AI peers
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+              <CardContent className="p-4 sm:p-6 pt-0">
+                <div className="space-y-3 sm:space-y-4">
                   {enhancedActivities.map((activity) => (
-                    <div key={activity.id} className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                      <div className="flex-shrink-0">
-                        {activity.type === 'lesson_completed' && <BookOpen className="w-5 h-5 text-blue-600" />}
-                        {activity.type === 'achievement' && <Trophy className="w-5 h-5 text-yellow-600" />}
-                        {activity.type === 'collaboration' && <Users className="w-5 h-5 text-purple-600" />}
-                        {activity.type === 'practice' && <Code className="w-5 h-5 text-green-600" />}
+                    <div key={activity.id} className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                      <div className="flex-shrink-0 mt-0.5">
+                        {activity.type === 'lesson_completed' && <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />}
+                        {activity.type === 'achievement' && <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />}
+                        {activity.type === 'collaboration' && <Users className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />}
+                        {activity.type === 'practice' && <Code className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-gray-900 dark:text-white mb-1">
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-1 text-sm sm:text-base">
                           {activity.title}
                         </h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
                           {activity.description}
                         </p>
                         <div className="flex items-center justify-between">
@@ -419,7 +430,9 @@ export default function DashboardPage() {
                         </div>
                       </div>
                       {activity.peerInvolved && (
-                        <Avatar peerId={activity.peerInvolved} size="sm" />
+                        <div className="flex-shrink-0">
+                          <Avatar peerId={activity.peerInvolved} size="sm" />
+                        </div>
                       )}
                     </div>
                   ))}
@@ -428,8 +441,8 @@ export default function DashboardPage() {
             </Card>
           </div>
 
-          {/* Right Column (1/3 width) */}
-          <div className="space-y-8">
+          {/* Right Column (1/3 width on desktop, full width on mobile) */}
+          <div className="space-y-6 sm:space-y-8">
             {/* Learning Path Section */}
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-gray-200/50 dark:border-gray-700/50">
               <LearningPath 

@@ -13,7 +13,7 @@ import { ArrowRight, MessageCircle, Zap, Star, Trophy } from 'lucide-react'
 import type { UserProfile, AIPeerProfile } from '@/types/database'
 
 interface HeroWelcomeSectionProps {
-  user: {
+  user?: {
     firstName?: string | null
   }
   profile: UserProfile

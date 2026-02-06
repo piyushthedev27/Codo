@@ -1,6 +1,7 @@
 /**
  * Collaborative Code Editor with Monaco Editor
  * Features real-time collaboration with AI peers, cursor presence, and code comparison
+ * Optimized for mobile touch interactions
  */
 
 'use client'
@@ -16,6 +17,8 @@ import { Badge } from '@/components/ui/badge'
 import { Play, Bug, Users, MessageSquare, BarChart3, Target } from 'lucide-react'
 import { CodeComparison, SAMPLE_CODE_SOLUTIONS } from './CodeComparison'
 import { SpotTheBugGame } from './SpotTheBugGame'
+import { useTouchOptimization, isMobileDevice } from '@/lib/mobile/touch-optimization'
+import { useLayoutOptimization } from '@/lib/mobile/layout-optimization'
 
 interface CursorPosition {
   peerId: string
@@ -66,6 +69,7 @@ export function CollaborativeCodeEditor({
   enableCollaboration = true
 }: CollaborativeCodeEditorProps) {
   const editorRef = useRef<any>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [code, setCode] = useState(initialCode)
   const [cursors, setCursors] = useState<CursorPosition[]>([])
   const [peerCodeStates, setPeerCodeStates] = useState<PeerCodeState[]>([])
@@ -75,6 +79,34 @@ export function CollaborativeCodeEditor({
   const [showDetailedComparison, setShowDetailedComparison] = useState(false)
   const [showBugGame, setShowBugGame] = useState(false)
   const [activeCollaborators, setActiveCollaborators] = useState(['sarah', 'alex'])
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Mobile optimization hooks
+  const { optimizeRef } = useTouchOptimization({
+    tapDelay: 200,
+    longPressDelay: 600,
+    preventZoom: true,
+    enhancedTouchTargets: true
+  })
+  
+  const { viewport, optimizeForMobile } = useLayoutOptimization()
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(isMobileDevice())
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Optimize container for mobile
+  useEffect(() => {
+    if (containerRef.current && isMobile) {
+      optimizeForMobile(containerRef.current)
+    }
+  }, [isMobile, optimizeForMobile])
 
   // Initialize AI peer code states
   useEffect(() => {
@@ -189,21 +221,47 @@ export function CollaborativeCodeEditor({
   const handleEditorDidMount: OnMount = (editor, monaco) => {
     editorRef.current = editor
 
-    // Configure editor for collaboration
-    editor.updateOptions({
-      minimap: { enabled: false },
+    // Configure editor for collaboration and mobile
+    const editorOptions = {
+      minimap: { enabled: !isMobile }, // Disable minimap on mobile
       scrollBeyondLastLine: false,
-      fontSize: 14,
-      lineNumbers: 'on',
+      fontSize: isMobile ? 16 : 14, // Larger font on mobile
+      lineNumbers: isMobile ? 'off' : 'on', // Hide line numbers on mobile for space
       renderWhitespace: 'selection',
-      cursorBlinking: 'smooth'
-    })
+      cursorBlinking: 'smooth',
+      wordWrap: isMobile ? 'on' : 'off', // Enable word wrap on mobile
+      automaticLayout: true,
+      scrollbar: {
+        verticalScrollbarSize: isMobile ? 8 : 14,
+        horizontalScrollbarSize: isMobile ? 8 : 14
+      },
+      // Mobile-specific optimizations
+      mouseWheelZoom: !isMobile, // Disable zoom on mobile
+      contextmenu: !isMobile, // Disable context menu on mobile
+      quickSuggestions: !isMobile, // Disable quick suggestions on mobile for performance
+      parameterHints: { enabled: !isMobile },
+      suggestOnTriggerCharacters: !isMobile
+    }
+
+    editor.updateOptions(editorOptions)
 
     // Add cursor position tracking
     editor.onDidChangeCursorPosition((e) => {
       // In a real implementation, this would sync with other users
       console.log('Cursor moved to:', e.position)
     })
+
+    // Mobile-specific touch handling
+    if (isMobile) {
+      const editorElement = editor.getDomNode()
+      if (editorElement) {
+        // Prevent zoom on double tap
+        editorElement.style.touchAction = 'manipulation'
+        
+        // Add mobile-friendly styling
+        editorElement.classList.add('mobile-code-editor')
+      }
+    }
   }
 
   const handleCodeChange: OnChange = (value) => {
@@ -240,14 +298,14 @@ export function CollaborativeCodeEditor({
   }
 
   return (
-    <div className="w-full space-y-4">
+    <div ref={containerRef} className={`w-full space-y-4 ${isMobile ? 'mobile-code-container' : ''}`}>
       {/* Collaboration Header */}
       {enableCollaboration && (
-        <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-4">
+        <div className={`flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${isMobile ? 'flex-col space-y-4' : ''}`}>
+          <div className={`flex items-center gap-4 ${isMobile ? 'w-full justify-center' : ''}`}>
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4 text-gray-500" />
-              <span className="text-sm font-medium">Collaborating with:</span>
+              <span className={`font-medium ${isMobile ? 'text-sm' : 'text-sm'}`}>Collaborating with:</span>
             </div>
             <div className="flex -space-x-2">
               {activeCollaborators.map(peerId => (
@@ -255,39 +313,53 @@ export function CollaborativeCodeEditor({
               ))}
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className={`flex items-center gap-2 ${isMobile ? 'w-full flex-wrap justify-center' : ''}`}>
             <Button
               variant="outline"
-              size="sm"
+              size={isMobile ? "sm" : "sm"}
               onClick={toggleComparison}
-              className="flex items-center gap-2"
+              className={`flex items-center gap-2 ${isMobile ? 'touch-target-enhanced' : ''}`}
+              ref={optimizeRef({
+                onTap: () => toggleComparison(),
+                onLongPress: () => console.log('Long press on compare button')
+              })}
             >
               <MessageSquare className="w-4 h-4" />
-              {showComparison ? 'Hide' : 'Compare'} Approaches
+              {isMobile ? 'Compare' : (showComparison ? 'Hide' : 'Compare') + ' Approaches'}
             </Button>
             <Button
               variant="outline"
-              size="sm"
+              size={isMobile ? "sm" : "sm"}
               onClick={toggleDetailedComparison}
-              className="flex items-center gap-2"
+              className={`flex items-center gap-2 ${isMobile ? 'touch-target-enhanced' : ''}`}
+              ref={optimizeRef({
+                onTap: () => toggleDetailedComparison()
+              })}
             >
               <BarChart3 className="w-4 h-4" />
-              Detailed Analysis
+              {isMobile ? 'Analysis' : 'Detailed Analysis'}
             </Button>
             <Button
               variant="outline"
-              size="sm"
+              size={isMobile ? "sm" : "sm"}
               onClick={toggleBugGame}
-              className="flex items-center gap-2"
+              className={`flex items-center gap-2 ${isMobile ? 'touch-target-enhanced' : ''}`}
+              ref={optimizeRef({
+                onTap: () => toggleBugGame()
+              })}
             >
               <Target className="w-4 h-4" />
-              Spot the Bug
+              {isMobile ? 'Bug Hunt' : 'Spot the Bug'}
             </Button>
             <Button
               onClick={runCode}
               disabled={isRunning}
-              size="sm"
-              className="flex items-center gap-2"
+              size={isMobile ? "sm" : "sm"}
+              className={`flex items-center gap-2 ${isMobile ? 'touch-target-enhanced bg-blue-600 hover:bg-blue-700' : ''}`}
+              ref={optimizeRef({
+                onTap: () => !isRunning && runCode(),
+                onLongPress: () => console.log('Long press on run button')
+              })}
             >
               <Play className="w-4 h-4" />
               {isRunning ? 'Running...' : 'Run Code'}
@@ -296,25 +368,30 @@ export function CollaborativeCodeEditor({
         </div>
       )}
 
-      <div className="flex gap-4">
+      <div className={`flex gap-4 ${isMobile ? 'flex-col' : ''}`}>
         {/* Main Editor */}
         <div className="flex-1 relative">
           <div className="relative border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
             <Editor
-              height={height}
+              height={isMobile ? '300px' : height} // Shorter on mobile
               language={language}
               theme={theme}
               value={code}
               onChange={handleCodeChange}
               onMount={handleEditorDidMount}
               options={{
-                minimap: { enabled: false },
+                minimap: { enabled: !isMobile },
                 scrollBeyondLastLine: false,
-                fontSize: 14,
-                lineNumbers: 'on',
+                fontSize: isMobile ? 16 : 14,
+                lineNumbers: isMobile ? 'off' : 'on',
                 renderWhitespace: 'selection',
                 cursorBlinking: 'smooth',
-                automaticLayout: true
+                automaticLayout: true,
+                wordWrap: isMobile ? 'on' : 'off',
+                scrollbar: {
+                  verticalScrollbarSize: isMobile ? 8 : 14,
+                  horizontalScrollbarSize: isMobile ? 8 : 14
+                }
               }}
             />
 
@@ -457,7 +534,7 @@ export function CollaborativeCodeEditor({
           {showComparison && enableCollaboration && (
             <motion.div
               initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: 400 }}
+              animate={{ opacity: 1, width: isMobile ? '100%' : 400 }}
               exit={{ opacity: 0, width: 0 }}
               className="overflow-hidden"
             >
@@ -479,7 +556,7 @@ export function CollaborativeCodeEditor({
                         </div>
                         <div className="p-2">
                           <Editor
-                            height="150px"
+                            height={isMobile ? "120px" : "150px"}
                             language={peerState.language}
                             theme={theme}
                             value={peerState.code}
@@ -487,12 +564,13 @@ export function CollaborativeCodeEditor({
                               readOnly: true,
                               minimap: { enabled: false },
                               scrollBeyondLastLine: false,
-                              fontSize: 12,
+                              fontSize: isMobile ? 14 : 12,
                               lineNumbers: 'off',
                               folding: false,
                               lineDecorationsWidth: 0,
                               lineNumbersMinChars: 0,
-                              glyphMargin: false
+                              glyphMargin: false,
+                              wordWrap: isMobile ? 'on' : 'off'
                             }}
                           />
                         </div>

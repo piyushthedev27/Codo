@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const includeDismissed = searchParams.get('dismissed') === 'true'
 
     // Get existing insights from database
-    const existingInsights = await learningInsightsOperations.getByUserId(userId)
+    const existingInsights = await learningInsightsOperations.getActiveByUserId(userId)
     
     // Filter out dismissed insights unless specifically requested
     const activeInsights = includeDismissed 

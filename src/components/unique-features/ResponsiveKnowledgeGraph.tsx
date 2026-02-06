@@ -60,17 +60,17 @@ export default function ResponsiveKnowledgeGraph({
         width = screenWidth - 40
         height = screenHeight - 120
       } else if (mobile || viewMode === 'mobile') {
-        // Mobile optimized dimensions
-        width = Math.min(containerRect.width - 20, screenWidth - 40)
-        height = Math.min(400, screenHeight * 0.5)
+        // Mobile optimized dimensions - more compact
+        width = Math.min(containerRect.width - 10, screenWidth - 20)
+        height = Math.min(280, screenHeight * 0.35) // Reduced height for mobile
       } else if (viewMode === 'desktop') {
         // Desktop optimized dimensions
         width = Math.min(containerRect.width - 20, 1000)
         height = Math.min(600, screenHeight * 0.7)
       } else {
-        // Auto mode - responsive
-        width = Math.min(containerRect.width - 20, mobile ? screenWidth - 40 : 800)
-        height = Math.min(mobile ? 350 : 500, screenHeight * (mobile ? 0.4 : 0.6))
+        // Auto mode - responsive with better mobile handling
+        width = Math.min(containerRect.width - 10, mobile ? screenWidth - 20 : 800)
+        height = Math.min(mobile ? 280 : 500, screenHeight * (mobile ? 0.35 : 0.6))
       }
 
       setDimensions({ width: Math.max(300, width), height: Math.max(250, height) })

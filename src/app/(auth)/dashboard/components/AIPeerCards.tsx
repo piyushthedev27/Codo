@@ -107,7 +107,7 @@ export function AIPeerCards({ peers }: AIPeerCardsProps) {
                     {peer.personality}
                   </Badge>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                    {peer.interaction_style.split(',')[0]}
+                    {peer.interaction_style?.split(',')[0] || 'Helpful companion'}
                   </p>
                   
                   {/* Level with stars */}

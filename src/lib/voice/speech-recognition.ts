@@ -1,5 +1,6 @@
 // Speech Recognition API implementation for voice input
 import { SPEECH_CONFIG, checkSpeechSupport } from './speech-config'
+import { isMobileDevice } from '@/lib/mobile/touch-optimization'
 
 export interface SpeechRecognitionOptions {
   continuous?: boolean
@@ -46,11 +47,13 @@ export class VoiceRecognitionManager {
   private setupRecognition() {
     if (!this.recognition) return
 
-    // Set default configuration
-    this.recognition.continuous = SPEECH_CONFIG.recognition.continuous
-    this.recognition.interimResults = SPEECH_CONFIG.recognition.interimResults
+    // Set default configuration with mobile optimizations
+    const isMobile = isMobileDevice()
+    
+    this.recognition.continuous = isMobile ? false : SPEECH_CONFIG.recognition.continuous // Shorter sessions on mobile
+    this.recognition.interimResults = isMobile ? false : SPEECH_CONFIG.recognition.interimResults // Reduce network usage
     this.recognition.lang = SPEECH_CONFIG.recognition.lang
-    this.recognition.maxAlternatives = SPEECH_CONFIG.recognition.maxAlternatives
+    this.recognition.maxAlternatives = isMobile ? 1 : SPEECH_CONFIG.recognition.maxAlternatives // Reduce processing
 
     // Set up event handlers
     this.recognition.onstart = () => {

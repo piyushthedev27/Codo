@@ -14,6 +14,7 @@ import {
   Code
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { animationClasses } from '@/lib/animations/animation-optimizer'
 import type { EnhancedStats } from '@/lib/utils/stats-calculations'
 import { getTrendIndicator, formatDuration } from '@/lib/utils/stats-calculations'
 
@@ -49,15 +50,15 @@ function StatCard({
   
   return (
     <Card className={cn(
-      "relative overflow-hidden border-0 hover:shadow-lg transition-all duration-300 hover:scale-105 group",
+      "relative overflow-hidden border-0 transition-optimized hover-lift group",
       gradient,
       className
     )}>
       {/* Animated background effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-fast" />
       
       <CardHeader className="pb-3 relative z-10">
-        <CardTitle className="text-lg flex items-center gap-2 text-white">
+        <CardTitle className={cn("text-lg flex items-center gap-2 text-white", animationClasses.fadeInUp)}>
           {icon}
           {title}
         </CardTitle>
@@ -65,21 +66,21 @@ function StatCard({
       
       <CardContent className="relative z-10">
         {/* Main Value */}
-        <div className="text-3xl font-bold text-white mb-2">
+        <div className={cn("text-3xl font-bold text-white mb-2", animationClasses.scaleIn)}>
           {value}
         </div>
         
         {/* Subtitle */}
-        <div className="text-sm text-white/90 mb-3">
+        <div className={cn("text-sm text-white/90 mb-3", animationClasses.fadeInUp)}>
           {subtitle}
         </div>
         
         {/* Trend Indicator */}
         {trendValue && (
-          <div className="flex items-center gap-1 text-sm">
+          <div className={cn("flex items-center gap-1 text-sm", animationClasses.slideInRight)}>
             <div className={cn(
-              "flex items-center gap-1 px-2 py-1 rounded-full",
-              "bg-white/20 text-white"
+              "flex items-center gap-1 px-2 py-1 rounded-full transition-optimized",
+              "bg-white/20 text-white hover-scale"
             )}>
               <TrendIcon className="w-3 h-3" />
               <span>

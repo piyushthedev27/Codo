@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { LearningInsight } from '@/types/database'
 import { ProactiveRecommendation } from '@/lib/utils/proactive-recommendations'
 import { LearningPattern } from '@/lib/utils/pattern-detection'
+import { apiClient } from '@/lib/api/api-client'
+import { useApiState, useApiCall } from './useApiState'
 
 export interface InsightsData {
   insights: LearningInsight[]
@@ -33,110 +35,57 @@ export function useInsights(options: UseInsightsOptions = {}) {
     refreshInterval = 30000 // 30 seconds
   } = options
 
-  const [data, setData] = useState<InsightsData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState(false)
 
-  // Fetch insights from API
-  const fetchInsights = useCallback(async (isRefresh = false) => {
-    try {
-      if (isRefresh) {
-        setRefreshing(true)
-      } else {
-        setLoading(true)
-      }
-      setError(null)
+  // Use the new API state hook with error handling and offline support
+  const {
+    data: apiData,
+    loading,
+    error: apiError,
+    fromCache,
+    demo,
+    retry
+  } = useApiState(
+    () => apiClient.getInsights({
+      recommendations: includeRecommendations,
+      dismissed: includeDismissed
+    }),
+    [includeRecommendations, includeDismissed]
+  )
 
-      const params = new URLSearchParams()
-      if (includeRecommendations) params.set('recommendations', 'true')
-      if (includeDismissed) params.set('dismissed', 'true')
+  // Hook for manual API calls (dismiss insight)
+  const { execute: executeDismiss, loading: dismissLoading } = useApiCall()
 
-      const response = await fetch(`/api/insights?${params.toString()}`)
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch insights: ${response.statusText}`)
-      }
-
-      const result = await response.json()
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to fetch insights')
-      }
-
-      setData({
-        insights: result.insights || [],
-        recommendations: result.recommendations || [],
-        patterns: result.patterns || [],
-        meta: result.meta || {
-          totalInsights: 0,
-          activeInsights: 0,
-          dismissedInsights: 0,
-          recommendationsCount: 0,
-          patternsCount: 0
-        }
-      })
-
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
-      setError(errorMessage)
-      console.error('Error fetching insights:', err)
-    } finally {
-      setLoading(false)
-      setRefreshing(false)
+  // Transform API data to match expected format
+  const data: InsightsData | null = apiData ? {
+    insights: apiData.insights || [],
+    recommendations: apiData.recommendations || [],
+    patterns: apiData.patterns || [],
+    meta: apiData.meta || {
+      totalInsights: 0,
+      activeInsights: 0,
+      dismissedInsights: 0,
+      recommendationsCount: 0,
+      patternsCount: 0
     }
-  }, [includeRecommendations, includeDismissed])
+  } : null
 
-  // Dismiss an insight
+  const error = apiError?.message || null
+
+  // Dismiss an insight with new API client
   const dismissInsight = useCallback(async (insightId: string) => {
-    try {
-      const response = await fetch('/api/insights/dismiss', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ insightId }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`Failed to dismiss insight: ${response.statusText}`)
-      }
-
-      const result = await response.json()
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to dismiss insight')
-      }
-
-      // Update local state to remove dismissed insight
-      setData(prevData => {
-        if (!prevData) return prevData
-        
-        return {
-          ...prevData,
-          insights: prevData.insights.map(insight =>
-            insight.id === insightId
-              ? { ...insight, dismissed: true, dismissed_at: new Date().toISOString() }
-              : insight
-          ).filter(insight => includeDismissed || !insight.dismissed),
-          meta: {
-            ...prevData.meta,
-            activeInsights: prevData.meta.activeInsights - 1,
-            dismissedInsights: prevData.meta.dismissedInsights + 1
-          }
-        }
-      })
-
+    const result = await executeDismiss(() => apiClient.dismissInsight(insightId))
+    
+    if (result) {
+      // Refresh insights after successful dismissal
+      await retry()
       return result.insight
-
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to dismiss insight'
-      console.error('Error dismissing insight:', err)
-      throw new Error(errorMessage)
     }
-  }, [includeDismissed])
+    
+    throw new Error('Failed to dismiss insight')
+  }, [executeDismiss, retry])
 
-  // Dismiss multiple insights
+  // Dismiss multiple insights (fallback to original implementation for now)
   const dismissMultipleInsights = useCallback(async (insightIds: string[]) => {
     try {
       const response = await fetch('/api/insights/dismiss', {
@@ -157,27 +106,8 @@ export function useInsights(options: UseInsightsOptions = {}) {
         throw new Error(result.error || 'Failed to dismiss insights')
       }
 
-      // Update local state
-      setData(prevData => {
-        if (!prevData) return prevData
-        
-        const dismissedSet = new Set(insightIds)
-        
-        return {
-          ...prevData,
-          insights: prevData.insights.map(insight =>
-            dismissedSet.has(insight.id)
-              ? { ...insight, dismissed: true, dismissed_at: new Date().toISOString() }
-              : insight
-          ).filter(insight => includeDismissed || !insight.dismissed),
-          meta: {
-            ...prevData.meta,
-            activeInsights: prevData.meta.activeInsights - result.dismissedCount,
-            dismissedInsights: prevData.meta.dismissedInsights + result.dismissedCount
-          }
-        }
-      })
-
+      // Refresh after successful dismissal
+      await retry()
       return result
 
     } catch (err) {
@@ -185,13 +115,12 @@ export function useInsights(options: UseInsightsOptions = {}) {
       console.error('Error dismissing multiple insights:', err)
       throw new Error(errorMessage)
     }
-  }, [includeDismissed])
+  }, [retry])
 
-  // Force refresh insights and generate new ones
+  // Force refresh insights and generate new ones (fallback to original implementation)
   const regenerateInsights = useCallback(async () => {
     try {
       setRefreshing(true)
-      setError(null)
 
       const response = await fetch('/api/insights', {
         method: 'PUT',
@@ -207,51 +136,39 @@ export function useInsights(options: UseInsightsOptions = {}) {
         throw new Error(result.error || 'Failed to regenerate insights')
       }
 
-      setData({
-        insights: result.insights || [],
-        recommendations: result.recommendations || [],
-        patterns: result.patterns || [],
-        meta: {
-          totalInsights: result.insights?.length || 0,
-          activeInsights: result.insights?.filter((i: LearningInsight) => !i.dismissed).length || 0,
-          dismissedInsights: result.insights?.filter((i: LearningInsight) => i.dismissed).length || 0,
-          recommendationsCount: result.recommendations?.length || 0,
-          patternsCount: result.patterns?.length || 0
-        }
-      })
-
+      // Refresh data after regeneration
+      await retry()
       return result
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to regenerate insights'
-      setError(errorMessage)
       console.error('Error regenerating insights:', err)
       throw new Error(errorMessage)
     } finally {
       setRefreshing(false)
     }
-  }, [])
+  }, [retry])
 
   // Manual refresh
-  const refresh = useCallback(() => {
-    fetchInsights(true)
-  }, [fetchInsights])
-
-  // Initial fetch
-  useEffect(() => {
-    fetchInsights()
-  }, [fetchInsights])
+  const refresh = useCallback(async () => {
+    setRefreshing(true)
+    try {
+      await retry()
+    } finally {
+      setRefreshing(false)
+    }
+  }, [retry])
 
   // Auto refresh
   useEffect(() => {
     if (!autoRefresh || refreshInterval <= 0) return
 
     const interval = setInterval(() => {
-      fetchInsights(true)
+      refresh()
     }, refreshInterval)
 
     return () => clearInterval(interval)
-  }, [autoRefresh, refreshInterval, fetchInsights])
+  }, [autoRefresh, refreshInterval, refresh])
 
   return {
     // Data
@@ -269,7 +186,9 @@ export function useInsights(options: UseInsightsOptions = {}) {
     // State
     loading,
     error,
-    refreshing,
+    refreshing: refreshing || dismissLoading,
+    fromCache, // New: indicates if data is from cache
+    demo, // New: indicates if using demo data
 
     // Actions
     dismissInsight,

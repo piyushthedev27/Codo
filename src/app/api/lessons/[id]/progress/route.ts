@@ -16,9 +16,9 @@ import {
 } from '@/lib/lessons/progress-tracking'
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export async function GET(
@@ -34,7 +34,7 @@ export async function GET(
       )
     }
 
-    const lessonId = params.id
+    const { id: lessonId } = await params
     const { searchParams } = new URL(request.url)
     const action = searchParams.get('action')
 
@@ -90,7 +90,7 @@ export async function POST(
       )
     }
 
-    const lessonId = params.id
+    const { id: lessonId } = await params
     const body = await request.json()
     const { action, ...data } = body
 

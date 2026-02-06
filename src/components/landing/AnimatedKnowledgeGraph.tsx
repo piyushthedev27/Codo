@@ -4,14 +4,11 @@ import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { Avatar } from '@/components/shared/Avatar'
+import { KnowledgeGraphLoadingSkeleton } from '@/components/ui/loading'
 
 // Lazy load D3 to reduce initial bundle size
 const D3Component = dynamic(() => import('./D3KnowledgeGraph'), {
-  loading: () => (
-    <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-4 animate-pulse">
-      <div className="w-full h-[300px] bg-gray-200 dark:bg-gray-700 rounded-lg" />
-    </div>
-  ),
+  loading: () => <KnowledgeGraphLoadingSkeleton />,
   ssr: false
 })
 
