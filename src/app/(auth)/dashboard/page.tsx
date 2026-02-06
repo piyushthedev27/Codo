@@ -449,6 +449,9 @@ export default function DashboardPage() {
               <LearningPath 
                 knowledgeGraph={knowledgeGraph}
                 upcomingMilestones={upcomingMilestones}
+                primaryDomain={profile.primary_domain}
+                currentXP={profile.current_xp}
+                currentLevel={profile.current_level}
               />
             </div>
 

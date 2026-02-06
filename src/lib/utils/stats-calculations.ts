@@ -197,14 +197,12 @@ export function calculateCodingTime(
     // Estimate time based on activity type
     if (activity.type === 'lesson_completed') {
       totalMinutes += 45 // Average lesson time
-    } else if (activity.type === 'challenge_completed') {
-      totalMinutes += 30 // Average challenge time
     } else if (activity.type === 'collaboration') {
       totalMinutes += 60 // Collaborative sessions
     } else if (activity.type === 'practice') {
       totalMinutes += 20 // Practice exercises
     } else {
-      totalMinutes += 15 // Other activities
+      totalMinutes += 15 // Other activities (achievements, etc.)
     }
   })
   
