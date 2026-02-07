@@ -3,6 +3,8 @@
 @import "../styles/knowledge-graph-animations.css";
 @import "../styles/optimized-animations.css";
 @import "../styles/mobile-optimizations.css";
+@import "../styles/dashboard-colors.css";
+@import "../styles/dark-mode-enhancements.css";
 
 @layer base {
   :root {

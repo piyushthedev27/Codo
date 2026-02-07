@@ -305,6 +305,11 @@ export interface DashboardData {
   // Enhanced dashboard data
   enhancedStats?: EnhancedStats
   recommendedLessons?: RecommendedLesson[]
+  // New enhanced fields (Requirements 23.1-23.5)
+  peerStatuses?: any[]
+  recentMessages?: any[]
+  currentTrack?: any
+  nextMilestone?: any
 }
 
 // Enhanced activity type for dashboard
