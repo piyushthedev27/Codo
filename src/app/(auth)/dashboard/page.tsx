@@ -60,6 +60,10 @@ const EnhancedStatsGrid = dynamic(() => import('./components/EnhancedStatsGrid')
   )
 })
 
+const EnhancedActivityFeed = dynamic(() => import('./components/EnhancedActivityFeed').then(mod => ({ default: mod.EnhancedActivityFeed })), {
+  loading: () => <SkeletonCard lines={4} />
+})
+
 // Demo data for when database is not available
 const demoData: DashboardData = {
   profile: {
@@ -304,41 +308,73 @@ export default function DashboardPage() {
   ]
 
   // Enhanced recent activities with AI peer involvement
-  const enhancedActivities = [
+  const enhancedActivities: import('@/lib/activities').EnhancedActivity[] = [
     {
       id: 'activity-1',
       type: 'lesson_completed',
       title: 'Completed: "React Hooks Deep Dive"',
-      description: 'With Sarah • 2 hours ago',
+      description: 'Mastered useState, useEffect, and custom hooks',
       xpEarned: 150,
-      peerInvolved: 'sarah',
-      rating: 5,
-      timestamp: '2 hours ago'
+      peerInvolved: ['sarah'],
+      timestamp: '2 hours ago',
+      duration: 45,
+      metadata: {
+        difficulty: 'intermediate',
+        completionRate: 95,
+        collaborators: ['Sarah']
+      }
     },
     {
       id: 'activity-2',
       type: 'achievement',
-      title: 'Achieved: "10 Day Streak" Badge',
-      description: '5 hours ago • Celebrated with all peers!',
-      xpEarned: 100,
-      timestamp: '5 hours ago'
+      title: '10 Day Streak',
+      description: 'Maintained consistent learning for 10 days!',
+      xpEarned: 200,
+      timestamp: '5 hours ago',
+      metadata: {
+        celebrationShown: false
+      }
     },
     {
       id: 'activity-3',
       type: 'collaboration',
-      title: 'Collaborated: "Build a Todo App"',
-      description: 'With Alex & Jordan • Yesterday',
-      xpEarned: 200,
-      peerInvolved: 'alex',
-      timestamp: 'Yesterday'
+      title: 'Collaborative Coding: Todo App',
+      description: 'Built a full-stack application with AI peers',
+      xpEarned: 250,
+      peerInvolved: ['alex', 'jordan'],
+      timestamp: 'Yesterday',
+      duration: 90,
+      metadata: {
+        difficulty: 'advanced',
+        completionRate: 100,
+        collaborators: ['Alex', 'Jordan']
+      }
     },
     {
       id: 'activity-4',
-      type: 'practice',
-      title: 'Practice: Solved 5 algorithm challenges',
-      description: '2 days ago',
-      xpEarned: 100,
-      timestamp: '2 days ago'
+      type: 'challenge_completed',
+      title: 'Algorithm Challenge: Binary Search',
+      description: 'Solved with optimal time complexity',
+      xpEarned: 120,
+      timestamp: '2 days ago',
+      duration: 30,
+      metadata: {
+        difficulty: 'intermediate',
+        completionRate: 100
+      }
+    },
+    {
+      id: 'activity-5',
+      type: 'voice_coaching',
+      title: 'Voice Coaching Session',
+      description: 'Practiced debugging with AI voice coach',
+      xpEarned: 75,
+      peerInvolved: ['jordan'],
+      timestamp: '3 days ago',
+      duration: 20,
+      metadata: {
+        collaborators: ['Jordan']
+      }
     }
   ]
 
@@ -388,58 +424,11 @@ export default function DashboardPage() {
             <AIPeerCards peers={aiPeers} />
 
             {/* Enhanced Recent Activity */}
-            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 card-hover-effect fade-in-delay-2">
-              <CardHeader className="p-4 sm:p-6">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                    <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
-                    Recent Activity
-                  </CardTitle>
-                  <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
-                    View All
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
-                  </Button>
-                </div>
-                <CardDescription className="text-sm">
-                  Your learning journey with AI peers
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-4 sm:p-6 pt-0">
-                <div className="space-y-3 sm:space-y-4">
-                  {enhancedActivities.map((activity, index) => (
-                    <div key={activity.id} className={`flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg smooth-transition card-hover-effect fade-in-delay-${Math.min(index + 1, 4)}`}>
-                      <div className="flex-shrink-0 mt-0.5">
-                        {activity.type === 'lesson_completed' && <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />}
-                        {activity.type === 'achievement' && <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />}
-                        {activity.type === 'collaboration' && <Users className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />}
-                        {activity.type === 'practice' && <Code className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-gray-900 dark:text-white mb-1 text-sm sm:text-base">
-                          {activity.title}
-                        </h4>
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
-                          {activity.description}
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">{activity.timestamp}</span>
-                          {activity.xpEarned && (
-                            <span className="text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded">
-                              +{activity.xpEarned} XP
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      {activity.peerInvolved && (
-                        <div className="flex-shrink-0">
-                          <Avatar peerId={activity.peerInvolved} size="sm" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <EnhancedActivityFeed 
+              activities={enhancedActivities}
+              maxDisplay={5}
+              showCelebrations={true}
+            />
           </div>
 
           {/* Right Column (1/3 width on desktop, full width on mobile) */}
