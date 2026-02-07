@@ -1,432 +1,403 @@
 /**
- * Performance Monitoring System
- * Tracks page load times, component render times, and user interactions
+ * Performance Monitoring Utilities
+ * Track and optimize application performance
  */
 
-// Performance metrics interface
-export interface PerformanceMetrics {
-  // Core Web Vitals
-  lcp?: number // Largest Contentful Paint
-  fid?: number // First Input Delay
-  cls?: number // Cumulative Layout Shift
-  
-  // Navigation timing
-  domContentLoaded?: number
-  loadComplete?: number
-  firstPaint?: number
-  firstContentfulPaint?: number
-  
-  // Custom metrics
-  timeToInteractive?: number
-  componentRenderTime?: number
-  apiResponseTime?: number
-  
-  // Page specific
-  pageName: string
+interface PerformanceMetric {
+  name: string
+  value: number
   timestamp: number
-  userAgent: string
-  connectionType?: string
+  type: 'navigation' | 'resource' | 'measure' | 'paint' | 'custom'
 }
 
-// Performance thresholds (in milliseconds)
-export const PERFORMANCE_THRESHOLDS = {
-  LCP: 2500,        // Good: < 2.5s
-  FID: 100,         // Good: < 100ms
-  CLS: 0.1,         // Good: < 0.1
-  PAGE_LOAD: 2000,  // Target: < 2s
-  API_RESPONSE: 1000, // Target: < 1s
-  COMPONENT_RENDER: 16, // Target: < 16ms (60fps)
-} as const
+interface PerformanceThresholds {
+  fcp: number // First Contentful Paint
+  lcp: number // Largest Contentful Paint
+  fid: number // First Input Delay
+  cls: number // Cumulative Layout Shift
+  ttfb: number // Time to First Byte
+}
 
-// Performance monitor class
-class PerformanceMonitor {
-  private metrics: PerformanceMetrics[] = []
+const DEFAULT_THRESHOLDS: PerformanceThresholds = {
+  fcp: 1800, // 1.8s
+  lcp: 2500, // 2.5s
+  fid: 100, // 100ms
+  cls: 0.1, // 0.1
+  ttfb: 600 // 600ms
+}
+
+/**
+ * Performance Monitor Class
+ */
+export class PerformanceMonitor {
+  private metrics: PerformanceMetric[] = []
+  private thresholds: PerformanceThresholds
   private observers: Map<string, PerformanceObserver> = new Map()
-  private startTimes: Map<string, number> = new Map()
 
-  constructor() {
+  constructor(thresholds: Partial<PerformanceThresholds> = {}) {
+    this.thresholds = { ...DEFAULT_THRESHOLDS, ...thresholds }
+    
     if (typeof window !== 'undefined') {
       this.initializeObservers()
-      this.setupNavigationTiming()
     }
   }
 
-  // Initialize performance observers
+  /**
+   * Initialize performance observers
+   */
   private initializeObservers() {
-    // Largest Contentful Paint
+    // Observe paint timing
     if ('PerformanceObserver' in window) {
       try {
-        const lcpObserver = new PerformanceObserver((list) => {
-          const entries = list.getEntries()
-          const lastEntry = entries[entries.length - 1] as any
-          this.recordMetric('lcp', lastEntry.startTime)
-        })
-        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] })
-        this.observers.set('lcp', lcpObserver)
-      } catch (error) {
-        console.warn('LCP observer not supported:', error)
-      }
-
-      // First Input Delay
-      try {
-        const fidObserver = new PerformanceObserver((list) => {
-          const entries = list.getEntries()
-          entries.forEach((entry: any) => {
-            this.recordMetric('fid', entry.processingStart - entry.startTime)
-          })
-        })
-        fidObserver.observe({ entryTypes: ['first-input'] })
-        this.observers.set('fid', fidObserver)
-      } catch (error) {
-        console.warn('FID observer not supported:', error)
-      }
-
-      // Cumulative Layout Shift
-      try {
-        const clsObserver = new PerformanceObserver((list) => {
-          let clsValue = 0
-          const entries = list.getEntries()
-          entries.forEach((entry: any) => {
-            if (!entry.hadRecentInput) {
-              clsValue += entry.value
-            }
-          })
-          this.recordMetric('cls', clsValue)
-        })
-        clsObserver.observe({ entryTypes: ['layout-shift'] })
-        this.observers.set('cls', clsObserver)
-      } catch (error) {
-        console.warn('CLS observer not supported:', error)
-      }
-
-      // Paint timing
-      try {
         const paintObserver = new PerformanceObserver((list) => {
-          const entries = list.getEntries()
-          entries.forEach((entry) => {
-            if (entry.name === 'first-paint') {
-              this.recordMetric('firstPaint', entry.startTime)
-            } else if (entry.name === 'first-contentful-paint') {
-              this.recordMetric('firstContentfulPaint', entry.startTime)
-            }
-          })
+          for (const entry of list.getEntries()) {
+            this.recordMetric({
+              name: entry.name,
+              value: entry.startTime,
+              timestamp: Date.now(),
+              type: 'paint'
+            })
+          }
         })
         paintObserver.observe({ entryTypes: ['paint'] })
         this.observers.set('paint', paintObserver)
-      } catch (error) {
-        console.warn('Paint observer not supported:', error)
+      } catch (e) {
+        console.warn('Paint observer not supported')
       }
-    }
-  }
 
-  // Setup navigation timing
-  private setupNavigationTiming() {
-    if ('performance' in window && 'timing' in window.performance) {
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const timing = window.performance.timing
-          const navigation = window.performance.navigation
-
-          const metrics = {
-            domContentLoaded: timing.domContentLoadedEventEnd - timing.navigationStart,
-            loadComplete: timing.loadEventEnd - timing.navigationStart,
-            timeToInteractive: this.calculateTimeToInteractive(),
-          }
-
-          Object.entries(metrics).forEach(([key, value]) => {
-            if (value > 0) {
-              this.recordMetric(key as keyof PerformanceMetrics, value)
-            }
+      // Observe Largest Contentful Paint
+      try {
+        const lcpObserver = new PerformanceObserver((list) => {
+          const entries = list.getEntries()
+          const lastEntry = entries[entries.length - 1]
+          this.recordMetric({
+            name: 'largest-contentful-paint',
+            value: lastEntry.startTime,
+            timestamp: Date.now(),
+            type: 'paint'
           })
-        }, 0)
-      })
-    }
-  }
-
-  // Calculate Time to Interactive (TTI)
-  private calculateTimeToInteractive(): number {
-    if (!('performance' in window)) return 0
-
-    const timing = window.performance.timing
-    const domContentLoaded = timing.domContentLoadedEventEnd - timing.navigationStart
-    
-    // Simple TTI approximation - when DOM is ready and no long tasks
-    return domContentLoaded
-  }
-
-  // Record a performance metric
-  private recordMetric(key: keyof PerformanceMetrics, value: number) {
-    const currentMetric = this.getCurrentMetric()
-    if (currentMetric) {
-      (currentMetric as any)[key] = value
-    }
-  }
-
-  // Get or create current metric entry
-  public getCurrentMetric(): PerformanceMetrics | null {
-    const pageName = this.getCurrentPageName()
-    let metric = this.metrics.find(m => m.pageName === pageName && !m.loadComplete)
-    
-    if (!metric) {
-      metric = {
-        pageName,
-        timestamp: Date.now(),
-        userAgent: navigator.userAgent,
-        connectionType: this.getConnectionType(),
+        })
+        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] })
+        this.observers.set('lcp', lcpObserver)
+      } catch (e) {
+        console.warn('LCP observer not supported')
       }
-      this.metrics.push(metric)
+
+      // Observe First Input Delay
+      try {
+        const fidObserver = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            const fid = (entry as any).processingStart - entry.startTime
+            this.recordMetric({
+              name: 'first-input-delay',
+              value: fid,
+              timestamp: Date.now(),
+              type: 'custom'
+            })
+          }
+        })
+        fidObserver.observe({ entryTypes: ['first-input'] })
+        this.observers.set('fid', fidObserver)
+      } catch (e) {
+        console.warn('FID observer not supported')
+      }
+
+      // Observe Layout Shifts
+      try {
+        let clsValue = 0
+        const clsObserver = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (!(entry as any).hadRecentInput) {
+              clsValue += (entry as any).value
+              this.recordMetric({
+                name: 'cumulative-layout-shift',
+                value: clsValue,
+                timestamp: Date.now(),
+                type: 'custom'
+              })
+            }
+          }
+        })
+        clsObserver.observe({ entryTypes: ['layout-shift'] })
+        this.observers.set('cls', clsObserver)
+      } catch (e) {
+        console.warn('CLS observer not supported')
+      }
     }
-    
-    return metric
   }
 
-  // Get current page name
-  private getCurrentPageName(): string {
-    if (typeof window === 'undefined') return 'unknown'
+  /**
+   * Record a performance metric
+   */
+  private recordMetric(metric: PerformanceMetric) {
+    this.metrics.push(metric)
     
-    const path = window.location.pathname
-    if (path === '/') return 'home'
-    if (path.startsWith('/dashboard')) return 'dashboard'
-    if (path.startsWith('/lessons/')) return 'lesson'
-    if (path.startsWith('/coding/')) return 'coding'
-    return path.replace(/^\//, '').replace(/\//g, '-') || 'unknown'
-  }
-
-  // Get connection type
-  private getConnectionType(): string {
-    if ('connection' in navigator) {
-      const connection = (navigator as any).connection
-      return connection?.effectiveType || 'unknown'
+    // Check against thresholds
+    this.checkThreshold(metric)
+    
+    // Log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[Performance] ${metric.name}: ${metric.value.toFixed(2)}ms`)
     }
-    return 'unknown'
   }
 
-  // Start timing a custom operation
-  startTiming(label: string) {
-    this.startTimes.set(label, performance.now())
-  }
+  /**
+   * Check if metric exceeds threshold
+   */
+  private checkThreshold(metric: PerformanceMetric) {
+    let threshold: number | undefined
+    let metricName: string = metric.name
 
-  // End timing a custom operation
-  endTiming(label: string): number {
-    const startTime = this.startTimes.get(label)
-    if (!startTime) return 0
-    
-    const duration = performance.now() - startTime
-    this.startTimes.delete(label)
-    
-    // Record component render time
-    if (label.includes('render')) {
-      this.recordMetric('componentRenderTime', duration)
+    if (metric.name === 'first-contentful-paint') {
+      threshold = this.thresholds.fcp
+      metricName = 'FCP'
+    } else if (metric.name === 'largest-contentful-paint') {
+      threshold = this.thresholds.lcp
+      metricName = 'LCP'
+    } else if (metric.name === 'first-input-delay') {
+      threshold = this.thresholds.fid
+      metricName = 'FID'
+    } else if (metric.name === 'cumulative-layout-shift') {
+      threshold = this.thresholds.cls
+      metricName = 'CLS'
     }
-    
-    return duration
+
+    if (threshold && metric.value > threshold) {
+      console.warn(
+        `[Performance Warning] ${metricName} (${metric.value.toFixed(2)}) exceeds threshold (${threshold})`
+      )
+    }
   }
 
-  // Measure API response time
-  async measureAPICall<T>(
-    label: string,
-    apiCall: () => Promise<T>
-  ): Promise<{ data: T; duration: number }> {
-    const startTime = performance.now()
+  /**
+   * Measure component render time
+   */
+  measureComponent(componentName: string, callback: () => void) {
+    const startMark = `${componentName}-start`
+    const endMark = `${componentName}-end`
+    const measureName = `${componentName}-render`
+
+    if (typeof window !== 'undefined' && 'performance' in window) {
+      performance.mark(startMark)
+      callback()
+      performance.mark(endMark)
+
+      try {
+        performance.measure(measureName, startMark, endMark)
+        const measure = performance.getEntriesByName(measureName)[0]
+        
+        this.recordMetric({
+          name: measureName,
+          value: measure.duration,
+          timestamp: Date.now(),
+          type: 'measure'
+        })
+
+        // Clean up
+        performance.clearMarks(startMark)
+        performance.clearMarks(endMark)
+        performance.clearMeasures(measureName)
+      } catch (e) {
+        console.warn('Performance measurement failed:', e)
+      }
+    } else {
+      callback()
+    }
+  }
+
+  /**
+   * Measure async operation
+   */
+  async measureAsync<T>(
+    operationName: string,
+    operation: () => Promise<T>
+  ): Promise<T> {
+    const startTime = Date.now()
     
     try {
-      const data = await apiCall()
-      const duration = performance.now() - startTime
+      const result = await operation()
+      const duration = Date.now() - startTime
       
-      this.recordMetric('apiResponseTime', duration)
+      this.recordMetric({
+        name: operationName,
+        value: duration,
+        timestamp: Date.now(),
+        type: 'custom'
+      })
       
-      return { data, duration }
+      return result
     } catch (error) {
-      const duration = performance.now() - startTime
-      console.warn(`API call ${label} failed after ${duration}ms:`, error)
+      const duration = Date.now() - startTime
+      
+      this.recordMetric({
+        name: `${operationName}-error`,
+        value: duration,
+        timestamp: Date.now(),
+        type: 'custom'
+      })
+      
       throw error
     }
   }
 
-  // Get performance summary
-  getPerformanceSummary(pageName?: string): PerformanceMetrics[] {
-    if (pageName) {
-      return this.metrics.filter(m => m.pageName === pageName)
+  /**
+   * Get Core Web Vitals
+   */
+  getCoreWebVitals(): {
+    fcp?: number
+    lcp?: number
+    fid?: number
+    cls?: number
+    ttfb?: number
+  } {
+    const vitals: any = {}
+
+    // FCP
+    const fcpMetric = this.metrics.find(m => m.name === 'first-contentful-paint')
+    if (fcpMetric) vitals.fcp = fcpMetric.value
+
+    // LCP
+    const lcpMetric = this.metrics.find(m => m.name === 'largest-contentful-paint')
+    if (lcpMetric) vitals.lcp = lcpMetric.value
+
+    // FID
+    const fidMetric = this.metrics.find(m => m.name === 'first-input-delay')
+    if (fidMetric) vitals.fid = fidMetric.value
+
+    // CLS
+    const clsMetric = this.metrics.find(m => m.name === 'cumulative-layout-shift')
+    if (clsMetric) vitals.cls = clsMetric.value
+
+    // TTFB
+    if (typeof window !== 'undefined' && 'performance' in window) {
+      const navTiming = performance.getEntriesByType('navigation')[0] as any
+      if (navTiming) {
+        vitals.ttfb = navTiming.responseStart - navTiming.requestStart
+      }
     }
+
+    return vitals
+  }
+
+  /**
+   * Get all metrics
+   */
+  getMetrics(): PerformanceMetric[] {
     return [...this.metrics]
   }
 
-  // Check if performance meets thresholds
-  checkPerformanceThresholds(metric: PerformanceMetrics): {
-    passed: boolean
-    issues: string[]
+  /**
+   * Get metrics by type
+   */
+  getMetricsByType(type: PerformanceMetric['type']): PerformanceMetric[] {
+    return this.metrics.filter(m => m.type === type)
+  }
+
+  /**
+   * Get performance summary
+   */
+  getSummary(): {
+    totalMetrics: number
+    coreWebVitals: {
+      fcp?: number
+      lcp?: number
+      fid?: number
+      cls?: number
+      ttfb?: number
+    }
+    slowestOperations: PerformanceMetric[]
+    averageRenderTime: number
   } {
-    const issues: string[] = []
+    const coreWebVitals = this.getCoreWebVitals()
+    const renderMetrics = this.metrics.filter(m => m.name.includes('render'))
+    const averageRenderTime = renderMetrics.length > 0
+      ? renderMetrics.reduce((sum, m) => sum + m.value, 0) / renderMetrics.length
+      : 0
 
-    if (metric.lcp && metric.lcp > PERFORMANCE_THRESHOLDS.LCP) {
-      issues.push(`LCP too slow: ${metric.lcp}ms (target: <${PERFORMANCE_THRESHOLDS.LCP}ms)`)
-    }
-
-    if (metric.fid && metric.fid > PERFORMANCE_THRESHOLDS.FID) {
-      issues.push(`FID too slow: ${metric.fid}ms (target: <${PERFORMANCE_THRESHOLDS.FID}ms)`)
-    }
-
-    if (metric.cls && metric.cls > PERFORMANCE_THRESHOLDS.CLS) {
-      issues.push(`CLS too high: ${metric.cls} (target: <${PERFORMANCE_THRESHOLDS.CLS})`)
-    }
-
-    if (metric.loadComplete && metric.loadComplete > PERFORMANCE_THRESHOLDS.PAGE_LOAD) {
-      issues.push(`Page load too slow: ${metric.loadComplete}ms (target: <${PERFORMANCE_THRESHOLDS.PAGE_LOAD}ms)`)
-    }
-
-    if (metric.apiResponseTime && metric.apiResponseTime > PERFORMANCE_THRESHOLDS.API_RESPONSE) {
-      issues.push(`API response too slow: ${metric.apiResponseTime}ms (target: <${PERFORMANCE_THRESHOLDS.API_RESPONSE}ms)`)
-    }
+    const slowestOperations = [...this.metrics]
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 10)
 
     return {
-      passed: issues.length === 0,
-      issues
+      totalMetrics: this.metrics.length,
+      coreWebVitals,
+      slowestOperations,
+      averageRenderTime
     }
   }
 
-  // Generate performance report
-  generateReport(): {
-    summary: {
-      totalPages: number
-      averageLoadTime: number
-      passedThresholds: number
-      failedThresholds: number
-    }
-    details: Array<{
-      page: string
-      metrics: PerformanceMetrics
-      status: 'passed' | 'failed'
-      issues: string[]
-    }>
-  } {
-    const details = this.metrics.map(metric => {
-      const check = this.checkPerformanceThresholds(metric)
-      return {
-        page: metric.pageName,
-        metrics: metric,
-        status: check.passed ? 'passed' as const : 'failed' as const,
-        issues: check.issues
-      }
-    })
-
-    const totalPages = details.length
-    const averageLoadTime = details.reduce((sum, d) => sum + (d.metrics.loadComplete || 0), 0) / totalPages
-    const passedThresholds = details.filter(d => d.status === 'passed').length
-    const failedThresholds = totalPages - passedThresholds
-
-    return {
-      summary: {
-        totalPages,
-        averageLoadTime,
-        passedThresholds,
-        failedThresholds
-      },
-      details
-    }
+  /**
+   * Export metrics for analytics
+   */
+  exportMetrics(): string {
+    return JSON.stringify({
+      timestamp: Date.now(),
+      metrics: this.metrics,
+      summary: this.getSummary()
+    }, null, 2)
   }
 
-  // Clear metrics
-  clearMetrics() {
+  /**
+   * Clear all metrics
+   */
+  clear() {
     this.metrics = []
   }
 
-  // Cleanup observers
-  cleanup() {
+  /**
+   * Disconnect all observers
+   */
+  disconnect() {
     this.observers.forEach(observer => observer.disconnect())
     this.observers.clear()
   }
 }
 
-// Create singleton instance
+// Global performance monitor instance
 export const performanceMonitor = new PerformanceMonitor()
 
-// React hook for performance monitoring
+/**
+ * React hook for performance monitoring
+ */
 export function usePerformanceMonitor(componentName: string) {
   React.useEffect(() => {
-    const label = `${componentName}-render`
-    performanceMonitor.startTiming(label)
-    
+    const startTime = Date.now()
+
     return () => {
-      performanceMonitor.endTiming(label)
+      const duration = Date.now() - startTime
+      performanceMonitor.measureComponent(componentName, () => {})
     }
   }, [componentName])
-
-  const measureRender = React.useCallback((callback: () => void) => {
-    const label = `${componentName}-update`
-    performanceMonitor.startTiming(label)
-    callback()
-    performanceMonitor.endTiming(label)
-  }, [componentName])
-
-  return { measureRender }
 }
 
-// Performance testing utilities
-export const performanceTest = {
-  // Test page load time
-  async testPageLoad(url: string): Promise<{
-    loadTime: number
-    passed: boolean
-    metrics: PerformanceMetrics
-  }> {
-    return new Promise((resolve) => {
-      const startTime = performance.now()
-      
-      // Navigate to page (in testing environment)
-      window.location.href = url
-      
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const loadTime = performance.now() - startTime
-          const metrics = performanceMonitor.getCurrentMetric()!
-          const check = performanceMonitor.checkPerformanceThresholds(metrics)
-          
-          resolve({
-            loadTime,
-            passed: loadTime < PERFORMANCE_THRESHOLDS.PAGE_LOAD,
-            metrics
-          })
-        }, 100)
-      }, { once: true })
-    })
-  },
-
-  // Test component render time
-  testComponentRender(component: React.ComponentType, props: any = {}): Promise<{
-    renderTime: number
-    passed: boolean
-  }> {
-    return new Promise((resolve) => {
-      const startTime = performance.now()
-      
-      // This would need to be implemented with a testing framework
-      // For now, just return a mock result
-      const renderTime = Math.random() * 20 // Simulate 0-20ms render time
-      
-      resolve({
-        renderTime,
-        passed: renderTime < PERFORMANCE_THRESHOLDS.COMPONENT_RENDER
-      })
-    })
-  },
-
-  // Test API response time
-  async testAPIResponse(url: string): Promise<{
-    responseTime: number
-    passed: boolean
-  }> {
-    const { duration } = await performanceMonitor.measureAPICall(
-      `test-${url}`,
-      () => fetch(url).then(r => r.json())
-    )
-
-    return {
-      responseTime: duration,
-      passed: duration < PERFORMANCE_THRESHOLDS.API_RESPONSE
-    }
+/**
+ * HOC for performance monitoring
+ */
+export function withPerformanceMonitoring<P extends object>(
+  Component: React.ComponentType<P>,
+  componentName?: string
+): React.ComponentType<P> {
+  return function PerformanceMonitoredComponent(props: P) {
+    const name = componentName || Component.displayName || Component.name || 'Component'
+    usePerformanceMonitor(name)
+    return React.createElement(Component, props)
   }
 }
 
-import React from 'react'
+/**
+ * Report Web Vitals to analytics
+ */
+export function reportWebVitals(onPerfEntry?: (metric: any) => void) {
+  if (onPerfEntry && typeof window !== 'undefined') {
+    // Use our own monitoring implementation
+    const vitals = performanceMonitor.getCoreWebVitals()
+    Object.entries(vitals).forEach(([name, value]) => {
+      if (value !== undefined) {
+        onPerfEntry({ name, value })
+      }
+    })
+  }
+}
 
-export default performanceMonitor
+// Import React for hooks
+import React from 'react'

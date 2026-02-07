@@ -783,7 +783,7 @@ export async function GET(request: NextRequest) {
         nextConcept
       },
       // Enhanced dashboard data
-      enhancedStats,
+      enhancedStats: enhancedStats as any,
       recommendedLessons,
       // Additional enhanced data
       peerStatuses: peerStatuses as any,
