@@ -1,5 +1,5 @@
 // Speech Recognition API implementation for voice input
-import { SPEECH_CONFIG, checkSpeechSupport } from './speech-config'
+import { SPEECH_CONFIG, checkSpeechSupport, checkNetworkConnectivity } from './speech-config'
 import { isMobileDevice } from '@/lib/mobile/touch-optimization'
 
 export interface SpeechRecognitionOptions {
@@ -49,7 +49,7 @@ export class VoiceRecognitionManager {
 
     // Set default configuration with mobile optimizations
     const isMobile = isMobileDevice()
-    
+
     this.recognition.continuous = isMobile ? false : SPEECH_CONFIG.recognition.continuous // Shorter sessions on mobile
     this.recognition.interimResults = isMobile ? false : SPEECH_CONFIG.recognition.interimResults // Reduce network usage
     this.recognition.lang = SPEECH_CONFIG.recognition.lang
@@ -91,6 +91,12 @@ export class VoiceRecognitionManager {
 
     this.recognition.onerror = (error: SpeechRecognitionErrorEvent) => {
       this.isListening = false
+
+      // Handle network errors gracefully - don't block the UI
+      if (error.error === 'network') {
+        console.warn('Speech recognition network error - falling back to text mode')
+      }
+
       this.currentOptions?.onError?.(error)
     }
 
@@ -112,6 +118,12 @@ export class VoiceRecognitionManager {
 
       if (this.isListening) {
         reject(new Error('Already listening'))
+        return
+      }
+
+      // Check network connectivity before starting
+      if (!checkNetworkConnectivity()) {
+        reject(new Error('No network connection. Speech recognition requires internet access.'))
         return
       }
 

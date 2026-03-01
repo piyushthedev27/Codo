@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { analyzeCodeForHints, requestVoiceHint, CodingContext } from '@/lib/voice/voice-hints'
 import { Button } from '@/components/ui/button'
 import { HelpCircle, Volume2 } from 'lucide-react'
@@ -24,7 +24,8 @@ export function VoiceHintProvider({
   children,
   onHintRequested
 }: VoiceHintProviderProps) {
-  const startTimeRef = useRef<number>(Date.now())
+  const [startTime] = useState(() => Date.now())
+  const startTimeRef = useRef<number>(startTime)
   const lastAnalysisRef = useRef<string>('')
 
   // Create coding context
@@ -41,11 +42,11 @@ export function VoiceHintProvider({
   useEffect(() => {
     const context = createContext()
     const codeHash = `${code}_${errorCount}_${lastError}`
-    
+
     // Only analyze if something meaningful changed
     if (codeHash !== lastAnalysisRef.current) {
       lastAnalysisRef.current = codeHash
-      
+
       // Debounce analysis to avoid too frequent calls
       const timeoutId = setTimeout(() => {
         analyzeCodeForHints(context).catch(console.warn)
@@ -65,7 +66,7 @@ export function VoiceHintProvider({
   return (
     <div className="voice-hint-provider">
       {children}
-      
+
       {/* Voice Hint Request Button */}
       <div className="fixed bottom-4 right-4 z-50">
         <Button
@@ -91,7 +92,8 @@ export function useVoiceHints(
   errorCount: number,
   lastError?: string
 ) {
-  const startTimeRef = useRef<number>(Date.now())
+  const [startTime] = useState(() => Date.now())
+  const startTimeRef = useRef<number>(startTime)
 
   const requestHint = useCallback(async () => {
     const context: CodingContext = {
@@ -122,6 +124,7 @@ export function useVoiceHints(
   return {
     requestHint,
     analyzeForHints,
+    // eslint-disable-next-line react-hooks/purity
     timeSpent: Date.now() - startTimeRef.current
   }
 }

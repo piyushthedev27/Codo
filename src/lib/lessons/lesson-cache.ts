@@ -336,10 +336,12 @@ export class DemoLessonManager {
     import('@/lib/ai/lesson-generation').then(({ getDemoLesson }) => {
       const demoTopics = [
         'react-hooks',
+        'react-hooks-intro',
         'javascript-async',
-        'python-functions',
-        'data-structures',
-        'api-development'
+        'typescript-basics',
+        'react-state-management',
+        'css-grid-flexbox',
+        'nodejs-apis'
       ]
 
       demoTopics.forEach(topic => {
@@ -434,8 +436,10 @@ export async function preloadPopularLessons(): Promise<void> {
  * Clear expired cache entries
  */
 export function clearExpiredCache(): void {
-  const stats = lessonCache.getStats()
-  const expiredThreshold = Date.now() - CACHE_CONFIG.ttl
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _stats = lessonCache.getStats()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _expiredThreshold = Date.now() - CACHE_CONFIG.ttl
   
   lessonCache.getKeys().forEach(key => {
     const cached = lessonCache.get(key)
@@ -455,7 +459,7 @@ export function exportCacheData(): string {
       lesson: lessonCache.get(key)
     })).filter(item => item.lesson),
     demoLessons: demoLessonManager.getAllDemoLessons(),
-    stats: lessonCache.getStats(),
+    _stats: lessonCache.getStats(),
     exportedAt: Date.now()
   }
 

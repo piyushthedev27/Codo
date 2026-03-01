@@ -4,7 +4,8 @@
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { SkillAssessment } from '../SkillAssessment'
-import type { OnboardingData } from '@/types/database'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { _OnboardingData } from '@/types/database'
 
 // Mock fetch
 global.fetch = jest.fn()

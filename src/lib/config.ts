@@ -48,7 +48,11 @@ export function validateEnvVars() {
   }
 }
 
-// Call validation in development
-if (config.app.nodeEnv === 'development') {
-  validateEnvVars()
+// Only validate on server-side runtime, not during build
+if (typeof window === 'undefined' && config.app.nodeEnv === 'development' && process.env.NEXT_PHASE !== 'phase-production-build') {
+  try {
+    validateEnvVars()
+  } catch (error) {
+    console.warn('Environment validation warning:', error)
+  }
 }

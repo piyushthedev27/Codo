@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -22,6 +23,7 @@ const nextConfig: NextConfig = {
   ...(process.env.ANALYZE === 'true' && {
     webpack: (config: any) => {
       config.plugins.push(
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         new (require('@next/bundle-analyzer'))({
           enabled: true,
         })

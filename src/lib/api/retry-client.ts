@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Retry Client
  * Implements exponential backoff retry logic for failed API requests

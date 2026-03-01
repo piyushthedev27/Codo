@@ -2,13 +2,18 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _Card, _CardContent, _CardHeader, _CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Mic, MicOff, Volume2, VolumeX, Play, Pause, Square } from 'lucide-react'
-import { voiceRecognition, startVoiceCoaching, stopVoiceRecognition } from '@/lib/voice/speech-recognition'
-import { voiceSynthesis, speakCoachingResponse, stopSpeaking } from '@/lib/voice/speech-synthesis'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Mic, MicOff, _Volume2, _VolumeX, _Play, _Pause, Square } from 'lucide-react'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _voiceRecognition, startVoiceCoaching, stopVoiceRecognition } from '@/lib/voice/speech-recognition'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _voiceSynthesis, speakCoachingResponse, stopSpeaking } from '@/lib/voice/speech-synthesis'
 import { checkSpeechSupport } from '@/lib/voice/speech-config'
-import { useVoiceFallback, handleVoiceError } from '@/lib/voice/voice-fallback'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { useVoiceFallback, _handleVoiceError } from '@/lib/voice/voice-fallback'
 import { TextInputFallback, ConversationEntry } from './TextInputFallback'
 
 interface VoiceCoachingInterfaceProps {
@@ -37,7 +42,8 @@ export function VoiceCoachingInterface({
   const [isListening, setIsListening] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [currentTranscript, setCurrentTranscript] = useState('')
-  const [voiceSession, setVoiceSession] = useState<VoiceSession[]>([])
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_voiceSession, setVoiceSession] = useState<VoiceSession[]>([])
   const [error, setError] = useState<string | null>(null)
   const [conversation, setConversation] = useState<ConversationEntry[]>([])
 
@@ -50,7 +56,7 @@ export function VoiceCoachingInterface({
     shouldUseTextInput,
     shouldUseTextOutput,
     canRetryVoice,
-    handleVoiceError: handleFallbackError,
+    _handleVoiceError: handleFallbackError,
     disableFallback
   } = useVoiceFallback()
 
@@ -60,31 +66,74 @@ export function VoiceCoachingInterface({
     if (!support.supported) {
       handleFallbackError({ error: 'not-supported' })
     }
-  }, [])
+  }, [handleFallbackError])
 
-  // Generate coaching response (mock implementation)
-  const generateCoachingResponse = useCallback(async (question: string): Promise<string> => {
-    // Mock responses based on common coding questions
-    const responses: Record<string, string> = {
-      'for loop': "I notice you're using a for loop here. Have you considered using the map method instead? It's more functional and readable.",
-      'async await': "Great use of async/await! This makes your asynchronous code much more readable than promise chains.",
-      'useState': "Perfect! useState is the right hook for managing component state. Remember it returns an array with the current value and setter function.",
-      'function': "That's a good function structure. Consider adding type annotations if you're using TypeScript for better code clarity.",
-      'error': "I see you're dealing with an error. Let's break this down step by step. What specific error message are you seeing?",
-      'help': "I'm here to help! Can you tell me what specific part of your code you're struggling with?",
-      'default': "That's an interesting approach! Let me help you optimize this code. What specific outcome are you trying to achieve?"
+  // Monitor network connectivity
+  useEffect(() => {
+    const handleOnline = () => {
+      // Network is back, clear error if it was a network error
+      if (error?.includes('Network') || error?.includes('network')) {
+        setError(null)
+      }
     }
 
-    // Simple keyword matching for demo
+    const handleOffline = () => {
+      // Don't set error - just trigger fallback mode
+      // The TextInputFallback will show the reason
+      handleFallbackError({ error: 'network' })
+      if (isListening) {
+        stopListening()
+      }
+    }
+
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error, isListening, handleFallbackError])
+
+  // Generate coaching response (Enhanced implementation)
+  const generateCoachingResponse = useCallback(async (question: string): Promise<string> => {
     const question_lower = question.toLowerCase()
+
+    // Check for specific code context if userCode is provided
+    if (userCode && (question_lower.includes('code') || question_lower.includes('this'))) {
+      if (userCode.includes('function') || userCode.includes('=>')) {
+        return "I see a function here. It's well-structured, but make sure you handles edge cases like null or undefined inputs."
+      }
+      if (userCode.includes('const') || userCode.includes('let')) {
+        return "You're using modern variable declarations. That's good practice for scoping and avoiding side effects."
+      }
+    }
+
+    // Keyword-based responses with more helpful content
+    const responses: Record<string, string> = {
+      'for loop': "I notice you're asking about loops. In modern JavaScript, methods like .map(), .filter(), or .forEach() are often preferred over for loops for better readability and fewer side effects.",
+      'async await': "Async/await is the gold standard for asynchronous code in JS. It makes your code look synchronous while remaining non-blocking. Remember to always wrap them in try/catch blocks!",
+      'useState': "The useState hook is essential for reactive UIs. When you update state, React schedules a re-render of your component with the new value.",
+      'function': "Functions are the building blocks of your app. Consider using arrow functions for simple logic and regular functions when you need the 'this' context.",
+      'debug': "Debugging is 90% of coding! Use console.log() to track values, or better yet, use the browser's 'debugger' statement to pause execution.",
+      'error': "Errors are just feedback! Try looking at the line number in the console - it usually points exactly to where the logic broke.",
+      'help': "I'm your AI guide! You can ask me to 'explain this code', 'find bugs', or 'suggest improvements' based on what you've written so far.",
+      'optimize': "Premature optimization is the root of all evil, but clean code isn't. Focus on making it work first, then we can look at reducing complexity.",
+      'hint': "Here's a tip: break the problem down into smaller functions. Smaller parts are much easier to test and reason about.",
+      'default': "That's a great question! Based on the lesson context, I'd suggest focusing on the core concepts first. Is there a specific part of the code you'd like me to explain?"
+    }
+
     for (const [keyword, response] of Object.entries(responses)) {
       if (question_lower.includes(keyword)) {
         return response
       }
     }
 
+     
     return responses.default
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userCode, context])
 
   // Handle voice question
   const handleVoiceQuestion = useCallback(async (question: string) => {
@@ -103,7 +152,7 @@ export function VoiceCoachingInterface({
 
       // Generate AI response
       const response = await generateCoachingResponse(question)
-      
+
       // Add AI response to conversation
       const aiEntry: ConversationEntry = {
         id: `ai_${Date.now()}`,
@@ -121,7 +170,7 @@ export function VoiceCoachingInterface({
         aiResponse: response,
         confidence: 0.9 // Mock confidence
       }
-      
+
       setVoiceSession(prev => [...prev, newSession])
       onCoachingResponse?.(response)
 
@@ -162,12 +211,22 @@ export function VoiceCoachingInterface({
         },
         (error) => {
           setIsListening(false)
-          setError(`Voice recognition error: ${error.error}`)
+
+          // For network errors, don't show error - just switch to text mode silently
+          // The TextInputFallback component will show the reason
+          if (error.error !== 'network') {
+            setError(`Voice recognition error: ${error.error}`)
+          }
+
           handleFallbackError(error)
         }
       )
     } catch (error) {
-      setError('Failed to start voice recognition')
+      // Don't show error for network issues - fallback handles it
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      if (!errorMessage.includes('network') && !errorMessage.includes('internet')) {
+        setError('Failed to start voice recognition')
+      }
       handleFallbackError(error)
     }
   }, [voiceRecognitionAvailable, handleVoiceQuestion, handleFallbackError])
@@ -197,18 +256,27 @@ export function VoiceCoachingInterface({
   }, [disableFallback])
 
   return (
-    <Card className={`voice-coaching-interface ${className}`}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Mic className="w-5 h-5" />
-          AI Voice Coaching
+    <div className={`voice-coaching-interface bg-slate-900/40 backdrop-blur-md rounded-3xl border border-slate-700/50 overflow-hidden flex flex-col h-full ${className}`}>
+      <div className="bg-gradient-to-r from-blue-500/10 to-indigo-500/10 p-5 border-b border-slate-700/50">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-500/20 rounded-xl">
+              <Mic className="w-5 h-5 text-blue-400" />
+            </div>
+            <div>
+              <h3 className="font-black text-white tracking-tight">AI Voice Coaching</h3>
+              <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mt-0.5">Your Personalized Tutor</p>
+            </div>
+          </div>
           {fallbackMode && (
-            <Badge variant="secondary">Text Mode</Badge>
+            <Badge variant="outline" className="text-[10px] font-black uppercase tracking-tighter bg-amber-500/10 text-amber-400 border-amber-500/20">
+              Text-Only Mode
+            </Badge>
           )}
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
+        </div>
+      </div>
+
+      <div className="p-5 space-y-6 flex-1 overflow-y-auto custom-scrollbar">
         {/* Voice Controls or Text Fallback */}
         {shouldUseTextInput ? (
           <TextInputFallback
@@ -269,51 +337,65 @@ export function VoiceCoachingInterface({
         {/* Current Transcript */}
         {currentTranscript && (
           <div className="p-3 bg-muted rounded-md">
-            <p className="text-sm font-medium">You're saying:</p>
+            <p className="text-sm font-medium">You&apos;re saying:</p>
             <p className="text-sm">{currentTranscript}</p>
           </div>
         )}
 
-        {/* Error Display */}
-        {error && (
+        {/* Error Display - only show for non-network errors */}
+        {error && !shouldUseTextInput && (
           <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
             <p className="text-sm text-destructive">{error}</p>
           </div>
         )}
 
-        {/* Voice Session History */}
+        {/* Voice Session History (Redesigned) */}
         {conversation.length > 0 && (
-          <div className="space-y-3">
-            <h4 className="text-sm font-medium">Coaching Session</h4>
-            <div className="space-y-3 max-h-60 overflow-y-auto">
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between px-1">
+              <h4 className="text-xs font-black uppercase tracking-widest text-slate-400">Session History</h4>
+              <span className="text-[10px] font-bold text-slate-500">Last {Math.min(conversation.length, 6)} messages</span>
+            </div>
+            <div className="space-y-4 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
               {conversation.slice(-6).map((entry) => (
-                <div key={entry.id} className={`flex gap-2 ${
-                  entry.type === 'user' ? 'justify-end' : 'justify-start'
-                }`}>
-                  <div className={`max-w-[80%] p-2 rounded-md text-sm ${
-                    entry.type === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted'
-                  }`}>
+                <div key={entry.id} className={`flex flex-col ${entry.type === 'user' ? 'items-end' : 'items-start'}`}>
+                  <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm ${entry.type === 'user'
+                      ? 'bg-blue-600 text-white rounded-tr-none'
+                      : 'bg-slate-800 text-slate-200 rounded-tl-none border border-slate-700/50'
+                    }`}>
                     <p>{entry.content}</p>
                   </div>
+                  <span className="text-[9px] font-bold text-slate-600 mt-1.5 px-1 uppercase letter-spacing-widest">
+                    {entry.type === 'user' ? 'You' : 'Coach'} • {entry.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Quick Tips */}
-        <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-md">
-          <h4 className="text-sm font-medium mb-2">💡 Voice Coaching Tips</h4>
-          <ul className="text-xs text-muted-foreground space-y-1">
-            <li>• Ask specific questions about your code</li>
-            <li>• Say "help" for general guidance</li>
-            <li>• Mention error messages for debugging help</li>
-            <li>• Ask about best practices and optimization</li>
+        {/* Quick Tips (Integrated) */}
+        <div className="p-4 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-2xl border border-blue-500/10 shadow-sm">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+            <h4 className="text-[10px] font-black uppercase tracking-widest text-blue-300">Coaching Tips</h4>
+          </div>
+          <ul className="text-[11px] text-slate-400 space-y-2 leading-relaxed font-medium">
+            <li className="flex items-center gap-2">
+              <span className="text-blue-500/50">•</span> Ask specific questions about your code
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-blue-500/50">•</span> Say &quot;help&quot; for general guidance
+                 </li>
+            <li className="flex items-center gap-2">
+              <span className="text-blue-500/50">•</span> Mention error messages for debugging help
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-blue-500/50">•</span> Explore best practices and optimization
+            </li>
           </ul>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

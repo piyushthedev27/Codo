@@ -5,8 +5,11 @@
  * Tests page load times and generates performance reports
  */
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const puppeteer = require('puppeteer')
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const fs = require('fs')
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('path')
 
 // Performance thresholds (in milliseconds)

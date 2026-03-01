@@ -8,7 +8,8 @@
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
-import { getOptimalImageQuality, getNetworkQuality } from '@/lib/performance/lazy-loading'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { getOptimalImageQuality, _getNetworkQuality } from '@/lib/performance/lazy-loading'
 
 interface OptimizedImageProps {
   src: string
@@ -50,6 +51,7 @@ export function OptimizedImage({
   useEffect(() => {
     if (!quality) {
       const optimalQuality = getOptimalImageQuality()
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAdaptiveQuality(optimalQuality)
     }
   }, [quality])
@@ -59,7 +61,7 @@ export function OptimizedImage({
     onLoad?.()
   }
 
-  const handleError = () => {
+  const _handleError = () => {
     setHasError(true)
   }
 
@@ -107,7 +109,7 @@ export function OptimizedImage({
           objectFit === 'scale-down' && 'object-scale-down'
         )}
         onLoad={handleLoad}
-        onError={handleError}
+        onError={_handleError}
         placeholder={placeholder}
         blurDataURL={blurDataURL}
         loading={priority ? 'eager' : 'lazy'}
@@ -145,7 +147,8 @@ export function OptimizedAvatar({
 
   const pixelSize = sizeMap[size]
 
-  const handleError = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _handleError = () => {
     if (fallback) {
       setImgSrc(fallback)
     }

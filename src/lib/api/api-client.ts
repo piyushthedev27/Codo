@@ -7,6 +7,7 @@ import { retryClient, type RequestOptions } from './retry-client'
 import { errorHandler, type UserFriendlyError } from './error-handler'
 import { offlineManager } from './offline-manager'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface APIResponse<T = any> {
   success: boolean
   data?: T
@@ -34,7 +35,7 @@ class APIClient {
     requestFn: () => Promise<Response>,
     options: APIClientOptions = {}
   ): Promise<APIResponse<T>> {
-    const { feature = 'api', showUserError = true } = options
+    const { feature = 'api' } = options
 
     try {
       const response = await requestFn()
@@ -42,9 +43,13 @@ class APIClient {
 
       // Save successful responses to offline cache
       if (response.ok && data) {
-        offlineManager.saveOfflineData({ 
-          lastUpdated: new Date().toISOString() 
+        offlineManager.saveOfflineData({
+          lastUpdated: new Date().toISOString()
         })
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || `Request failed with status ${response.status}`)
       }
 
       return {
@@ -62,24 +67,13 @@ class APIClient {
       // Try to get offline/cached data as fallback
       if (userError.retryable) {
         const offlineData = offlineManager.getOfflineData()
-        
+
         if (offlineData) {
           console.log(`Using offline data for ${feature}`)
           return {
             success: true,
             data: offlineData as T,
             fromCache: true,
-            error: userError
-          }
-        }
-
-        // If no offline data, try demo data for certain features
-        if (feature === 'dashboard') {
-          const demoData = offlineManager.getDemoData()
-          return {
-            success: true,
-            data: demoData as T,
-            demo: true,
             error: userError
           }
         }
@@ -173,7 +167,7 @@ class APIClient {
     )
   }
 
-  public async updateUserProfile(data: any, options: APIClientOptions = {}): Promise<APIResponse> {
+  public async updateUserProfile(data: Record<string, unknown>, options: APIClientOptions = {}): Promise<APIResponse> {
     return this.handleRequest(
       () => retryClient.put('/api/user/profile', data, options),
       { ...options, feature: 'profile' }

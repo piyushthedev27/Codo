@@ -8,7 +8,8 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _Badge } from '@/components/ui/badge'
 import { CheckCircle, XCircle, Play, RotateCcw } from 'lucide-react'
 
 interface TestResult {

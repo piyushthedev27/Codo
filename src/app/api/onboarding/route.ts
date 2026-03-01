@@ -3,7 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { initializeUserData, userProfileOperations, testDatabaseConnection } from '@/lib/database/operations'
 import type { OnboardingData } from '@/types/database'
 
-export async function POST(request: NextRequest) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function POST(_request: NextRequest) {
   try {
     // Test database connection first
     const dbTest = await testDatabaseConnection()
@@ -96,7 +97,8 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function GET(_request: NextRequest) {
   try {
     // Test database connection first
     const dbTest = await testDatabaseConnection()

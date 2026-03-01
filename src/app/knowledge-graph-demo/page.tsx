@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Brain, RotateCcw, Zap, CheckCircle, BookOpen, Play } from 'lucide-react'
 import InteractiveKnowledgeGraph from '@/components/unique-features/InteractiveKnowledgeGraph'
 import { KnowledgeGraphNode } from '@/types/database'
+import { DashboardLayout } from '@/components/navigation/DashboardLayout'
 
 // Demo data for the knowledge graph
 const demoNodes: KnowledgeGraphNode[] = [
@@ -193,7 +194,8 @@ const demoNodes: KnowledgeGraphNode[] = [
 ]
 
 export default function KnowledgeGraphDemoPage() {
-  const [selectedPath, setSelectedPath] = useState<string>('web-development')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_selectedPath, setSelectedPath] = useState<string>('web-development')
 
   const handleStartLesson = (nodeId: string) => {
     console.log('Starting lesson for node:', nodeId)
@@ -229,28 +231,12 @@ export default function KnowledgeGraphDemoPage() {
   const stats = getPathStats()
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl">
-              <Brain className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Knowledge Graph Demo
-            </h1>
-          </div>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Explore how Codo's AI-powered knowledge graph adapts to your learning journey, 
-            creating personalized pathways through interconnected concepts.
-          </p>
-        </div>
-
+    <DashboardLayout>
+      <div className="p-6 space-y-6">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
                   <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -264,7 +250,7 @@ export default function KnowledgeGraphDemoPage() {
           </Card>
 
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
                   <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
@@ -278,7 +264,7 @@ export default function KnowledgeGraphDemoPage() {
           </Card>
 
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
                   <Zap className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
@@ -292,7 +278,7 @@ export default function KnowledgeGraphDemoPage() {
           </Card>
 
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
                   <Brain className="w-5 h-5 text-purple-600 dark:text-purple-400" />
@@ -307,7 +293,7 @@ export default function KnowledgeGraphDemoPage() {
         </div>
 
         {/* Learning Path Selector */}
-        <Card className="mb-8">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Play className="w-5 h-5" />
@@ -327,15 +313,13 @@ export default function KnowledgeGraphDemoPage() {
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              This demo shows a complete learning path from HTML basics to React fundamentals. 
+              This shows a complete learning path from HTML basics to React fundamentals. 
               Click on any concept to explore prerequisites, estimated time, and difficulty level.
             </p>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={handleResetProgress}>
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Reset Progress
-              </Button>
-            </div>
+            <Button variant="outline" onClick={handleResetProgress}>
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Reset Progress
+            </Button>
           </CardContent>
         </Card>
 
@@ -353,46 +337,7 @@ export default function KnowledgeGraphDemoPage() {
             />
           </CardContent>
         </Card>
-
-        {/* Features Explanation */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Adaptive Learning</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                The knowledge graph adapts to your progress, unlocking new concepts as you master prerequisites 
-                and adjusting difficulty based on your performance.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Visual Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                See your learning journey visualized with clear connections between concepts, 
-                progress indicators, and estimated completion times.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Personalized Paths</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                AI-powered recommendations suggest optimal learning sequences based on your goals, 
-                current knowledge, and learning preferences.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
       </div>
-    </div>
+    </DashboardLayout>
   )
 }

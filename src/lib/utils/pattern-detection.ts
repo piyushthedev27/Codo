@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Pattern Detection for Learning Behavior
  * Analyzes user learning activities to identify patterns and generate insights
@@ -27,11 +28,11 @@ export async function analyzeUserLearningPatterns(userId: string): Promise<Patte
   try {
     // Get recent learning activities (last 30 days)
     const { data: activities, error } = await supabase
-      .from('learning_activities')
+      .from('enhanced_activities')
       .select('*')
       .eq('user_id', userId)
-      .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
-      .order('created_at', { ascending: false })
+      .gte('activity_timestamp', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+      .order('activity_timestamp', { ascending: false })
 
     if (error) throw error
 
@@ -97,9 +98,9 @@ function analyzeVelocityChanges(activities: LearningActivity[]): LearningPattern
   const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
   const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000)
 
-  const thisWeek = activities.filter(a => new Date(a.created_at) >= oneWeekAgo)
-  const lastWeek = activities.filter(a => 
-    new Date(a.created_at) >= twoWeeksAgo && new Date(a.created_at) < oneWeekAgo
+  const thisWeek = activities.filter(a => new Date(a.activity_timestamp || a.created_at) >= oneWeekAgo)
+  const lastWeek = activities.filter(a =>
+    new Date(a.activity_timestamp || a.created_at) >= twoWeeksAgo && new Date(a.activity_timestamp || a.created_at) < oneWeekAgo
   )
 
   if (lastWeek.length === 0) return null
@@ -114,7 +115,7 @@ function analyzeVelocityChanges(activities: LearningActivity[]): LearningPattern
   return {
     type: 'velocity_change',
     confidence: Math.min(Math.abs(changePercentage) / 50, 1), // Higher confidence for bigger changes
-    description: changePercentage > 0 
+    description: changePercentage > 0
       ? `Learning velocity increased by ${changePercentage.toFixed(1)}%`
       : `Learning velocity decreased by ${Math.abs(changePercentage).toFixed(1)}%`,
     data: {
@@ -135,7 +136,7 @@ function analyzeRetentionRisk(activities: LearningActivity[]): LearningPattern |
   if (activities.length === 0) return null
 
   const now = new Date()
-  const lastActivity = new Date(activities[0].created_at)
+  const lastActivity = new Date(activities[0].activity_timestamp || activities[0].created_at)
   const daysSinceLastActivity = Math.floor((now.getTime() - lastActivity.getTime()) / (24 * 60 * 60 * 1000))
 
   // Check for concerning gaps
@@ -176,7 +177,9 @@ function analyzeStrengths(activities: LearningActivity[]): LearningPattern | nul
 
   // Find the strongest area (highest average XP)
   const strongestArea = Object.entries(activityGroups)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .filter(([_, data]) => data.count >= 3) // Need at least 3 activities
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .sort(([_, a], [__, b]) => b.avgXP - a.avgXP)[0]
 
   if (!strongestArea || strongestArea[1].avgXP < 50) return null
@@ -227,7 +230,7 @@ function analyzeConceptRepetition(activities: LearningActivity[]): LearningPatte
   // Group by content_id to find repeated attempts
   const contentAttempts = activities.reduce((groups, activity) => {
     if (!activity.content_id) return groups
-    
+
     const id = activity.content_id
     if (!groups[id]) {
       groups[id] = []
@@ -238,7 +241,9 @@ function analyzeConceptRepetition(activities: LearningActivity[]): LearningPatte
 
   // Find content with multiple attempts
   const repeatedContent = Object.entries(contentAttempts)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .filter(([_, attempts]) => attempts.length >= 3)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .sort(([_, a], [__, b]) => b.length - a.length)[0]
 
   if (!repeatedContent) return null
@@ -268,12 +273,13 @@ function analyzeTimePreferences(activities: LearningActivity[]): LearningPattern
   if (activities.length < 10) return null
 
   const hourCounts = activities.reduce((counts, activity) => {
-    const hour = new Date(activity.created_at).getHours()
+    const hour = new Date(activity.activity_timestamp || activity.created_at).getHours()
     counts[hour] = (counts[hour] || 0) + 1
     return counts
   }, {} as Record<number, number>)
 
   const sortedHours = Object.entries(hourCounts)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .sort(([_, a], [__, b]) => b - a)
     .slice(0, 3)
 
@@ -303,7 +309,7 @@ function analyzeTimePreferences(activities: LearningActivity[]): LearningPattern
  */
 function analyzeVoiceCoachingUsage(activities: LearningActivity[]): LearningPattern | null {
   const voiceActivities = activities.filter(a => a.voice_coaching_used)
-  
+
   if (voiceActivities.length === 0) return null
 
   const voicePercentage = (voiceActivities.length / activities.length) * 100
@@ -335,14 +341,14 @@ function analyzeVoiceCoachingUsage(activities: LearningActivity[]): LearningPatt
  */
 function createVelocityInsight(pattern: LearningPattern): Omit<LearningInsight, 'id' | 'user_id' | 'created_at' | 'updated_at'> {
   const isImproving = pattern.data.changePercentage > 0
-  
+
   return {
     insight_type: 'velocity_change' as InsightType,
     title: isImproving ? '🚀 Learning Velocity Increased!' : '📉 Learning Pace Slowed',
-    message: isImproving 
+    message: isImproving
       ? `Great progress! You're learning ${pattern.data.changePercentage.toFixed(1)}% faster than last week. At this rate, you'll master new concepts even quicker!`
       : `Your learning pace has decreased by ${Math.abs(pattern.data.changePercentage).toFixed(1)}% this week. Consider setting aside more focused study time.`,
-    action_recommended: isImproving 
+    action_recommended: isImproving
       ? 'Keep up the momentum with more challenging topics'
       : 'Try shorter, more frequent study sessions',
     priority: isImproving ? 'low' : 'medium',
@@ -422,15 +428,15 @@ function generateRecommendations(patterns: LearningPattern[]): string[] {
           recommendations.push('Try breaking down complex topics into smaller chunks')
         }
         break
-      
+
       case 'retention_risk':
         recommendations.push('Set up daily reminders for consistent practice')
         break
-      
+
       case 'strength_identified':
         recommendations.push(`Leverage your ${pattern.data.activityType} skills to help AI peers`)
         break
-      
+
       case 'pattern_detected':
         recommendations.push(generatePatternRecommendation(pattern))
         break
@@ -444,11 +450,11 @@ function generatePatternRecommendation(pattern: LearningPattern): string {
   if (pattern.description.includes('Repeated attempts')) {
     return 'Consider asking AI peers for help or trying voice coaching'
   }
-  
+
   if (pattern.description.includes('Prefers learning during')) {
     return `Schedule your most challenging topics during ${pattern.data.timeLabel}`
   }
-  
+
   if (pattern.description.includes('voice coaching')) {
     if (pattern.data.performanceDifference > 0) {
       return 'Voice coaching seems to help - use it more often!'
@@ -456,7 +462,7 @@ function generatePatternRecommendation(pattern: LearningPattern): string {
       return 'Try combining voice coaching with visual learning'
     }
   }
-  
+
   return 'Continue with your current learning approach'
 }
 
@@ -465,36 +471,36 @@ function generatePatternRecommendation(pattern: LearningPattern): string {
  */
 function calculateAverageGap(activities: LearningActivity[]): number {
   if (activities.length < 2) return 0
-  
+
   const gaps = []
   for (let i = 0; i < activities.length - 1; i++) {
-    const gap = new Date(activities[i].created_at).getTime() - new Date(activities[i + 1].created_at).getTime()
+    const gap = new Date(activities[i].activity_timestamp || activities[i].created_at).getTime() - new Date(activities[i + 1].activity_timestamp || activities[i + 1].created_at).getTime()
     gaps.push(gap / (24 * 60 * 60 * 1000)) // Convert to days
   }
-  
+
   return gaps.reduce((sum, gap) => sum + gap, 0) / gaps.length
 }
 
 function calculateTimeSpan(activities: LearningActivity[]): number {
   if (activities.length < 2) return 0
-  
-  const earliest = new Date(activities[activities.length - 1].created_at)
-  const latest = new Date(activities[0].created_at)
-  
+
+  const earliest = new Date(activities[activities.length - 1].activity_timestamp || activities[activities.length - 1].created_at)
+  const latest = new Date(activities[0].activity_timestamp || activities[0].created_at)
+
   return Math.floor((latest.getTime() - earliest.getTime()) / (24 * 60 * 60 * 1000))
 }
 
 function calculateImprovementTrend(activities: LearningActivity[]): 'improving' | 'declining' | 'stable' {
   if (activities.length < 3) return 'stable'
-  
+
   const recent = activities.slice(0, Math.ceil(activities.length / 2))
   const older = activities.slice(Math.ceil(activities.length / 2))
-  
+
   const recentAvg = recent.reduce((sum, a) => sum + (a.xp_earned || 0), 0) / recent.length
   const olderAvg = older.reduce((sum, a) => sum + (a.xp_earned || 0), 0) / older.length
-  
+
   const diff = recentAvg - olderAvg
-  
+
   if (diff > 10) return 'improving'
   if (diff < -10) return 'declining'
   return 'stable'

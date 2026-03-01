@@ -1,22 +1,23 @@
 'use client'
+/* eslint-disable react-hooks/static-components */
 
 import React from 'react'
-import { Loader2, Brain, Code, Users, Target, BookOpen, Zap } from 'lucide-react'
+import { Loader2, Brain, Code, Users, Target, BookOpen, Zap, Lightbulb, MessageSquare, Trophy } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { animationClasses } from '@/lib/animations/animation-optimizer'
 
 // Base loading spinner component
-export function LoadingSpinner({ 
-  size = 'md', 
-  className = '' 
-}: { 
+export function LoadingSpinner({
+  size = 'md',
+  className = ''
+}: {
   size?: 'sm' | 'md' | 'lg' | 'xl'
-  className?: string 
+  className?: string
 }) {
   const sizeClasses = {
     sm: 'w-4 h-4',
-    md: 'w-6 h-6', 
+    md: 'w-6 h-6',
     lg: 'w-8 h-8',
     xl: 'w-12 h-12'
   }
@@ -31,12 +32,12 @@ export function LoadingSpinner({
 }
 
 // Skeleton components for different content types
-export function SkeletonLine({ 
-  width = 'full', 
+export function SkeletonLine({
+  width = 'full',
   height = 'h-4',
   className = '',
   style
-}: { 
+}: {
   width?: string | 'full' | 'half' | 'quarter' | 'three-quarters'
   height?: string
   className?: string
@@ -44,17 +45,17 @@ export function SkeletonLine({
 }) {
   const widthClasses = {
     full: 'w-full',
-    half: 'w-1/2', 
+    half: 'w-1/2',
     quarter: 'w-1/4',
     'three-quarters': 'w-3/4'
   }
 
-  const widthClass = typeof width === 'string' && widthClasses[width as keyof typeof widthClasses] 
+  const widthClass = typeof width === 'string' && widthClasses[width as keyof typeof widthClasses]
     ? widthClasses[width as keyof typeof widthClasses]
     : width
 
   return (
-    <div 
+    <div
       className={cn(
         'bg-gray-200 dark:bg-gray-700 rounded animate-shimmer',
         height,
@@ -66,12 +67,12 @@ export function SkeletonLine({
   )
 }
 
-export function SkeletonAvatar({ 
+export function SkeletonAvatar({
   size = 'md',
-  className = '' 
-}: { 
+  className = ''
+}: {
   size?: 'sm' | 'md' | 'lg'
-  className?: string 
+  className?: string
 }) {
   const sizeClasses = {
     sm: 'w-8 h-8',
@@ -88,14 +89,14 @@ export function SkeletonAvatar({
   )
 }
 
-export function SkeletonCard({ 
+export function SkeletonCard({
   className = '',
   showHeader = true,
-  lines = 3 
-}: { 
+  lines = 3
+}: {
   className?: string
   showHeader?: boolean
-  lines?: number 
+  lines?: number
 }) {
   return (
     <Card className={cn('animate-scale-in', className)}>
@@ -107,7 +108,7 @@ export function SkeletonCard({
       )}
       <CardContent className="space-y-3">
         {Array.from({ length: lines }).map((_, i) => (
-          <SkeletonLine 
+          <SkeletonLine
             key={i}
             width={i === lines - 1 ? 'half' : 'full'}
             height="h-4"
@@ -221,9 +222,9 @@ export function CodeEditorLoadingSkeleton() {
           <SkeletonLine width="quarter" height="h-4" className="bg-gray-700" />
         </div>
         {Array.from({ length: 8 }).map((_, i) => (
-          <SkeletonLine 
+          <SkeletonLine
             key={i}
-            width={Math.random() > 0.5 ? 'three-quarters' : 'half'}
+            width={i % 2 === 0 ? 'three-quarters' : 'half'}
             height="h-4"
             className="bg-gray-700"
           />
@@ -311,16 +312,50 @@ export function InsightsLoadingSkeleton() {
   )
 }
 
+// Icon name type for serialization
+export type LoadingIconName =
+  | 'Loader2'
+  | 'Brain'
+  | 'Code'
+  | 'Users'
+  | 'Target'
+  | 'BookOpen'
+  | 'Zap'
+  | 'Lightbulb'
+  | 'MessageSquare'
+  | 'Trophy'
+
+// Icon mapping for client-side rendering
+const LOADING_ICON_MAP = {
+  Loader2,
+  Brain,
+  Code,
+  Users,
+  Target,
+  BookOpen,
+  Zap,
+  Lightbulb,
+  MessageSquare,
+  Trophy
+} as const
+
+function getLoadingIcon(iconName?: LoadingIconName) {
+  if (!iconName) return Loader2
+  return LOADING_ICON_MAP[iconName as keyof typeof LOADING_ICON_MAP] || Loader2
+}
+
 // Loading states with contextual messages
-export function LoadingWithMessage({ 
-  message, 
-  icon: Icon = Loader2,
-  className = '' 
-}: { 
+export function LoadingWithMessage({
+  message,
+  iconName,
+  className = ''
+}: {
   message: string
-  icon?: React.ComponentType<{ className?: string }>
-  className?: string 
+  iconName?: LoadingIconName
+  className?: string
 }) {
+  const Icon = getLoadingIcon(iconName)
+
   return (
     <div className={cn('flex flex-col items-center justify-center p-8 text-center', className)}>
       <Icon className="w-8 h-8 animate-spin text-blue-500 mb-4" />
@@ -330,37 +365,37 @@ export function LoadingWithMessage({
 }
 
 // Progressive loading component for complex features
-export function ProgressiveLoader({ 
+export function ProgressiveLoader({
   steps,
   currentStep = 0,
-  className = '' 
-}: { 
+  className = ''
+}: {
   steps: string[]
   currentStep?: number
-  className?: string 
+  className?: string
 }) {
   return (
     <div className={cn('space-y-4 p-6', className)}>
       <div className="flex items-center justify-center mb-6">
         <LoadingSpinner size="lg" />
       </div>
-      
+
       <div className="space-y-2">
         {steps.map((step, index) => (
-          <div 
+          <div
             key={index}
             className={cn(
               'flex items-center gap-3 text-sm',
               index < currentStep ? 'text-green-600 dark:text-green-400' :
-              index === currentStep ? 'text-blue-600 dark:text-blue-400' :
-              'text-gray-400 dark:text-gray-600'
+                index === currentStep ? 'text-blue-600 dark:text-blue-400' :
+                  'text-gray-400 dark:text-gray-600'
             )}
           >
             <div className={cn(
               'w-2 h-2 rounded-full',
               index < currentStep ? 'bg-green-500' :
-              index === currentStep ? 'bg-blue-500 animate-pulse' :
-              'bg-gray-300 dark:bg-gray-600'
+                index === currentStep ? 'bg-blue-500 animate-pulse' :
+                  'bg-gray-300 dark:bg-gray-600'
             )} />
             <span>{step}</span>
           </div>
@@ -371,14 +406,14 @@ export function ProgressiveLoader({
 }
 
 // Lazy loading wrapper with suspense fallback
-export function LazyLoadWrapper({ 
-  children, 
+export function LazyLoadWrapper({
+  children,
   fallback,
-  className = '' 
-}: { 
+  className = ''
+}: {
   children: React.ReactNode
   fallback?: React.ReactNode
-  className?: string 
+  className?: string
 }) {
   return (
     <div className={className}>

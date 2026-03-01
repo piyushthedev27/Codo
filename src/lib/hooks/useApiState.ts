@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * API State Hook
  * React hook for managing API call states with error handling
@@ -34,7 +35,7 @@ export function useApiState<T = any>(
 
     try {
       const response = await apiCall()
-      
+
       if (response.success) {
         setData(response.data || null)
         setFromCache(response.fromCache || false)
@@ -77,6 +78,7 @@ export function useApiState<T = any>(
   // Execute on mount and when dependencies change
   useEffect(() => {
     executeCall()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies)
 
   return {
@@ -119,15 +121,10 @@ export function useMistakePatterns() {
 
 // Hook for connection status
 export function useConnectionStatus() {
-  const [isOnline, setIsOnline] = useState(true)
-  const [hasOfflineData, setHasOfflineData] = useState(false)
+  const [isOnline, setIsOnline] = useState(() => apiClient.getConnectionStatus().isOnline)
+  const [hasOfflineData, setHasOfflineData] = useState(() => apiClient.getConnectionStatus().hasOfflineData)
 
   useEffect(() => {
-    // Initial status
-    const status = apiClient.getConnectionStatus()
-    setIsOnline(status.isOnline)
-    setHasOfflineData(status.hasOfflineData)
-
     // Listen for connection changes
     const unsubscribe = offlineManager.onConnectionChange((online) => {
       setIsOnline(online)
@@ -158,7 +155,7 @@ export function useApiCall<T = any>() {
 
     try {
       const response = await apiCall()
-      
+
       if (response.success) {
         return response.data || null
       } else {

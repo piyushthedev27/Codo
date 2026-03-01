@@ -10,11 +10,11 @@ Thank you for your interest in contributing to this project! This guide will hel
 
 ```bash
 # Fork the repository on GitHub, then clone your fork
-git clone https://github.com/your-username/project-name.git
-cd project-name
+git clone https://github.com/piyushthedev27/Codo.git
+cd Codo
 
 # Add the original repository as upstream
-git remote add upstream https://github.com/original-owner/project-name.git
+git remote add upstream https://github.com/piyushthedev27/Codo.git
 ```
 
 ### 2. Set Up Development Environment

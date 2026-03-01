@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-comment-textnodes, react-hooks/static-components */
 /**
  * Enhanced Activity Feed Component
  * 
@@ -10,11 +11,27 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ExternalLink, Sparkles } from 'lucide-react'
+import { ExternalLink, Sparkles, BookOpen, Trophy, Users, Code, Zap, Target, MessageCircle, Award } from 'lucide-react'
 import { Avatar } from '@/components/shared/Avatar'
-import { getActivityStyle } from '@/lib/activities/activity-types'
+import { getActivityStyle, type ActivityIconName } from '@/lib/activities/activity-types'
 import type { EnhancedActivity } from '@/lib/activities/activity-tracker'
 import { motion, AnimatePresence } from 'framer-motion'
+
+// Icon mapping for client-side rendering
+const ICON_MAP = {
+  BookOpen,
+  Trophy,
+  Users,
+  Code,
+  Zap,
+  Target,
+  MessageCircle,
+  Award
+} as const
+
+function getIconComponent(iconName: ActivityIconName) {
+  return ICON_MAP[iconName]
+}
 
 interface EnhancedActivityFeedProps {
   activities: EnhancedActivity[]
@@ -22,19 +39,19 @@ interface EnhancedActivityFeedProps {
   showCelebrations?: boolean
 }
 
-export function EnhancedActivityFeed({ 
-  activities, 
+export function EnhancedActivityFeed({
+  activities,
   maxDisplay = 5,
-  showCelebrations = true 
+  showCelebrations = true
 }: EnhancedActivityFeedProps) {
   const [celebratedActivities, setCelebratedActivities] = useState<Set<string>>(new Set())
-  
+
   const displayActivities = activities.slice(0, maxDisplay)
-  
+
   const handleCelebration = (activityId: string) => {
     setCelebratedActivities(prev => new Set(prev).add(activityId))
   }
-  
+
   return (
     <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 card-hover-effect">
       <CardHeader className="p-4 sm:p-6">
@@ -52,7 +69,7 @@ export function EnhancedActivityFeed({
           Your learning journey with AI peers
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent className="p-4 sm:p-6 pt-0">
         <div className="space-y-3 sm:space-y-4">
           <AnimatePresence mode="popLayout">
@@ -62,15 +79,15 @@ export function EnhancedActivityFeed({
                 activity={activity}
                 index={index}
                 showCelebration={
-                  showCelebrations && 
-                  activity.type === 'achievement' && 
+                  showCelebrations &&
+                  activity.type === 'achievement' &&
                   !celebratedActivities.has(activity.id)
                 }
                 onCelebrate={() => handleCelebration(activity.id)}
               />
             ))}
           </AnimatePresence>
-          
+
           {activities.length === 0 && (
             <div className="text-center py-8 text-gray-500 dark:text-gray-400">
               <p className="text-sm">No recent activities yet.</p>
@@ -92,8 +109,8 @@ interface ActivityCardProps {
 
 function ActivityCard({ activity, index, showCelebration, onCelebrate }: ActivityCardProps) {
   const style = getActivityStyle(activity.type)
-  const Icon = style.icon
-  
+  const Icon = getIconComponent(style.iconName)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -108,45 +125,45 @@ function ActivityCard({ activity, index, showCelebration, onCelebrate }: Activit
       `}
     >
       {/* Activity Icon */}
-      <div className="flex-shrink-0 mt-0.5">
-        <div className={`p-2 rounded-lg ${style.iconColor} bg-white dark:bg-gray-800`}>
+      <div className="flex-shrink-0 mt-0.5">        <div className={`p-2 rounded-lg ${style.iconColor} bg-white dark:bg-gray-800`}>
+          // eslint-disable-next-line react-hooks/static-components
           <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
       </div>
-      
+
       {/* Activity Content */}
       <div className="flex-1 min-w-0">
         <h4 className="font-medium text-gray-900 dark:text-white mb-1 text-sm sm:text-base">
           {activity.title}
         </h4>
-        
+
         <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
           {activity.description}
         </p>
-        
+
         {/* Activity Metadata */}
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs text-gray-500">{activity.timestamp}</span>
-          
+
           {activity.duration && (
             <Badge variant="outline" className="text-xs">
               {activity.duration}m
             </Badge>
           )}
-          
+
           {activity.metadata?.difficulty && (
             <Badge variant="outline" className="text-xs capitalize">
               {activity.metadata.difficulty}
             </Badge>
           )}
-          
+
           {activity.xpEarned > 0 && (
             <Badge className={`text-xs ${style.badgeColor} border-0`}>
               +{activity.xpEarned} XP
             </Badge>
           )}
         </div>
-        
+
         {/* Collaboration Info */}
         {activity.metadata?.collaborators && activity.metadata.collaborators.length > 0 && (
           <div className="mt-2 flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
@@ -155,7 +172,7 @@ function ActivityCard({ activity, index, showCelebration, onCelebrate }: Activit
           </div>
         )}
       </div>
-      
+
       {/* AI Peer Avatar */}
       {activity.peerInvolved && activity.peerInvolved.length > 0 && (
         <div className="flex-shrink-0">
@@ -164,9 +181,9 @@ function ActivityCard({ activity, index, showCelebration, onCelebrate }: Activit
           ) : (
             <div className="flex -space-x-2">
               {activity.peerInvolved.slice(0, 3).map((peerId, i) => (
-                <Avatar 
-                  key={peerId} 
-                  peerId={peerId} 
+                <Avatar
+                  key={peerId}
+                  peerId={peerId}
                   size="sm"
                   className={`border-2 border-white dark:border-gray-800 z-${10 - i}`}
                 />
@@ -175,7 +192,7 @@ function ActivityCard({ activity, index, showCelebration, onCelebrate }: Activit
           )}
         </div>
       )}
-      
+
       {/* Celebration Effect */}
       {showCelebration && (
         <motion.div

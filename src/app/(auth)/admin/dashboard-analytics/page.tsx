@@ -1,16 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Admin Dashboard Analytics Page
  * 
  * Displays analytics and monitoring data for the dashboard
  */
 
-import { auth } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { createServerClient } from '@/lib/supabase/server'
 import { Card } from '@/components/ui/card'
 
 async function getDashboardAnalytics() {
-  const supabase = createClient()
+  const supabase = await createServerClient()
   
   // Get analytics summary
   const [eventsResult, sessionsResult, performanceResult, errorsResult] = await Promise.all([
@@ -107,7 +108,7 @@ function calculateMetrics(data: any) {
 }
 
 export default async function DashboardAnalyticsPage() {
-  const { userId } = auth()
+  const { userId } = await auth()
   
   if (!userId) {
     redirect('/sign-in')

@@ -13,40 +13,40 @@ import type { LearningActivity } from '@/types/database'
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth()
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
-    
+
     const searchParams = request.nextUrl.searchParams
     const limit = parseInt(searchParams.get('limit') || '10')
     const offset = parseInt(searchParams.get('offset') || '0')
-    
+
     // Get user profile
     const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
       .select('id')
       .eq('clerk_user_id', userId)
       .single()
-    
+
     if (profileError || !profile) {
       return NextResponse.json(
         { error: 'Profile not found' },
         { status: 404 }
       )
     }
-    
+
     // Fetch learning activities
     const { data: activities, error: activitiesError } = await supabase
-      .from('learning_activities')
+      .from('enhanced_activities')
       .select('*')
       .eq('user_id', profile.id)
-      .order('created_at', { ascending: false })
+      .order('activity_timestamp', { ascending: false })
       .range(offset, offset + limit - 1)
-    
+
     if (activitiesError) {
       console.error('Error fetching activities:', activitiesError)
       return NextResponse.json(
@@ -54,21 +54,21 @@ export async function GET(request: NextRequest) {
         { status: 500 }
       )
     }
-    
+
     // Convert to enhanced activities
-    const enhancedActivities = (activities || []).map((activity: LearningActivity) => 
+    const enhancedActivities = (activities || []).map((activity: LearningActivity) =>
       createEnhancedActivity(activity)
     )
-    
+
     // Sort by timestamp
     const sortedActivities = sortActivities(enhancedActivities)
-    
+
     return NextResponse.json({
       activities: sortedActivities,
       count: sortedActivities.length,
       hasMore: sortedActivities.length === limit
     })
-    
+
   } catch (error) {
     console.error('Error in activities API:', error)
     return NextResponse.json(
@@ -81,14 +81,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth()
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
-    
+
     const body = await request.json()
     const {
       activity_type,
@@ -102,24 +102,24 @@ export async function POST(request: NextRequest) {
       completion_percentage = 100,
       metadata = {}
     } = body
-    
+
     // Get user profile
     const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
       .select('id, current_xp')
       .eq('clerk_user_id', userId)
       .single()
-    
+
     if (profileError || !profile) {
       return NextResponse.json(
         { error: 'Profile not found' },
         { status: 404 }
       )
     }
-    
+
     // Create activity
     const { data: activity, error: activityError } = await supabase
-      .from('learning_activities')
+      .from('enhanced_activities')
       .insert({
         user_id: profile.id,
         activity_type,
@@ -131,11 +131,12 @@ export async function POST(request: NextRequest) {
         voice_coaching_used,
         mistakes_made,
         completion_percentage,
-        metadata
+        metadata,
+        activity_timestamp: new Date().toISOString()
       })
       .select()
       .single()
-    
+
     if (activityError) {
       console.error('Error creating activity:', activityError)
       return NextResponse.json(
@@ -143,7 +144,7 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
-    
+
     // Update user XP
     const { error: xpError } = await supabase
       .from('user_profiles')
@@ -151,18 +152,18 @@ export async function POST(request: NextRequest) {
         current_xp: (profile.current_xp || 0) + xp_earned
       })
       .eq('id', profile.id)
-    
+
     if (xpError) {
       console.error('Error updating XP:', xpError)
     }
-    
+
     const enhancedActivity = createEnhancedActivity(activity)
-    
+
     return NextResponse.json({
       activity: enhancedActivity,
       success: true
     })
-    
+
   } catch (error) {
     console.error('Error in activities POST:', error)
     return NextResponse.json(

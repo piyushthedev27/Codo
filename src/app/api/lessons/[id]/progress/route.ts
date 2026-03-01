@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
+import { createServerClient } from '@/lib/supabase/server'
 import {
   getLessonProgress,
   updateLessonProgress,
@@ -26,8 +27,8 @@ export async function GET(
   { params }: RouteParams
 ) {
   try {
-    const { userId } = await auth()
-    if (!userId) {
+    const { userId: clerkUserId } = await auth()
+    if (!clerkUserId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -37,6 +38,23 @@ export async function GET(
     const { id: lessonId } = await params
     const { searchParams } = new URL(request.url)
     const action = searchParams.get('action')
+
+    // Get the internal Supabase user ID (UUID)
+    const supabase = await createServerClient()
+    const { data: userProfile, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('id')
+      .eq('clerk_user_id', clerkUserId)
+      .single()
+
+    if (profileError || !userProfile) {
+      return NextResponse.json(
+        { error: 'User profile not found' },
+        { status: 404 }
+      )
+    }
+
+    const userId = userProfile.id
 
     if (action === 'resume') {
       const resumeData = await resumeLesson(userId, lessonId)
@@ -69,7 +87,7 @@ export async function GET(
 
   } catch (error) {
     console.error('Error getting lesson progress:', error)
-    
+
     return NextResponse.json(
       { error: 'Failed to get lesson progress' },
       { status: 500 }
@@ -82,8 +100,8 @@ export async function POST(
   { params }: RouteParams
 ) {
   try {
-    const { userId } = await auth()
-    if (!userId) {
+    const { userId: clerkUserId } = await auth()
+    if (!clerkUserId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -93,6 +111,23 @@ export async function POST(
     const { id: lessonId } = await params
     const body = await request.json()
     const { action, ...data } = body
+
+    // Get the internal Supabase user ID (UUID)
+    const supabase = await createServerClient()
+    const { data: userProfile, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('id')
+      .eq('clerk_user_id', clerkUserId)
+      .single()
+
+    if (profileError || !userProfile) {
+      return NextResponse.json(
+        { error: 'User profile not found' },
+        { status: 404 }
+      )
+    }
+
+    const userId = userProfile.id
 
     let updatedProgress = null
 
@@ -142,7 +177,6 @@ export async function POST(
           { status: 400 }
         )
     }
-
     if (!updatedProgress) {
       return NextResponse.json(
         { error: 'Failed to update progress' },
@@ -157,7 +191,7 @@ export async function POST(
 
   } catch (error) {
     console.error('Error updating lesson progress:', error)
-    
+
     return NextResponse.json(
       { error: 'Failed to update lesson progress' },
       { status: 500 }

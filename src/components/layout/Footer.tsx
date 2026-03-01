@@ -61,12 +61,12 @@ export function Footer() {
                   Codo
                 </span>
               </div>
-              
+
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                The AI-powered learning platform that transforms programming education 
+                The AI-powered learning platform that transforms programming education
                 with synthetic study buddies, voice coaching, and personalized learning paths.
               </p>
-              
+
               <div className="flex gap-4">
                 {socialLinks.map((social, index) => (
                   <motion.a
@@ -128,7 +128,7 @@ export function Footer() {
             <p className="text-gray-600 dark:text-gray-300 mb-6">
               Get the latest updates on new AI features, learning techniques, and platform improvements.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
                 type="email"
@@ -157,7 +157,7 @@ export function Footer() {
           <div className="text-gray-600 dark:text-gray-400 text-sm mb-4 md:mb-0">
             © 2026 Codo. All rights reserved. Built with ❤️ for developers worldwide.
           </div>
-          
+
           <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
             <span>Made with AI study buddies</span>
             <div className="flex -space-x-1">

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Real-time Dashboard Data Synchronization
  * Implements efficient data refresh and real-time updates for dashboard

@@ -6,7 +6,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
-import { AIPeerProfile, getAllPeers, preloadAvatars } from '@/lib/avatars'
+import { getAllPeers, preloadAvatars } from '@/lib/avatars'
 
 interface AvatarState {
   peerId: string
@@ -27,13 +27,10 @@ interface AvatarContextType {
 const AvatarContext = createContext<AvatarContextType | undefined>(undefined)
 
 export function AvatarProvider({ children }: { children: React.ReactNode }) {
-  const [avatarStates, setAvatarStates] = useState<Record<string, AvatarState>>({})
-
-  // Initialize avatar states for all AI peers
-  useEffect(() => {
+  const [avatarStates, setAvatarStates] = useState<Record<string, AvatarState>>(() => {
     const peers = getAllPeers()
     const initialStates: Record<string, AvatarState> = {}
-    
+
     peers.forEach(peer => {
       initialStates[peer.id] = {
         peerId: peer.id,
@@ -42,9 +39,11 @@ export function AvatarProvider({ children }: { children: React.ReactNode }) {
         lastInteraction: new Date()
       }
     })
-    
-    setAvatarStates(initialStates)
-    
+    return initialStates
+  })
+
+  // Initialize avatar states for all AI peers
+  useEffect(() => {
     // Preload avatar images for better performance
     preloadAvatars()
   }, [])
@@ -119,29 +118,29 @@ export function useAvatar() {
 // Custom hooks for specific avatar interactions
 export function useAvatarInteraction(peerId: string) {
   const { updateAvatarStatus, setAvatarActive, triggerAvatarAnimation, getAvatarState } = useAvatar()
-  
+
   const startTyping = useCallback(() => {
     updateAvatarStatus(peerId, 'typing')
     setAvatarActive(peerId, true)
   }, [peerId, updateAvatarStatus, setAvatarActive])
-  
+
   const stopTyping = useCallback(() => {
     updateAvatarStatus(peerId, 'online')
     setAvatarActive(peerId, false)
   }, [peerId, updateAvatarStatus, setAvatarActive])
-  
+
   const startThinking = useCallback(() => {
     updateAvatarStatus(peerId, 'thinking')
     setAvatarActive(peerId, true)
   }, [peerId, updateAvatarStatus, setAvatarActive])
-  
+
   const celebrate = useCallback(() => {
     triggerAvatarAnimation(peerId, 'animate-bounce')
     setTimeout(() => triggerAvatarAnimation(peerId, 'animate-wiggle'), 500)
   }, [peerId, triggerAvatarAnimation])
-  
+
   const avatarState = getAvatarState(peerId)
-  
+
   return {
     avatarState,
     startTyping,
@@ -154,7 +153,7 @@ export function useAvatarInteraction(peerId: string) {
 // Hook for managing collaborative avatar states
 export function useCollaborativeAvatars(peerIds: string[]) {
   const { updateAvatarStatus, setAvatarActive } = useAvatar()
-  
+
   const setActivePeer = useCallback((activeId: string) => {
     peerIds.forEach(peerId => {
       if (peerId === activeId) {
@@ -166,14 +165,14 @@ export function useCollaborativeAvatars(peerIds: string[]) {
       }
     })
   }, [peerIds, updateAvatarStatus, setAvatarActive])
-  
+
   const resetAllPeers = useCallback(() => {
     peerIds.forEach(peerId => {
       updateAvatarStatus(peerId, 'online')
       setAvatarActive(peerId, false)
     })
   }, [peerIds, updateAvatarStatus, setAvatarActive])
-  
+
   return {
     setActivePeer,
     resetAllPeers

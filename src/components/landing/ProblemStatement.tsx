@@ -58,7 +58,7 @@ export function ProblemStatement() {
           
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
             Despite billions invested in online education, most developers still struggle to learn effectively. 
-            Here's why the current approach is broken:
+            Here&apos;s why the current approach is broken:
           </p>
         </motion.div>
 
@@ -127,7 +127,7 @@ export function ProblemStatement() {
             
             <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
               Traditional learning platforms treat you like just another number. 
-              <strong className="text-gray-900 dark:text-white"> It's time for a better way.</strong>
+              <strong className="text-gray-900 dark:text-white"> It&apos;s time for a better way.</strong>
             </p>
           </div>
         </motion.div>

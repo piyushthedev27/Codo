@@ -1,4 +1,5 @@
 'use client'
+/* eslint-disable react/no-unescaped-entities */
 
 import React, { useState } from 'react'
 import { VoiceCoachingInterface } from '@/components/unique-features/VoiceCoachingInterface'
@@ -203,9 +204,9 @@ export default function VoiceDemoPage() {
               <div>
                 <h4 className="font-medium mb-2">Voice Mode (if supported):</h4>
                 <ul className="space-y-1 text-muted-foreground">
-                  <li>• Click "Start Voice Coaching"</li>
+                  <li>• Click "Start Voice Coaching&quot;hing&quot;hing"</li>
                   <li>• Allow microphone access</li>
-                  <li>• Ask questions like "Help me debug this"</li>
+                  <li>• Ask questions like "Help me debug this&quot;this&quot;this"</li>
                   <li>• Listen to AI responses</li>
                 </ul>
               </div>
@@ -216,7 +217,7 @@ export default function VoiceDemoPage() {
                   <li>• Type questions in the text input</li>
                   <li>• Use quick suggestions</li>
                   <li>• View conversation history</li>
-                  <li>• Try "Retry Voice" if available</li>
+                  <li>• Try &quot;Retry Voice&quot; if availablelable</li>
                 </ul>
               </div>
             </div>

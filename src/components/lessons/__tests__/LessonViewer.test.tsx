@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * LessonViewer Component Tests
  * Tests for the main lesson viewer functionality

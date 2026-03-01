@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
         // Get a specific cached or demo lesson
         if (!lessonId || !topic) {
           return NextResponse.json(
-            { error: 'lessonId and topic are required' },
+            { _error: 'lessonId and topic are required' },
             { status: 400 }
           )
         }
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
         const lesson = await getCachedOrDemoLesson(lessonId, topic)
         if (!lesson) {
           return NextResponse.json(
-            { error: 'Lesson not found in cache or demo' },
+            { _error: 'Lesson not found in cache or demo' },
             { status: 404 }
           )
         }
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
         // Get a specific demo lesson by topic
         if (!topic) {
           return NextResponse.json(
-            { error: 'topic is required' },
+            { _error: 'topic is required' },
             { status: 400 }
           )
         }
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
         const demoLesson = getDemoLesson(topic)
         if (!demoLesson) {
           return NextResponse.json(
-            { error: 'Demo lesson not found' },
+            { _error: 'Demo lesson not found' },
             { status: 404 }
           )
         }
@@ -109,16 +109,16 @@ export async function GET(request: NextRequest) {
 
       default:
         return NextResponse.json(
-          { error: 'Invalid action' },
+          { _error: 'Invalid action' },
           { status: 400 }
         )
     }
 
-  } catch (error) {
-    console.error('Error handling cache request:', error)
+  } catch (_error) {
+    console.error('Error handling cache request:', _error)
     
     return NextResponse.json(
-      { error: 'Failed to process cache request' },
+      { _error: 'Failed to process cache request' },
       { status: 500 }
     )
   }
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
     const { userId } = await auth()
     if (!userId) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { _error: 'Unauthorized' },
         { status: 401 }
       )
     }
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
         // Cache a lesson
         if (!lessonId || !lesson) {
           return NextResponse.json(
-            { error: 'lessonId and lesson are required' },
+            { _error: 'lessonId and lesson are required' },
             { status: 400 }
           )
         }
@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
         // Generate a cache key for lesson parameters
         if (!topic || !skillLevel || !userDomain) {
           return NextResponse.json(
-            { error: 'topic, skillLevel, and userDomain are required' },
+            { _error: 'topic, skillLevel, and userDomain are required' },
             { status: 400 }
           )
         }
@@ -190,9 +190,10 @@ export async function POST(request: NextRequest) {
             preloadedLessons,
             message: `Preloaded ${preloadedLessons.length} demo lessons`
           })
-        } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (_error) {
           return NextResponse.json(
-            { error: 'Failed to preload demo lessons' },
+            { _error: 'Failed to preload demo lessons' },
             { status: 500 }
           )
         }
@@ -210,7 +211,7 @@ export async function POST(request: NextRequest) {
         // Remove a specific lesson from cache
         if (!lessonId) {
           return NextResponse.json(
-            { error: 'lessonId is required' },
+            { _error: 'lessonId is required' },
             { status: 400 }
           )
         }
@@ -225,16 +226,16 @@ export async function POST(request: NextRequest) {
 
       default:
         return NextResponse.json(
-          { error: 'Invalid action' },
+          { _error: 'Invalid action' },
           { status: 400 }
         )
     }
 
-  } catch (error) {
-    console.error('Error handling cache update:', error)
+  } catch (_error) {
+    console.error('Error handling cache update:', _error)
     
     return NextResponse.json(
-      { error: 'Failed to update cache' },
+      { _error: 'Failed to update cache' },
       { status: 500 }
     )
   }
@@ -245,7 +246,7 @@ export async function DELETE(request: NextRequest) {
     const { userId } = await auth()
     if (!userId) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { _error: 'Unauthorized' },
         { status: 401 }
       )
     }
@@ -272,11 +273,11 @@ export async function DELETE(request: NextRequest) {
       })
     }
 
-  } catch (error) {
-    console.error('Error deleting from cache:', error)
+  } catch (_error) {
+    console.error('Error deleting from cache:', _error)
     
     return NextResponse.json(
-      { error: 'Failed to delete from cache' },
+      { _error: 'Failed to delete from cache' },
       { status: 500 }
     )
   }

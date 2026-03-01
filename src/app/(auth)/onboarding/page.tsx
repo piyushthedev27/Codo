@@ -49,7 +49,7 @@ export default function OnboardingPage() {
             Welcome to Codo, {user?.firstName || 'Learner'}!
           </h1>
           <p className="text-lg text-muted-foreground mb-6">
-            Let's personalize your AI-powered learning experience
+            Let&apos;s personalize your AI-powered learning experience
           </p>
           
           {/* Progress Bar */}

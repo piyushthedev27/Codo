@@ -3,74 +3,86 @@
  * Centralized configuration for all navigation items
  */
 
-import {
-  Home,
-  Network,
-  BookOpen,
-  Code,
-  Users,
-  BarChart,
-  Settings
-} from 'lucide-react'
 import { NavigationConfig } from './types'
+
+// Icon name type for serialization
+export type NavigationIconName =
+  | 'Home'
+  | 'Network'
+  | 'BookOpen'
+  | 'Code'
+  | 'Users'
+  | 'BarChart'
+  | 'Settings'
+  | 'Trophy'
+  | 'Target'
+  | 'Lightbulb'
 
 export const navigationConfig: NavigationConfig = {
   sections: [
     {
       id: 'main',
+      title: 'Main',
       items: [
         {
           id: 'dashboard',
           label: 'Dashboard',
           href: '/dashboard',
-          icon: Home,
+          iconName: 'Home',
           description: 'Your learning overview'
-        },
-        {
-          id: 'knowledge-graph',
-          label: 'Knowledge Graph',
-          href: '/knowledge-graph-demo',
-          icon: Network,
-          description: 'Visual skill progression'
         },
         {
           id: 'lessons',
           label: 'Lessons',
           href: '/lessons',
-          icon: BookOpen,
+          iconName: 'BookOpen',
           description: 'Interactive learning content'
         },
         {
+          id: 'knowledge-graph',
+          label: 'Knowledge Graph',
+          href: '/knowledge-graph-demo',
+          iconName: 'Network',
+          description: 'Visual skill progression'
+        },
+        {
+          id: 'progress',
+          label: 'Progress',
+          href: '/insights',
+          iconName: 'BarChart',
+          description: 'Track your improvement'
+        }
+      ]
+    },
+    {
+      id: 'practice',
+      title: 'Practice',
+      items: [
+        {
           id: 'code-challenges',
           label: 'Code Challenges',
-          href: '/coding/duel/test',
-          icon: Code,
+          href: '/coding/duel',
+          iconName: 'Code',
           description: 'Practice coding skills'
         },
         {
           id: 'ai-peers',
           label: 'AI Peers',
           href: '/dashboard#ai-peers',
-          icon: Users,
+          iconName: 'Users',
           description: 'Your study companions'
-        },
-        {
-          id: 'progress',
-          label: 'Progress Analytics',
-          href: '/insights',
-          icon: BarChart,
-          description: 'Track your improvement'
         }
       ]
     },
     {
       id: 'settings',
+      title: 'Settings',
       items: [
         {
           id: 'settings',
           label: 'Settings',
           href: '/dashboard#settings',
-          icon: Settings,
+          iconName: 'Settings',
           description: 'Preferences and account'
         }
       ]

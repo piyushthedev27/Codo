@@ -4,7 +4,8 @@
  * Requirements: 23.1, 23.2, 23.3, 23.4, 23.5
  */
 
-import { supabase, supabaseAdmin } from './supabase-client'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _supabase, supabaseAdmin } from './supabase-client'
 
 // ============================================================================
 // User Learning Stats Operations (Requirement 23.1)
@@ -51,7 +52,7 @@ export const userLearningStatsOperations = {
     const existing = await this.getByUserId(userId)
     
     if (existing) {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAdmin
         .from('user_learning_stats')
         .update(stats)
         .eq('user_id', userId)
@@ -61,7 +62,7 @@ export const userLearningStatsOperations = {
       if (error) throw error
       return data
     } else {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAdmin
         .from('user_learning_stats')
         .insert({ user_id: userId, ...stats })
         .select()
@@ -175,7 +176,7 @@ export const userAIPeersOperations = {
       .single()
     
     if (existing) {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAdmin
         .from('user_ai_peers')
         .update(updates)
         .eq('user_id', userId)
@@ -186,7 +187,7 @@ export const userAIPeersOperations = {
       if (error) throw error
       return data
     } else {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAdmin
         .from('user_ai_peers')
         .insert({ user_id: userId, peer_id: peerId, ...updates })
         .select()
@@ -259,7 +260,7 @@ export const peerMessagesOperations = {
   },
 
   async create(message: Omit<PeerMessage, 'id' | 'created_at' | 'updated_at'>): Promise<PeerMessage> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('peer_messages')
       .insert(message)
       .select()
@@ -270,7 +271,7 @@ export const peerMessagesOperations = {
   },
 
   async markAsRead(messageId: string): Promise<PeerMessage> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('peer_messages')
       .update({ is_read: true })
       .eq('id', messageId)
@@ -407,7 +408,7 @@ export const userTrackProgressOperations = {
       .single()
     
     if (existing) {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAdmin
         .from('user_track_progress')
         .update(updates)
         .eq('user_id', userId)
@@ -418,7 +419,7 @@ export const userTrackProgressOperations = {
       if (error) throw error
       return data
     } else {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAdmin
         .from('user_track_progress')
         .insert({ user_id: userId, track_id: trackId, ...updates })
         .select()
@@ -488,7 +489,7 @@ export const lessonRecommendationsOperations = {
   },
 
   async create(recommendation: Omit<LessonRecommendation, 'id' | 'created_at' | 'updated_at' | 'recommended_at'>): Promise<LessonRecommendation> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('lesson_recommendations')
       .insert(recommendation)
       .select()
@@ -499,7 +500,7 @@ export const lessonRecommendationsOperations = {
   },
 
   async markCompleted(recommendationId: string, rating?: number): Promise<LessonRecommendation> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('lesson_recommendations')
       .update({
         is_completed: true,
@@ -559,7 +560,7 @@ export const enhancedActivitiesOperations = {
   },
 
   async create(activity: Omit<EnhancedActivity, 'id' | 'created_at' | 'updated_at'>): Promise<EnhancedActivity> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('enhanced_activities')
       .insert(activity)
       .select()
@@ -599,3 +600,5 @@ export const enhancedActivitiesOperations = {
     }, 0)
   }
 }
+
+

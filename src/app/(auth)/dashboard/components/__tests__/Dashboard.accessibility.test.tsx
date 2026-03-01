@@ -138,7 +138,8 @@ describe('Dashboard Accessibility Tests', () => {
 
     describe('Color Contrast', () => {
       it('uses sufficient contrast for text in HeroWelcomeSection', () => {
-        const { container } = render(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { _container } = render(
           <HeroWelcomeSection
             user={mockUser}
             profile={mockProfile}
@@ -154,7 +155,8 @@ describe('Dashboard Accessibility Tests', () => {
       })
 
       it('uses sufficient contrast in stat cards', () => {
-        const { container } = render(<EnhancedStatsGrid stats={mockStats} />)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { _container } = render(<EnhancedStatsGrid stats={mockStats} />)
 
         // Stat cards use white text on colored backgrounds
         const whiteTextElements = container.querySelectorAll('[class*="text-white"]')
@@ -225,7 +227,8 @@ describe('Dashboard Accessibility Tests', () => {
     })
 
     it('maintains logical tab order', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <HeroWelcomeSection
           user={mockUser}
           profile={mockProfile}
@@ -258,7 +261,8 @@ describe('Dashboard Accessibility Tests', () => {
 
   describe('Screen Reader Compatibility', () => {
     it('provides meaningful labels for progress bars', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <HeroWelcomeSection
           user={mockUser}
           profile={mockProfile}
@@ -285,7 +289,8 @@ describe('Dashboard Accessibility Tests', () => {
     })
 
     it('uses semantic HTML elements', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <div>
           <HeroWelcomeSection
             user={mockUser}
@@ -325,7 +330,8 @@ describe('Dashboard Accessibility Tests', () => {
 
   describe('ARIA Attributes', () => {
     it('uses ARIA labels where appropriate', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <LearningPath
           knowledgeGraph={mockKnowledgeGraph}
           upcomingMilestones={mockUpcomingMilestones}
@@ -356,7 +362,8 @@ describe('Dashboard Accessibility Tests', () => {
 
   describe('Touch Target Size', () => {
     it('buttons meet minimum touch target size (44x44px)', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <LearningPath
           knowledgeGraph={mockKnowledgeGraph}
           upcomingMilestones={mockUpcomingMilestones}
@@ -389,7 +396,8 @@ describe('Dashboard Accessibility Tests', () => {
 
   describe('Responsive Text Sizing', () => {
     it('uses responsive text classes', () => {
-      const { container } = render(<EnhancedStatsGrid stats={mockStats} />)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(<EnhancedStatsGrid stats={mockStats} />)
 
       // Check for responsive text sizing
       const responsiveText = container.querySelectorAll('[class*="sm:text"], [class*="lg:text"]')
@@ -397,7 +405,8 @@ describe('Dashboard Accessibility Tests', () => {
     })
 
     it('maintains readability at different viewport sizes', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <HeroWelcomeSection
           user={mockUser}
           profile={mockProfile}

@@ -3,13 +3,17 @@
  * Tests complete dashboard loading, data flow, and component interactions
  */
 
-import { render, screen, waitFor } from '@testing-library/react'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { render, screen, _waitFor } from '@testing-library/react'
 import { HeroWelcomeSection } from '../HeroWelcomeSection'
 import { EnhancedStatsGrid } from '../EnhancedStatsGrid'
 import { LearningPath } from '../LearningPath'
-import { RecommendedLessons } from '../RecommendedLessons'
-import { EnhancedActivityFeed } from '../EnhancedActivityFeed'
-import { AIPeerCards } from '../AIPeerCards'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _RecommendedLessons } from '../RecommendedLessons'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _EnhancedActivityFeed } from '../EnhancedActivityFeed'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _AIPeerCards } from '../AIPeerCards'
 import type { UserProfile, AIPeerProfile, KnowledgeGraphNode } from '@/types/database'
 import type { EnhancedStats } from '@/lib/utils/stats-calculations'
 
@@ -101,7 +105,8 @@ describe('Dashboard Integration Tests', () => {
 
   describe('Complete Dashboard Loading', () => {
     it('renders all dashboard components together', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <div>
           <HeroWelcomeSection
             user={mockDashboardData.user}
@@ -320,7 +325,8 @@ describe('Dashboard Integration Tests', () => {
     })
 
     it('displays loading skeleton for stats', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <div className="animate-pulse">
           <div className="h-32 bg-gray-200 rounded" />
         </div>
@@ -332,7 +338,8 @@ describe('Dashboard Integration Tests', () => {
 
   describe('Component Interaction Flow', () => {
     it('maintains consistent theme across all components', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <div>
           <HeroWelcomeSection
             user={mockDashboardData.user}

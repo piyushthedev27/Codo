@@ -350,7 +350,7 @@ export function SkillAssessment({ onComplete }: SkillAssessmentProps) {
 
       {/* Help Text */}
       <div className="text-center mt-6 text-sm text-muted-foreground">
-        <p>Don't worry - you can always change these preferences later in your settings</p>
+        <p>Don&apos;t worry - you can always change these preferences later in your settings</p>
       </div>
     </div>
   )

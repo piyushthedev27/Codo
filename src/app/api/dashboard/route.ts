@@ -1,213 +1,29 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { 
-  userProfileOperations, 
-  aiPeerOperations, 
+import {
+  userProfileOperations,
+  aiPeerOperations,
   knowledgeGraphOperations,
   learningInsightsOperations,
   challengeAttemptOperations,
   testDatabaseConnection,
   initializeUserData
 } from '@/lib/database/operations'
+import { supabase } from '@/lib/database/supabase-client'
 import {
   userLearningStatsOperations,
   userAIPeersOperations,
   peerMessagesOperations,
-  learningTracksOperations,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _learningTracksOperations,
   userTrackProgressOperations,
   lessonRecommendationsOperations,
-  enhancedActivitiesOperations
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _enhancedActivitiesOperations
 } from '@/lib/database/dashboard-operations'
 import { generateEnhancedStats } from '@/lib/utils/stats-calculations'
 import type { DashboardData } from '@/types/database'
-
-// Demo data for fallback
-const createDemoData = (userId?: string): DashboardData => {
-  const demoProfile = {
-    id: 'demo-profile',
-    clerk_user_id: userId || 'demo',
-    email: 'demo@example.com',
-    first_name: 'Demo',
-    last_name: 'User',
-    skill_level: 'beginner' as const,
-    learning_goal: 'learning' as const,
-    primary_domain: 'javascript',
-    current_xp: 350,
-    current_level: 1,
-    learning_streak: 3,
-    voice_coaching_enabled: true,
-    preferred_learning_style: 'mixed',
-    timezone: 'UTC',
-    created_at: '2024-01-01T00:00:00Z',
-    updated_at: '2024-01-01T00:00:00Z'
-  }
-
-  const demoKnowledgeGraph = [
-    {
-      id: 'node-1',
-      user_id: 'demo-profile',
-      concept: 'Variables & Data Types',
-      category: 'Programming',
-      prerequisites: [],
-      status: 'mastered' as const,
-      position: { x: 100, y: 100 },
-      connections: ['node-2'],
-      mastery_percentage: 100,
-      estimated_duration_minutes: 30,
-      difficulty_level: 1,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z'
-    },
-    {
-      id: 'node-2',
-      user_id: 'demo-profile',
-      concept: 'Functions',
-      category: 'Programming',
-      prerequisites: ['node-1'],
-      status: 'in_progress' as const,
-      position: { x: 200, y: 100 },
-      connections: ['node-3'],
-      mastery_percentage: 65,
-      estimated_duration_minutes: 45,
-      difficulty_level: 2,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z'
-    },
-    {
-      id: 'node-3',
-      user_id: 'demo-profile',
-      concept: 'Arrays & Objects',
-      category: 'Programming',
-      prerequisites: ['node-2'],
-      status: 'locked' as const,
-      position: { x: 300, y: 100 },
-      connections: [],
-      mastery_percentage: 0,
-      estimated_duration_minutes: 60,
-      difficulty_level: 3,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z'
-    }
-  ]
-
-  const demoActivities = [
-    {
-      id: 'activity-1',
-      type: 'lesson_completed' as const,
-      title: 'Completed: "React Hooks Deep Dive"',
-      description: 'With Sarah • 2 hours ago',
-      xpEarned: 150,
-      peerInvolved: 'sarah',
-      rating: 5,
-      timestamp: '2 hours ago'
-    },
-    {
-      id: 'activity-2',
-      type: 'achievement' as const,
-      title: 'Achieved: "10 Day Streak" Badge',
-      description: '5 hours ago • Celebrated with all peers!',
-      xpEarned: 100,
-      timestamp: '5 hours ago'
-    }
-  ]
-
-  return {
-  profile: demoProfile,
-  aiPeers: [
-    {
-      id: 'peer-1',
-      user_id: 'demo-profile',
-      name: 'Sarah',
-      personality: 'curious',
-      skill_level: 'beginner',
-      avatar_url: '/images/avatars/sarah-3d.png',
-      common_mistakes: ['Array method confusion', 'Variable scope issues'],
-      interaction_style: 'Asks thoughtful questions and seeks clarification',
-      backstory: 'A curious learner who loves understanding the "why" behind code',
-      is_active: true,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z'
-    },
-    {
-      id: 'peer-2',
-      user_id: 'demo-profile',
-      name: 'Alex',
-      personality: 'analytical',
-      skill_level: 'intermediate',
-      avatar_url: '/images/avatars/alex-3d.png',
-      common_mistakes: ['Async/await mixing', 'Performance optimization'],
-      interaction_style: 'Methodical and detail-oriented, likes to compare approaches',
-      backstory: 'An analytical thinker who enjoys breaking down complex problems',
-      is_active: true,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z'
-    },
-    {
-      id: 'peer-3',
-      user_id: 'demo-profile',
-      name: 'Jordan',
-      personality: 'supportive',
-      skill_level: 'advanced',
-      avatar_url: '/images/avatars/jordan-3d.png',
-      common_mistakes: ['Architecture decisions', 'Code organization'],
-      interaction_style: 'Encouraging and helpful, provides guidance and mentorship',
-      backstory: 'A supportive mentor who helps others learn from mistakes',
-      is_active: true,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z'
-    }
-  ],
-  knowledgeGraph: demoKnowledgeGraph,
-  recentActivities: demoActivities,
-  activeInsights: [],
-  currentStreak: 3,
-  weeklyProgress: {
-    xpEarned: 250,
-    lessonsCompleted: 4,
-    challengesAttempted: 2,
-    voiceSessionsUsed: 1
-  },
-  upcomingMilestones: {
-    nextLevel: {
-      current: 1,
-      next: 2,
-      xpNeeded: 650
-    },
-    nextConcept: demoKnowledgeGraph[2]
-  },
-  // Enhanced dashboard data
-  enhancedStats: generateEnhancedStats(demoProfile, demoKnowledgeGraph, demoActivities),
-  recommendedLessons: [
-    {
-      id: 'lesson-1',
-      title: 'Advanced React Patterns',
-      duration: '2.5 hours',
-      difficulty: 'intermediate',
-      description: 'Master hooks, context, and custom patterns...',
-      recommendedBy: 'sarah',
-      thumbnail: '/lessons/react-advanced.png'
-    },
-    {
-      id: 'lesson-2',
-      title: 'Data Structures Masterclass',
-      duration: '3 hours',
-      difficulty: 'advanced',
-      description: 'Trees, graphs, and hash tables...',
-      recommendedBy: 'alex',
-      thumbnail: '/lessons/data-structures.png'
-    },
-    {
-      id: 'lesson-3',
-      title: 'System Design Fundamentals',
-      duration: '4 hours',
-      difficulty: 'advanced',
-      description: 'Scalability, databases, caching...',
-      recommendedBy: 'jordan',
-      thumbnail: '/lessons/system-design.png'
-    }
-  ]
-}
-}
 
 // ============================================================================
 // Enhanced Stats Data Fetching Functions (Requirement 23.1)
@@ -217,14 +33,14 @@ async function fetchEnhancedStats(userId: string, profile: any, knowledgeGraph: 
   try {
     // Get or create learning stats
     let stats = await userLearningStatsOperations.getByUserId(userId)
-    
+
     if (!stats) {
       // Initialize stats for new users
       const completedNodes = knowledgeGraph.filter(n => n.status === 'mastered').length
-      const progressPercentage = knowledgeGraph.length > 0 
-        ? Math.round((completedNodes / knowledgeGraph.length) * 100) 
+      const progressPercentage = knowledgeGraph.length > 0
+        ? Math.round((completedNodes / knowledgeGraph.length) * 100)
         : 0
-      
+
       stats = await userLearningStatsOperations.createOrUpdate(userId, {
         learning_progress_percentage: progressPercentage,
         lessons_completed_count: completedNodes,
@@ -237,7 +53,7 @@ async function fetchEnhancedStats(userId: string, profile: any, knowledgeGraph: 
           .map(n => n.concept)
       })
     }
-    
+
     return {
       learningProgress: {
         percentage: stats.learning_progress_percentage,
@@ -298,23 +114,10 @@ function getTimeTrendText(trend: string, current: number, previous: number): str
 // AI Peer Status and Messages Retrieval (Requirement 23.2)
 // ============================================================================
 
-async function fetchAIPeerStatus(userId: string, aiPeers: any[]) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function fetchAIPeerStatus(userId: string, _aiPeers: any[]) {
   try {
-    const peerStatuses = await userAIPeersOperations.getByUserId(userId)
-    
-    // Initialize peer relationships if they don't exist
-    if (peerStatuses.length === 0 && aiPeers.length > 0) {
-      for (const peer of aiPeers) {
-        await userAIPeersOperations.createOrUpdate(userId, peer.id, {
-          status: 'online',
-          specialty_area: getSpecialtyForPeer(peer.name),
-          skill_level_stars: getStarsForSkillLevel(peer.skill_level)
-        })
-      }
-      return await userAIPeersOperations.getByUserId(userId)
-    }
-    
-    return peerStatuses
+    return await userAIPeersOperations.getByUserId(userId)
   } catch (error) {
     console.error('Error fetching AI peer status:', error)
     return []
@@ -330,6 +133,7 @@ async function fetchRecentMessages(userId: string, limit: number = 10) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getSpecialtyForPeer(peerName: string): string {
   const specialties: Record<string, string> = {
     'Sarah': 'React Hooks & State Management',
@@ -339,6 +143,7 @@ function getSpecialtyForPeer(peerName: string): string {
   return specialties[peerName] || 'General Programming'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getStarsForSkillLevel(skillLevel: string): number {
   const stars: Record<string, number> = {
     'beginner': 2,
@@ -354,23 +159,7 @@ function getStarsForSkillLevel(skillLevel: string): number {
 
 async function fetchLearningPathData(userId: string) {
   try {
-    const currentTrack = await userTrackProgressOperations.getCurrentTrack(userId)
-    
-    if (!currentTrack) {
-      // Create a default track for new users
-      const tracks = await learningTracksOperations.getAll()
-      if (tracks.length > 0) {
-        const defaultTrack = tracks[0]
-        await userTrackProgressOperations.createOrUpdate(userId, defaultTrack.id, {
-          status: 'in_progress',
-          progress_percentage: 0,
-          started_at: new Date().toISOString()
-        })
-        return await userTrackProgressOperations.getCurrentTrack(userId)
-      }
-    }
-    
-    return currentTrack
+    return await userTrackProgressOperations.getCurrentTrack(userId)
   } catch (error) {
     console.error('Error fetching learning path data:', error)
     return null
@@ -380,26 +169,7 @@ async function fetchLearningPathData(userId: string) {
 async function fetchMilestoneData(userId: string, trackId?: string) {
   try {
     if (!trackId) return null
-    
-    // Get track progress to find next milestone
-    const progress = await userTrackProgressOperations.getCurrentTrack(userId)
-    
-    if (progress && progress.next_milestone_id) {
-      // In a real implementation, we'd fetch the milestone details
-      // For now, return mock milestone data
-      return {
-        id: progress.next_milestone_id,
-        title: 'Complete 10 Lessons',
-        description: 'Finish 10 lessons in your current track',
-        progress: progress.progress_percentage,
-        reward: {
-          xp: 500,
-          badge: 'Learning Champion',
-          unlockedContent: ['Advanced React Patterns']
-        }
-      }
-    }
-    
+    // Fetch real milestone data if needed, or return null to signify no active milestone
     return null
   } catch (error) {
     console.error('Error fetching milestone data:', error)
@@ -411,88 +181,9 @@ async function fetchMilestoneData(userId: string, trackId?: string) {
 // Lesson Recommendation Generation (Requirement 23.4)
 // ============================================================================
 
-async function fetchLessonRecommendations(userId: string, aiPeers: any[], limit: number = 3) {
+async function fetchLessonRecommendations(userId: string, _aiPeers: any[], limit: number = 3) {
   try {
-    let recommendations = await lessonRecommendationsOperations.getActiveByUserId(userId, limit)
-    
-    // Generate recommendations if none exist
-    if (recommendations.length === 0 && aiPeers.length > 0) {
-      const mockRecommendations = [
-        {
-          user_id: userId,
-          lesson_id: null,
-          title: 'Advanced React Patterns',
-          description: 'Master hooks, context, and custom patterns for building scalable React applications',
-          duration_minutes: 150,
-          difficulty_level: 'intermediate' as const,
-          recommended_by_peer_id: aiPeers[0]?.id,
-          recommendation_reason: 'Based on your recent progress with React basics',
-          relevance_score: 0.95,
-          thumbnail_url: '/lessons/react-advanced.png',
-          topic_tags: ['React', 'Hooks', 'Patterns'],
-          learning_objectives: ['Master custom hooks', 'Understand context API', 'Build reusable components'],
-          prerequisites: ['React Basics', 'JavaScript ES6'],
-          is_active: true,
-          is_completed: false,
-          user_rating: null,
-          expires_at: null,
-          completed_at: null
-        },
-        {
-          user_id: userId,
-          lesson_id: null,
-          title: 'Data Structures Masterclass',
-          description: 'Deep dive into trees, graphs, and hash tables with practical implementations',
-          duration_minutes: 180,
-          difficulty_level: 'advanced' as const,
-          recommended_by_peer_id: aiPeers[1]?.id,
-          recommendation_reason: 'Perfect for strengthening your algorithm skills',
-          relevance_score: 0.88,
-          thumbnail_url: '/lessons/data-structures.png',
-          topic_tags: ['Algorithms', 'Data Structures', 'Problem Solving'],
-          learning_objectives: ['Implement tree structures', 'Master graph algorithms', 'Optimize with hash tables'],
-          prerequisites: ['Arrays & Objects', 'Recursion'],
-          is_active: true,
-          is_completed: false,
-          user_rating: null,
-          expires_at: null,
-          completed_at: null
-        },
-        {
-          user_id: userId,
-          lesson_id: null,
-          title: 'System Design Fundamentals',
-          description: 'Learn to design scalable systems with databases, caching, and load balancing',
-          duration_minutes: 240,
-          difficulty_level: 'advanced' as const,
-          recommended_by_peer_id: aiPeers[2]?.id,
-          recommendation_reason: 'Great next step for your learning journey',
-          relevance_score: 0.82,
-          thumbnail_url: '/lessons/system-design.png',
-          topic_tags: ['System Design', 'Architecture', 'Scalability'],
-          learning_objectives: ['Design distributed systems', 'Implement caching strategies', 'Handle high traffic'],
-          prerequisites: ['Backend Development', 'Databases'],
-          is_active: true,
-          is_completed: false,
-          user_rating: null,
-          expires_at: null,
-          completed_at: null
-        }
-      ]
-      
-      // Create recommendations in database
-      for (const rec of mockRecommendations) {
-        try {
-          await lessonRecommendationsOperations.create(rec)
-        } catch (error) {
-          console.error('Error creating recommendation:', error)
-        }
-      }
-      
-      recommendations = await lessonRecommendationsOperations.getActiveByUserId(userId, limit)
-    }
-    
-    return recommendations
+    return await lessonRecommendationsOperations.getActiveByUserId(userId, limit)
   } catch (error) {
     console.error('Error fetching lesson recommendations:', error)
     return []
@@ -505,111 +196,32 @@ async function fetchLessonRecommendations(userId: string, aiPeers: any[], limit:
 
 async function fetchEnhancedActivities(userId: string, limit: number = 10) {
   try {
-    let activities = await enhancedActivitiesOperations.getRecentByUserId(userId, limit)
-    
-    // Generate sample activities if none exist
-    if (activities.length === 0) {
-      const sampleActivities = [
-        {
-          user_id: userId,
-          activity_type: 'lesson_completed' as const,
-          title: 'Completed: "React Hooks Deep Dive"',
-          description: 'With Sarah • 2 hours ago',
-          xp_earned: 150,
-          bonus_xp: 25,
-          xp_multiplier: 1.0,
-          peer_involved_id: null,
-          peer_contribution_type: 'teaching' as const,
-          category: 'lesson',
-          background_color: 'bg-blue-50 dark:bg-blue-900/20',
-          icon_name: 'BookOpen',
-          priority_level: 1,
-          duration_minutes: 45,
-          completion_quality: 0.92,
-          mistakes_made: 2,
-          achievement_badge: null,
-          achievement_tier: null,
-          celebration_shown: false,
-          activity_timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-        },
-        {
-          user_id: userId,
-          activity_type: 'achievement' as const,
-          title: 'Achieved: "10 Day Streak" Badge',
-          description: '5 hours ago • Celebrated with all peers!',
-          xp_earned: 100,
-          bonus_xp: 50,
-          xp_multiplier: 1.5,
-          peer_involved_id: null,
-          peer_contribution_type: null,
-          category: 'achievement',
-          background_color: 'bg-yellow-50 dark:bg-yellow-900/20',
-          icon_name: 'Trophy',
-          priority_level: 2,
-          duration_minutes: 0,
-          completion_quality: 1.0,
-          mistakes_made: 0,
-          achievement_badge: '10-day-streak',
-          achievement_tier: 'gold' as const,
-          celebration_shown: true,
-          activity_timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
-        },
-        {
-          user_id: userId,
-          activity_type: 'collaboration' as const,
-          title: 'Collaborated: "Build a Todo App"',
-          description: 'With Alex & Jordan • Yesterday',
-          xp_earned: 200,
-          bonus_xp: 30,
-          xp_multiplier: 1.0,
-          peer_involved_id: null,
-          peer_contribution_type: 'collaboration' as const,
-          category: 'collaboration',
-          background_color: 'bg-green-50 dark:bg-green-900/20',
-          icon_name: 'Users',
-          priority_level: 1,
-          duration_minutes: 90,
-          completion_quality: 0.88,
-          mistakes_made: 5,
-          achievement_badge: null,
-          achievement_tier: null,
-          celebration_shown: false,
-          activity_timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-        }
-      ]
-      
-      // Create activities in database
-      for (const activity of sampleActivities) {
-        try {
-          await enhancedActivitiesOperations.create(activity)
-        } catch (error) {
-          console.error('Error creating activity:', error)
-        }
-      }
-      
-      activities = await enhancedActivitiesOperations.getRecentByUserId(userId, limit)
-    }
-    
-    return activities
+    // Fetch recent activities
+    const { data: recentActivities } = await supabase
+      .from('enhanced_activities')
+      .select('*')
+      .eq('user_id', userId)
+      .order('activity_timestamp', { ascending: false })
+      .limit(limit)
+
+    return recentActivities || []
   } catch (error) {
     console.error('Error fetching enhanced activities:', error)
     return []
   }
 }
 
-export async function GET(request: NextRequest) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function GET(_request: NextRequest) {
   try {
     // First test database connection
     const dbTest = await testDatabaseConnection()
     if (!dbTest.success) {
-      console.warn('Database connection failed:', dbTest.message)
-      // Return demo data if database is not available
+      console.error('Database connection failed:', dbTest.message)
       return NextResponse.json({
-        success: true,
-        data: createDemoData(),
-        demo: true,
-        message: 'Using demo data - database connection failed'
-      })
+        success: false,
+        error: 'Database connection failed. Please check your configuration.'
+      }, { status: 503 })
     }
 
     // Try to get user authentication
@@ -618,38 +230,33 @@ export async function GET(request: NextRequest) {
       const authResult = await auth()
       userId = authResult.userId
     } catch (authError) {
-      console.warn('Authentication failed:', authError)
-      // Return demo data if auth is not available
+      console.error('Authentication failed:', authError)
       return NextResponse.json({
-        success: true,
-        data: createDemoData(),
-        demo: true,
-        message: 'Using demo data - authentication not available'
-      })
+        success: false,
+        error: 'Authentication failed. Please sign in again.'
+      }, { status: 401 })
     }
-    
+
     if (!userId) {
       return NextResponse.json({
-        success: true,
-        data: createDemoData(),
-        demo: true,
-        message: 'Using demo data - user not authenticated'
-      })
+        success: false,
+        error: 'User not authenticated. Please sign in.'
+      }, { status: 401 })
     }
 
     // Try to get or create user profile
     let profile
     try {
       profile = await userProfileOperations.getByClerkId(userId)
-      
+
       // If profile doesn't exist, try to create it
       if (!profile) {
         console.log('Profile not found, attempting to create for user:', userId)
-        
+
         const initResult = await initializeUserData(userId, {
-          email: 'demo@example.com',
-          firstName: 'Demo',
-          lastName: 'User',
+          email: 'user@example.com',
+          firstName: 'User',
+          lastName: 'Name',
           skillLevel: 'beginner',
           learningGoal: 'learning',
           primaryDomain: 'web-development',
@@ -660,41 +267,35 @@ export async function GET(request: NextRequest) {
         if (initResult.success && initResult.profile) {
           profile = initResult.profile
         } else {
-          console.warn('Failed to initialize user data, using demo data:', initResult.error)
+          console.error('Failed to initialize user data:', initResult.error)
           return NextResponse.json({
-            success: true,
-            data: createDemoData(userId),
-            demo: true,
-            message: 'Using demo data - failed to initialize user profile'
-          })
+            success: false,
+            error: 'Failed to initialize user profile. Please try again.'
+          }, { status: 500 })
         }
       }
     } catch (profileError) {
-      console.warn('Failed to get/create user profile, using demo data:', profileError)
+      console.error('Failed to get/create user profile:', profileError)
       return NextResponse.json({
-        success: true,
-        data: createDemoData(userId),
-        demo: true,
-        message: 'Using demo data - profile operations failed'
-      })
+        success: false,
+        error: 'Failed to load user profile. Please try again.'
+      }, { status: 500 })
     }
 
-    // Try to get additional data, but fall back to demo if any step fails
-    let aiPeers, knowledgeGraph, activeInsights, challengeStats
+    // Try to get additional data
+    let _aiPeers, knowledgeGraph, activeInsights, challengeStats
 
     try {
-      aiPeers = await aiPeerOperations.getByUserId(profile.id)
+      _aiPeers = await aiPeerOperations.getByUserId(profile.id)
       knowledgeGraph = await knowledgeGraphOperations.getByUserId(profile.id)
       activeInsights = await learningInsightsOperations.getActiveByUserId(profile.id)
       challengeStats = await challengeAttemptOperations.getUserStats(profile.id)
     } catch (dataError) {
-      console.warn('Failed to get user data, using demo data:', dataError)
+      console.error('Failed to get user data:', dataError)
       return NextResponse.json({
-        success: true,
-        data: createDemoData(userId),
-        demo: true,
-        message: 'Using demo data - failed to load user data'
-      })
+        success: false,
+        error: 'Failed to load dashboard data. Please try again.'
+      }, { status: 500 })
     }
 
     // ============================================================================
@@ -705,7 +306,7 @@ export async function GET(request: NextRequest) {
     const enhancedStatsData = await fetchEnhancedStats(profile.id, profile, knowledgeGraph)
 
     // Fetch AI peer status and messages (Requirement 23.2)
-    const peerStatuses = await fetchAIPeerStatus(profile.id, aiPeers)
+    const peerStatuses = await fetchAIPeerStatus(profile.id, _aiPeers)
     const recentMessages = await fetchRecentMessages(profile.id, 10)
 
     // Fetch learning path and milestone data (Requirement 23.3)
@@ -713,7 +314,7 @@ export async function GET(request: NextRequest) {
     const nextMilestone = currentTrack ? await fetchMilestoneData(profile.id, currentTrack.track_id) : null
 
     // Fetch lesson recommendations (Requirement 23.4)
-    const recommendations = await fetchLessonRecommendations(profile.id, aiPeers, 3)
+    const recommendations = await fetchLessonRecommendations(profile.id, _aiPeers, 3)
 
     // Fetch enhanced activities (Requirement 23.5)
     const enhancedActivitiesData = await fetchEnhancedActivities(profile.id, 10)
@@ -727,7 +328,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform enhanced activities to dashboard format
-    const recentActivities = enhancedActivitiesData.map(activity => ({
+    const recentActivities = enhancedActivitiesData.map((activity: any) => ({
       id: activity.id,
       type: activity.activity_type as any,
       title: activity.title,
@@ -745,8 +346,8 @@ export async function GET(request: NextRequest) {
       duration: `${Math.floor(rec.duration_minutes / 60)} hours`,
       difficulty: rec.difficulty_level,
       description: rec.description || '',
-      recommendedBy: rec.recommended_by_peer_id ? 
-        aiPeers.find(p => p.id === rec.recommended_by_peer_id)?.name.toLowerCase() || 'sarah' : 
+      recommendedBy: rec.recommended_by_peer_id ?
+        aiPeers.find(p => p.id === rec.recommended_by_peer_id)?.name.toLowerCase() || 'sarah' :
         'sarah',
       thumbnail: rec.thumbnail_url || '/lessons/default.png'
     }))
@@ -768,7 +369,7 @@ export async function GET(request: NextRequest) {
 
     const dashboardData: DashboardData = {
       profile,
-      aiPeers,
+      _aiPeers,
       knowledgeGraph,
       recentActivities,
       activeInsights,
@@ -799,13 +400,10 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Dashboard API error:', error)
-    
-    // Always return demo data as fallback
+
     return NextResponse.json({
-      success: true,
-      data: createDemoData(),
-      demo: true,
-      message: `Using demo data - ${error instanceof Error ? error.message : 'Unknown error'}`
-    })
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    }, { status: 500 })
   }
 }

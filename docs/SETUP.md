@@ -13,8 +13,8 @@ Before setting up this project, ensure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd <project-name>
+git clone https://github.com/piyushthedev27/Codo.git
+cd Codo
 ```
 
 ### 2. Install Dependencies
@@ -168,7 +168,7 @@ npm run start
 
 ### Getting Help
 
-- Check the [ARCHITECTURE.md](./ARCHITECTURE.md) for system overview
+- Check the [SYSTEM_GUIDE.md](./SYSTEM_GUIDE.md) for system overview
 - Review component documentation in respective folders
 - Check API route documentation in `src/app/api/`
 

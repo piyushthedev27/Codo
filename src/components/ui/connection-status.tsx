@@ -6,7 +6,8 @@
 'use client'
 
 import React from 'react'
-import { Wifi, WifiOff, Database, AlertCircle } from 'lucide-react'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Wifi, WifiOff, Database, _AlertCircle } from 'lucide-react'
 import { useConnectionStatus } from '@/lib/hooks/useApiState'
 import { Badge } from './badge'
 
@@ -109,7 +110,7 @@ export function OfflineBanner() {
       <div className="flex items-center justify-center gap-2 text-sm">
         <WifiOff className="h-4 w-4 text-orange-600 dark:text-orange-400" />
         <span className="text-orange-800 dark:text-orange-200">
-          You're offline. 
+          You&apos;re offline. 
           {hasOfflineData 
             ? ' Using cached content - your progress will sync when you\'re back online.' 
             : ' Some features may not be available.'

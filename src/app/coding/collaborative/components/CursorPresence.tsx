@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 /**
  * Cursor Presence Component for Collaborative Coding
  * Shows AI peer cursors with 3D avatars during collaborative coding sessions
@@ -89,13 +90,13 @@ export function CursorPresence() {
       <div className="absolute inset-0 p-4 font-mono text-sm text-green-400">
         <div className="space-y-1">
           <div>1  function calculateSum(a, b) {`{`}</div>
-          <div>2    // Sarah is working here</div>
+          <div>2    {"//"} Sarah is working here</div>
           <div>3    const result = a + b;</div>
           <div>4    </div>
-          <div>5    // Validation logic</div>
+          <div>5    {"//"} Validation logic</div>
           <div>6    if (typeof a !== 'number' || typeof b !== 'number') {`{`}</div>
           <div>7      throw new Error('Invalid input');</div>
-          <div>8    {`}`} // Alex is reviewing this</div>
+          <div>8    {`}`} {"//"} Alex is reviewing this</div>
           <div>9    </div>
           <div>10   return result;</div>
           <div>11 {`}`}</div>
@@ -112,29 +113,29 @@ export function CursorPresence() {
             <motion.div
               key={cursor.peerId}
               initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ 
-                opacity: 1, 
+              animate={{
+                opacity: 1,
                 scale: 1,
                 x: cursor.x,
                 y: cursor.y
               }}
               exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 300, 
-                damping: 30 
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 30
               }}
               className="absolute pointer-events-none"
             >
               {/* Cursor Line */}
-              <div 
+              <div
                 className="w-0.5 h-5 animate-pulse"
-                style={{ 
-                  backgroundColor: peer.personality === 'curious' ? '#ec4899' : 
-                                 peer.personality === 'analytical' ? '#3b82f6' : '#10b981'
+                style={{
+                  backgroundColor: peer.personality === 'curious' ? '#ec4899' :
+                    peer.personality === 'analytical' ? '#3b82f6' : '#10b981'
                 }}
               />
-              
+
               {/* Cursor Label */}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -175,7 +176,7 @@ export function CursorPresence() {
               {cursor.isTyping && (
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: Math.random() * 100 + 50 }}
+                  animate={{ width: 150 }}
                   className="absolute top-0 h-5 bg-blue-200 dark:bg-blue-800 opacity-30 rounded"
                 />
               )}
@@ -227,7 +228,7 @@ export function CursorPresence() {
               Alex suggests:
             </div>
             <div className="text-gray-700 dark:text-gray-300 mt-1">
-              "Consider adding input validation before the calculation"
+              &quot;Consider adding input validation before the calculation&quot;
             </div>
           </div>
         </div>

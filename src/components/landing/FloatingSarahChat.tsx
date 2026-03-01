@@ -82,7 +82,7 @@ export function FloatingSarahChat() {
             <div className="mb-4">
               <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm">
                 <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
-                  Hey there! 👋 I'm Sarah, your AI study buddy. I noticed you're checking out Codo - want to see how I can help you learn programming faster?
+                  Hey there! 👋 I&apos;m Sarah, your AI study buddy. I noticed you&apos;re checking out Codo - want to see how I can help you learn programming faster?
                 </p>
                 
                 {/* Typing Animation */}

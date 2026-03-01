@@ -13,6 +13,7 @@ import type { EnhancedStats } from '@/lib/utils/stats-calculations'
 import { Target, Zap, Star, Clock } from 'lucide-react'
 import { formatDuration } from '@/lib/utils/stats-calculations'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface ResponsiveDashboardProps {
   stats: EnhancedStats
   children?: React.ReactNode

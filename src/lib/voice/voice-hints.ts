@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Voice hints system for coding challenges
 import { speakCoachingResponse } from './speech-synthesis'
 

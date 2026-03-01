@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Enhanced Caching System
  * Provides efficient data caching with background updates and stale-while-revalidate
@@ -156,7 +157,7 @@ export class EnhancedCache {
       if (!item) return null
 
       const entry = JSON.parse(item) as CacheEntry<T>
-      
+
       // Check if expired
       if (Date.now() > entry.expiresAt) {
         storageObj.removeItem(`cache:${key}`)
@@ -318,6 +319,7 @@ export function useCachedData<T>(
     return () => {
       mounted = false
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key])
 
   const invalidate = () => {

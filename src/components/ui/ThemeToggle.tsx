@@ -6,11 +6,13 @@ import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
 export function ThemeToggle() {
-  const { theme } = useTheme()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { _theme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
   // Handle mounting state to prevent hydration mismatch
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true)
   }, [])
 

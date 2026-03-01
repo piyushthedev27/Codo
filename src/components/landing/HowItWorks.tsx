@@ -1,4 +1,5 @@
 'use client'
+/* eslint-disable react/no-unescaped-entities */
 
 import { motion } from 'framer-motion'
 import { UserPlus, Brain, Rocket, ArrowRight, CheckCircle, Mic } from 'lucide-react'
@@ -72,7 +73,7 @@ export function HowItWorks() {
           
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
             Get started in minutes and experience the future of programming education. 
-            Here's how our AI-powered learning system transforms your coding journey:
+            Here&apos;s how our AI-powered learning system transforms your coding journey:
           </p>
         </motion.div>
 
@@ -165,7 +166,7 @@ export function HowItWorks() {
                         <Avatar peerId="sarah" size="sm" />
                         <div className="flex-1">
                           <div className="text-sm font-semibold text-gray-900 dark:text-white">Sarah asks:</div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400">"Why do we use const instead of let here?"</div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">"Why do we use const instead of let here?&quot;ere?&quot;ere?"</div>
                         </div>
                       </div>
                       
@@ -175,8 +176,8 @@ export function HowItWorks() {
                           <span className="text-sm font-semibold text-gray-900 dark:text-white">Voice Coach:</span>
                         </div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">
-                          "Great question! Let me explain the difference between const and let..."
-                        </div>
+                          &quot;Great question! Let me explain the difference between const and let...&quot;
+                             </div>
                       </div>
                     </div>
                   )}

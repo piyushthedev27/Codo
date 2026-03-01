@@ -7,8 +7,6 @@
  */
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SidebarNavigation } from './SidebarNavigation'
 import { TopNavigationBar } from './TopNavigationBar'
@@ -38,6 +36,7 @@ export function DashboardLayout({ children, className }: DashboardLayoutProps) {
   // Close mobile menu when screen size changes to desktop
   useEffect(() => {
     if (!isMobile) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMobileMenuOpen(false)
     }
   }, [isMobile])

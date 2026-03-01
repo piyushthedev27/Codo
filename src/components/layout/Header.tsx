@@ -58,7 +58,7 @@ export function Header() {
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
             <ThemeToggle />
-            
+
             {/* Show different content based on authentication status */}
             <SignedOut>
               <Link href="/sign-in">
@@ -70,7 +70,7 @@ export function Header() {
                   Sign In
                 </motion.button>
               </Link>
-              
+
               <Link href="/sign-up">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -81,7 +81,7 @@ export function Header() {
                 </motion.button>
               </Link>
             </SignedOut>
-            
+
             <SignedIn>
               <Link href="/dashboard">
                 <motion.button
@@ -92,8 +92,8 @@ export function Header() {
                   Dashboard
                 </motion.button>
               </Link>
-              
-              <UserButton 
+
+              <UserButton
                 appearance={{
                   elements: {
                     avatarBox: "w-10 h-10"
@@ -144,7 +144,7 @@ export function Header() {
                 {item.name}
               </motion.a>
             ))}
-            
+
             <div className="pt-4 space-y-3">
               <SignedOut>
                 <Link href="/sign-in">
@@ -152,23 +152,23 @@ export function Header() {
                     Sign In
                   </button>
                 </Link>
-                
+
                 <Link href="/sign-up">
                   <button className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold text-center">
                     Get Started Free
                   </button>
                 </Link>
               </SignedOut>
-              
+
               <SignedIn>
                 <Link href="/dashboard">
                   <button className="block w-full text-left text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200">
                     Dashboard
                   </button>
                 </Link>
-                
+
                 <div className="flex items-center gap-3 pt-2">
-                  <UserButton 
+                  <UserButton
                     appearance={{
                       elements: {
                         avatarBox: "w-10 h-10"

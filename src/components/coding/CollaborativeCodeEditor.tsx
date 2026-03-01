@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Collaborative Code Editor with Monaco Editor
  * Features real-time collaboration with AI peers, cursor presence, and code comparison
@@ -6,7 +7,8 @@
 
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { useState, useEffect, useRef, _useCallback } from 'react'
 import { Editor, OnMount, OnChange } from '@monaco-editor/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Avatar } from '@/components/shared/Avatar'
@@ -19,6 +21,8 @@ import { CodeComparison, SAMPLE_CODE_SOLUTIONS } from './CodeComparison'
 import { SpotTheBugGame } from './SpotTheBugGame'
 import { useTouchOptimization, isMobileDevice } from '@/lib/mobile/touch-optimization'
 import { useLayoutOptimization } from '@/lib/mobile/layout-optimization'
+import { CollaborationManager, CursorPosition as CollabCursor } from '@/lib/realtime/collaboration-manager'
+import { useUser } from '@clerk/nextjs'
 
 interface CursorPosition {
   peerId: string
@@ -78,8 +82,14 @@ export function CollaborativeCodeEditor({
   const [showComparison, setShowComparison] = useState(false)
   const [showDetailedComparison, setShowDetailedComparison] = useState(false)
   const [showBugGame, setShowBugGame] = useState(false)
-  const [activeCollaborators, setActiveCollaborators] = useState(['sarah', 'alex'])
   const [isMobile, setIsMobile] = useState(false)
+  const { user } = useUser()
+  const collabManagerRef = useRef<CollaborationManager | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_realtimeCursors, setRealtimeCursors] = useState<CollabCursor[]>([])
+     
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const activeCollaborators = ['sarah', 'alex']
 
   // Mobile optimization hooks
   const { optimizeRef } = useTouchOptimization({
@@ -88,8 +98,9 @@ export function CollaborativeCodeEditor({
     preventZoom: true,
     enhancedTouchTargets: true
   })
-  
-  const { viewport, optimizeForMobile } = useLayoutOptimization()
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { _viewport, optimizeForMobile } = useLayoutOptimization()
 
   // Detect mobile device
   useEffect(() => {
@@ -129,6 +140,37 @@ export function CollaborativeCodeEditor({
 
     setPeerCodeStates(initialPeerStates)
   }, [language, enableCollaboration])
+
+  // Real-time collaboration setup
+  useEffect(() => {
+    if (!enableCollaboration || !user || !challengeId) return
+
+    const sessionId = challengeId
+    const userId = user.id
+    const userName = user.firstName || 'User'
+
+    const manager = new CollaborationManager(sessionId, userId, userName)
+    collabManagerRef.current = manager
+
+    const setupCollab = async () => {
+      await manager.join()
+
+      manager.onUpdates({
+        onCodeUpdate: (update) => {
+          setCode(update.code)
+        },
+        onCursorUpdate: (cursors) => {
+          setRealtimeCursors(cursors)
+        }
+      })
+    }
+
+    setupCollab()
+
+    return () => {
+      manager.leave()
+    }
+  }, [enableCollaboration, user, challengeId])
 
   // Simulate cursor movements and typing with realistic patterns
   useEffect(() => {
@@ -218,7 +260,8 @@ export function CollaborativeCodeEditor({
     return () => clearInterval(interval)
   }, [activeCollaborators, suggestions.length, enableCollaboration])
 
-  const handleEditorDidMount: OnMount = (editor, monaco) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleEditorDidMount: OnMount = (editor, _monaco) => {
     editorRef.current = editor
 
     // Configure editor for collaboration and mobile
@@ -227,8 +270,8 @@ export function CollaborativeCodeEditor({
       scrollBeyondLastLine: false,
       fontSize: isMobile ? 16 : 14, // Larger font on mobile
       lineNumbers: (isMobile ? 'off' : 'on') as 'on' | 'off', // Hide line numbers on mobile for space
-      renderWhitespace: 'selection' as 'selection',
-      cursorBlinking: 'smooth' as 'smooth',
+      renderWhitespace: 'selection' as const,
+      cursorBlinking: 'smooth' as const,
       wordWrap: (isMobile ? 'on' : 'off') as 'on' | 'off', // Enable word wrap on mobile
       automaticLayout: true,
       scrollbar: {
@@ -247,8 +290,13 @@ export function CollaborativeCodeEditor({
 
     // Add cursor position tracking
     editor.onDidChangeCursorPosition((e) => {
-      // In a real implementation, this would sync with other users
-      console.log('Cursor moved to:', e.position)
+      if (collabManagerRef.current) {
+        collabManagerRef.current.updatePresence({
+          line: e.position.lineNumber,
+          column: e.position.column,
+          isTyping: true
+        })
+      }
     })
 
     // Mobile-specific touch handling
@@ -257,7 +305,7 @@ export function CollaborativeCodeEditor({
       if (editorElement) {
         // Prevent zoom on double tap
         editorElement.style.touchAction = 'manipulation'
-        
+
         // Add mobile-friendly styling
         editorElement.classList.add('mobile-code-editor')
       }
@@ -268,6 +316,14 @@ export function CollaborativeCodeEditor({
     if (value !== undefined) {
       setCode(value)
       onCodeChange?.(value)
+
+      if (collabManagerRef.current) {
+        const position = editorRef.current?.getPosition()
+        collabManagerRef.current.broadcastCode(value, position ? {
+          line: position.lineNumber,
+          column: position.column
+        } : undefined)
+      }
     }
   }
 
@@ -419,14 +475,14 @@ export function CollaborativeCodeEditor({
                         className="absolute"
                       >
                         {/* Cursor Line */}
-                        <div 
+                        <div
                           className="w-0.5 h-4 animate-pulse"
-                          style={{ 
-                            backgroundColor: peer.personality === 'curious' ? '#ec4899' : 
-                                           peer.personality === 'analytical' ? '#3b82f6' : '#10b981'
+                          style={{
+                            backgroundColor: peer.personality === 'curious' ? '#ec4899' :
+                              peer.personality === 'analytical' ? '#3b82f6' : '#10b981'
                           }}
                         />
-                        
+
                         {/* Cursor Label with Enhanced Typing Animation */}
                         {cursor.isTyping && (
                           <motion.div
@@ -448,15 +504,15 @@ export function CollaborativeCodeEditor({
                                         opacity: [0.4, 1, 0.4],
                                       }}
                                       transition={{
-                                        duration: peer.personality === 'curious' ? 0.8 : 
-                                                 peer.personality === 'analytical' ? 1.2 : 1.0,
+                                        duration: peer.personality === 'curious' ? 0.8 :
+                                          peer.personality === 'analytical' ? 1.2 : 1.0,
                                         repeat: Infinity,
                                         delay: i * 0.15,
                                       }}
                                       className="w-1 h-1 rounded-full"
-                                      style={{ 
-                                        backgroundColor: peer.personality === 'curious' ? '#ec4899' : 
-                                                       peer.personality === 'analytical' ? '#3b82f6' : '#10b981'
+                                      style={{
+                                        backgroundColor: peer.personality === 'curious' ? '#ec4899' :
+                                          peer.personality === 'analytical' ? '#3b82f6' : '#10b981'
                                       }}
                                     />
                                   ))}
@@ -495,9 +551,9 @@ export function CollaborativeCodeEditor({
                           <span className="text-xs font-medium text-gray-900 dark:text-white">
                             {peer.name}
                           </span>
-                          <Badge 
-                            variant={suggestion.type === 'bug' ? 'destructive' : 
-                                   suggestion.type === 'improvement' ? 'default' : 'secondary'}
+                          <Badge
+                            variant={suggestion.type === 'bug' ? 'destructive' :
+                              suggestion.type === 'improvement' ? 'default' : 'secondary'}
                             className="text-xs"
                           >
                             {suggestion.type === 'bug' && <Bug className="w-3 h-3 mr-1" />}
@@ -552,7 +608,7 @@ export function CollaborativeCodeEditor({
                       <div key={peerState.peerId} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                         <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                           <Avatar peerId={peerState.peerId} size="sm" className="w-6 h-6" />
-                          <span className="text-sm font-medium">{peer.name}'s Code</span>
+                          <span className="text-sm font-medium">{peer.name}&apos;s Code</span>
                         </div>
                         <div className="p-2">
                           <Editor

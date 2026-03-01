@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
@@ -136,6 +137,7 @@ export function FloatingNotifications({
     return () => {
       timers.forEach(timer => clearTimeout(timer))
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notifications])
 
   const dismissNotification = useCallback((notificationId: string) => {

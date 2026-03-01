@@ -56,33 +56,33 @@ export function calculateActivityXP(
   } = {}
 ): number {
   const baseXP = XP_BASE_VALUES[activityType] || 50
-  
+
   // Difficulty multiplier
   const difficultyMultiplier = {
     beginner: 1.0,
     intermediate: 1.5,
     advanced: 2.0
   }[options.difficulty || 'beginner']
-  
+
   let totalXP = baseXP * difficultyMultiplier
-  
+
   // Streak bonus
   if (options.streakDays && options.streakDays > 0) {
     const streakBonus = Math.min(options.streakDays * STREAK_BONUS_MULTIPLIER, 1.0) // Cap at 100%
     totalXP += baseXP * streakBonus
   }
-  
+
   // Quality bonus
   if (options.qualityScore && options.qualityScore > 0.7) {
     const qualityBonus = (options.qualityScore - 0.7) * QUALITY_BONUS_MULTIPLIER
     totalXP += baseXP * qualityBonus
   }
-  
+
   // Collaboration bonus
   if (options.hasCollaboration) {
     totalXP += COLLABORATION_BONUS
   }
-  
+
   return Math.round(totalXP)
 }
 
@@ -90,14 +90,14 @@ export function calculateActivityXP(
  * Create an enhanced activity from a learning activity
  */
 export function createEnhancedActivity(
-  activity: Partial<LearningActivity> & { 
+  activity: Partial<LearningActivity> & {
     id: string
     activity_type?: string
     type?: ActivityCategory
   }
 ): EnhancedActivity {
   const activityType = (activity.type || mapActivityType(activity.activity_type)) as ActivityCategory
-  
+
   return {
     id: activity.id,
     type: activityType,
@@ -127,7 +127,7 @@ function mapActivityType(dbType?: string): ActivityCategory {
     'collaborative_coding': 'collaboration',
     'mistake_analysis': 'practice'
   }
-  
+
   return mapping[dbType || ''] || 'practice'
 }
 
@@ -145,7 +145,7 @@ function generateActivityTitle(type: ActivityCategory): string {
     milestone: 'Milestone Reached',
     challenge_completed: 'Challenge Completed'
   }
-  
+
   return titles[type] || 'Activity Completed'
 }
 
@@ -163,19 +163,20 @@ function generateActivityDescription(type: ActivityCategory): string {
     milestone: 'Reached an important milestone',
     challenge_completed: 'Successfully solved a coding challenge'
   }
-  
+
   return descriptions[type] || 'Completed an activity'
 }
 
 /**
  * Extract peer IDs from activity metadata
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extractPeerIds(activity: any): string[] | undefined {
   if (activity.peer_interactions_count && activity.peer_interactions_count > 0) {
     // Extract from metadata if available
     if (activity.metadata?.peers) {
-      return Array.isArray(activity.metadata.peers) 
-        ? activity.metadata.peers 
+      return Array.isArray(activity.metadata.peers)
+        ? activity.metadata.peers
         : [activity.metadata.peers]
     }
   }
@@ -185,6 +186,7 @@ function extractPeerIds(activity: any): string[] | undefined {
 /**
  * Extract difficulty from activity metadata
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extractDifficulty(activity: any): string | undefined {
   return activity.metadata?.difficulty || activity.difficulty_level
 }
@@ -199,12 +201,12 @@ function formatTimestamp(isoString: string): string {
   const diffMins = Math.floor(diffMs / 60000)
   const diffHours = Math.floor(diffMs / 3600000)
   const diffDays = Math.floor(diffMs / 86400000)
-  
+
   if (diffMins < 1) return 'Just now'
   if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`
   if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
   if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
-  
+
   return date.toLocaleDateString()
 }
 
@@ -216,7 +218,7 @@ export function sortActivities(activities: EnhancedActivity[]): EnhancedActivity
     // First sort by timestamp (most recent first)
     const timeA = new Date(a.timestamp).getTime()
     const timeB = new Date(b.timestamp).getTime()
-    
+
     return timeB - timeA
   })
 }
@@ -226,13 +228,13 @@ export function sortActivities(activities: EnhancedActivity[]): EnhancedActivity
  */
 export function groupActivitiesByDate(activities: EnhancedActivity[]): Record<string, EnhancedActivity[]> {
   const groups: Record<string, EnhancedActivity[]> = {}
-  
+
   activities.forEach(activity => {
     const date = new Date(activity.timestamp)
     const today = new Date()
     const yesterday = new Date(today)
     yesterday.setDate(yesterday.getDate() - 1)
-    
+
     let groupKey: string
     if (date.toDateString() === today.toDateString()) {
       groupKey = 'Today'
@@ -241,12 +243,12 @@ export function groupActivitiesByDate(activities: EnhancedActivity[]): Record<st
     } else {
       groupKey = date.toLocaleDateString()
     }
-    
+
     if (!groups[groupKey]) {
       groups[groupKey] = []
     }
     groups[groupKey].push(activity)
   })
-  
+
   return groups
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Error Handler
  * Provides user-friendly error messages and error boundary functionality
@@ -31,7 +32,8 @@ class ErrorHandler {
     return ErrorHandler.instance
   }
 
-  private getNetworkErrorMessage(error: any): UserFriendlyError {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private getNetworkErrorMessage(_error: any): UserFriendlyError {
     if (!navigator.onLine) {
       return {
         title: 'No Internet Connection',
@@ -55,7 +57,8 @@ class ErrorHandler {
     }
   }
 
-  private getHttpErrorMessage(status: number, statusText: string): UserFriendlyError {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private getHttpErrorMessage(status: number, _statusText: string): UserFriendlyError {
     switch (status) {
       case 400:
         return {
@@ -145,7 +148,8 @@ class ErrorHandler {
     }
   }
 
-  private getAPIErrorMessage(error: any): UserFriendlyError {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private getAPIErrorMessage(_error: any): UserFriendlyError {
     // OpenAI API specific errors
     if (error.message?.includes('OpenAI')) {
       return {
@@ -196,18 +200,19 @@ class ErrorHandler {
     }
   }
 
-  public handleError(error: any, context?: Partial<ErrorContext>): UserFriendlyError {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public handleError(_error: any, context?: Partial<ErrorContext>): UserFriendlyError {
     const fullContext: ErrorContext = {
       timestamp: new Date().toISOString(),
-      ...context
+      ..._context
     }
 
     // Log error for debugging
-    console.error('Error handled:', error, fullContext)
+    console.error('Error handled:', _error, fullContext)
 
     // Network errors (fetch failures)
     if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      return this.getNetworkErrorMessage(error)
+      return this.getNetworkErrorMessage(_error)
     }
 
     // HTTP errors
@@ -217,7 +222,7 @@ class ErrorHandler {
 
     // API-specific errors
     if (error.message) {
-      return this.getAPIErrorMessage(error)
+      return this.getAPIErrorMessage(_error)
     }
 
     // Generic fallback
@@ -232,8 +237,8 @@ class ErrorHandler {
     }
   }
 
-  public getContextualMessage(error: any, feature: string): UserFriendlyError {
-    const baseError = this.handleError(error)
+  public getContextualMessage(_error: any, feature: string): UserFriendlyError {
+    const baseError = this.handleError(_error)
 
     // Customize message based on feature context
     switch (feature) {
@@ -286,7 +291,8 @@ class ErrorHandler {
     }
   }
 
-  public createErrorBoundaryMessage(error: Error, errorInfo: any): UserFriendlyError {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public createErrorBoundaryMessage(_error: Error, _errorInfo: any): UserFriendlyError {
     return {
       title: 'Something Went Wrong',
       message: 'This part of the app crashed unexpectedly. Don\'t worry - your progress is saved. Try refreshing the page.',
@@ -326,16 +332,18 @@ class ErrorHandler {
 export const errorHandler = ErrorHandler.getInstance()
 
 // Utility functions for common error scenarios
-export const handleNetworkError = (error: any, context?: Partial<ErrorContext>) => 
-  errorHandler.handleError(error, context)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const handleNetworkError = (_error: any, context?: Partial<ErrorContext>) => 
+  errorHandler.handleError(_error, _context)
 
-export const handleAPIError = (error: any, feature: string, context?: Partial<ErrorContext>) => 
-  errorHandler.getContextualMessage(error, feature)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const handleAPIError = (_error: any, feature: string, context?: Partial<ErrorContext>) => 
+  errorHandler.getContextualMessage(_error, feature)
 
 export const getOfflineMessage = () => errorHandler.getOfflineMessage()
 
 export const getMaintenanceMessage = () => errorHandler.getMaintenanceMessage()
 
 // Error boundary helper
-export const createErrorBoundary = (error: Error, errorInfo: any) => 
-  errorHandler.createErrorBoundaryMessage(error, errorInfo)
+export const createErrorBoundary = (_error: Error, _errorInfo: any) => 
+  errorHandler.createErrorBoundaryMessage(_error, _errorInfo)

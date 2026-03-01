@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Voice fallback system for graceful degradation
 import React from 'react'
 import { checkSpeechSupport } from './speech-config'
@@ -91,7 +92,7 @@ export class VoiceFallbackManager {
           reason = 'Microphone not available. Check your audio settings.'
           break
         case 'network':
-          reason = 'Network error. Voice features may be limited.'
+          reason = 'Network error. Voice recognition requires an internet connection. Using text mode instead.'
           break
         case 'service-not-allowed':
           reason = 'Voice service not available. Using text mode.'

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Code Duel Test Suite
  * Tests for competitive coding interface functionality
@@ -333,12 +334,12 @@ describe('Victory Celebration', () => {
 
 describe('Scoring System', () => {
   it('should calculate score based on tests passed', () => {
-    const mockOnProgressUpdate = jest.fn()
+    const _mockOnProgressUpdate = jest.fn()
     
     render(
       <CodeDuelArena
         duelState="active"
-        onProgressUpdate={mockOnProgressUpdate}
+        onProgressUpdate={_mockOnProgressUpdate}
         timeRemaining={600}
       />
     )
@@ -348,7 +349,7 @@ describe('Scoring System', () => {
     
     // Wait for test completion and check if progress update was called
     waitFor(() => {
-      expect(mockOnProgressUpdate).toHaveBeenCalled()
+      expect(_mockOnProgressUpdate).toHaveBeenCalled()
     })
   })
 
@@ -385,7 +386,8 @@ describe('Integration Tests', () => {
   })
 
   it('should complete full duel flow', async () => {
-    const mockOnProgressUpdate = jest.fn()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _mockOnProgressUpdate = jest.fn()
     
     render(<CodeDuelPage params={mockParams} />)
     
@@ -487,12 +489,12 @@ describe('Performance', () => {
   })
 
   it('should handle rapid progress updates efficiently', async () => {
-    const mockOnProgressUpdate = jest.fn()
+    const _mockOnProgressUpdate = jest.fn()
     
     render(
       <CodeDuelArena
         duelState="active"
-        onProgressUpdate={mockOnProgressUpdate}
+        onProgressUpdate={_mockOnProgressUpdate}
         timeRemaining={600}
       />
     )

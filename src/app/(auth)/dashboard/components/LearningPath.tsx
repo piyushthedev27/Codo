@@ -12,9 +12,9 @@ import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { ExternalLink, CheckCircle, Circle, Lock, ArrowRight, Trophy, Sparkles, Target } from 'lucide-react'
 import type { KnowledgeGraphNode } from '@/types/database'
-import { 
-  calculateLearningTrack, 
-  convertNodesToLessons, 
+import {
+  calculateLearningTrack,
+  convertNodesToLessons,
   getUpcomingLessons,
   calculateMilestones,
   getNextMilestone,
@@ -26,7 +26,7 @@ import '@/styles/dashboard-animations.css'
 
 interface LearningPathProps {
   knowledgeGraph: KnowledgeGraphNode[]
-  upcomingMilestones: {
+  _upcomingMilestones: {
     nextLevel: {
       current: number
       next: number
@@ -39,25 +39,26 @@ interface LearningPathProps {
   currentLevel?: number
 }
 
-export function LearningPath({ 
-  knowledgeGraph, 
-  upcomingMilestones,
+export function LearningPath({
+  knowledgeGraph,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _upcomingMilestones,
   primaryDomain = 'javascript',
   currentXP = 350,
   currentLevel = 1
 }: LearningPathProps) {
   // Calculate learning track from knowledge graph
   const track = calculateLearningTrack(knowledgeGraph, primaryDomain)
-  
+
   // Convert knowledge graph nodes to lesson status
   const allLessons = convertNodesToLessons(knowledgeGraph)
-  
+
   // Get next 5-6 lessons to display
   const upcomingLessons = getUpcomingLessons(allLessons, 6)
-  
+
   // Calculate milestones
   const milestones = calculateMilestones(track, currentXP, currentLevel)
-  
+
   // Get next milestone to display
   const nextMilestone = getNextMilestone(milestones)
 
@@ -104,7 +105,12 @@ export function LearningPath({
             <Target className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
             <span className="truncate">Your Learning Journey</span>
           </CardTitle>
-          <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs sm:text-sm"
+            onClick={() => window.location.href = '/learning-path'}
+          >
             <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
             <span className="hidden sm:inline">View Full Path</span>
           </Button>
@@ -129,7 +135,7 @@ export function LearningPath({
           </div>
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
             <div className="relative flex-1 h-2 sm:h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-              <div 
+              <div
                 className="absolute top-0 left-0 h-full progress-gradient rounded-full gpu-accelerated smooth-transition"
                 style={{ width: `${track.progressPercentage}%` }}
               />
@@ -146,9 +152,17 @@ export function LearningPath({
             Upcoming Lessons
           </h4>
           {upcomingLessons.map((lesson, index) => (
-            <div 
+            <div
               key={lesson.id}
-              className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 smooth-transition card-hover-effect fade-in-delay-${Math.min(index + 1, 4)} touch-manipulation`}
+              className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 smooth-transition card-hover-effect fade-in-delay-${Math.min(index + 1, 4)} touch-manipulation ${lesson.status !== 'locked' ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
+              onClick={() => {
+                if (lesson.status === 'locked') {
+                  alert('This lesson is locked. Complete previous lessons first!')
+                  return
+                }
+                // For now, redirect to lessons page since individual lessons don't exist yet
+                window.location.href = '/lessons'
+              }}
             >
               <div className="flex-shrink-0">
                 {getStatusIcon(lesson.status)}
@@ -202,8 +216,14 @@ export function LearningPath({
         )}
 
         {/* Continue Button */}
-        <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white smooth-transition button-glow touch-manipulation min-h-[44px]">
-          Continue Current Lesson
+        <Button
+          className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white smooth-transition button-glow touch-manipulation min-h-[44px]"
+          onClick={() => {
+            // Redirect to lessons page to browse available lessons
+            window.location.href = '/lessons'
+          }}
+        >
+          Browse Available Lessons
           <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </CardContent>

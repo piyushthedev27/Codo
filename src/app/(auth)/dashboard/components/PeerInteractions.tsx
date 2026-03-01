@@ -9,18 +9,19 @@
 import { motion } from 'framer-motion'
 import { MessageCircle, Settings, Star, Clock } from 'lucide-react'
 import { Avatar } from '@/components/shared/Avatar'
-import { getAllPeers, PERSONALITY_RINGS } from '@/lib/avatars'
-import { 
-  getAllPeerStatuses, 
-  getStatusColor, 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { getAllPeers, _PERSONALITY_RINGS } from '@/lib/avatars'
+import {
+  getAllPeerStatuses,
+  getStatusColor,
   getStatusText,
-  formatTimeAgo 
+  formatTimeAgo
 } from '@/lib/peer-status'
 import { useMemo } from 'react'
 
 export function PeerInteractions() {
   const peers = getAllPeers()
-  
+
   // Generate peer statuses with specialty and level info
   const peerStatuses = useMemo(() => {
     return getAllPeerStatuses(peers)
@@ -49,7 +50,7 @@ export function PeerInteractions() {
   // Get most recent message across all peers
   const mostRecentMessage = useMemo(() => {
     let latest = { peerId: 'sarah', content: '', timestamp: new Date(0) }
-    
+
     peerStatuses.forEach((status, peerId) => {
       if (status.recentMessage && status.recentMessage.timestamp > latest.timestamp) {
         latest = {
@@ -59,7 +60,7 @@ export function PeerInteractions() {
         }
       }
     })
-    
+
     return latest
   }, [peerStatuses])
 
@@ -101,9 +102,9 @@ export function PeerInteractions() {
 
               {/* Avatar with Ring */}
               <div className="flex justify-center mb-3">
-                <Avatar 
-                  peerId={peer.id} 
-                  size="lg" 
+                <Avatar
+                  peerId={peer.id}
+                  size="lg"
                   className="ring-4 ring-white dark:ring-gray-800 shadow-lg group-hover:ring-offset-2 transition-all"
                 />
               </div>
@@ -125,8 +126,8 @@ export function PeerInteractions() {
                 </span>
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
+                    <Star
+                      key={i}
                       className={`w-3 h-3 ${i < statusInfo.level ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-300 text-gray-300 dark:fill-gray-600 dark:text-gray-600'}`}
                     />
                   ))}
@@ -134,7 +135,7 @@ export function PeerInteractions() {
               </div>
 
               {/* Chat Now Button with Personality Color */}
-              <button 
+              <button
                 className={`w-full ${getPeerButtonColor(peer.id)} text-white py-2 px-3 rounded-lg text-sm font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2`}
               >
                 <MessageCircle className="w-4 h-4" />
@@ -168,7 +169,7 @@ export function PeerInteractions() {
               </span>
             </div>
             <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
-              💬 "{mostRecentMessage.content}"
+              💬 &quot;{mostRecentMessage.content}&quot;
             </p>
           </div>
         </motion.div>

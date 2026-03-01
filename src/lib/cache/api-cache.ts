@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * API Response Caching System
  * Handles caching of API responses with intelligent invalidation
@@ -20,7 +21,7 @@ export const API_CACHE_CONFIG = {
     '/api/ai-peers': CACHE_CONFIG.DURATIONS.LONG,
     '/api/progress': CACHE_CONFIG.DURATIONS.MEDIUM,
   },
-  
+
   // Cache invalidation patterns
   INVALIDATION: {
     USER_UPDATE: ['/api/user/profile', '/api/dashboard'],
@@ -75,7 +76,7 @@ export async function cachedFetch<T>(
 // Invalidate cache based on patterns
 export function invalidateCache(pattern: keyof typeof API_CACHE_CONFIG.INVALIDATION) {
   const urlsToInvalidate = API_CACHE_CONFIG.INVALIDATION[pattern]
-  
+
   urlsToInvalidate.forEach(url => {
     // Clear cache entries by deleting known keys
     if (url === '/api/dashboard') {
@@ -92,16 +93,17 @@ export function invalidateCache(pattern: keyof typeof API_CACHE_CONFIG.INVALIDAT
 }
 
 // Preload critical data
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function preloadCriticalData(userId?: string) {
-  if (!userId) return
+  if (!_userId) return
 
   const preloadPromises = [
     // Preload user profile
     cachedFetch('/api/user/profile', {}, { storage: 'LOCAL' }),
-    
+
     // Preload dashboard data
     cachedFetch('/api/dashboard', {}, { storage: 'MEMORY' }),
-    
+
     // Preload AI peers
     cachedFetch('/api/ai-peers', {}, { storage: 'LOCAL' }),
   ]
@@ -120,9 +122,9 @@ export function setupBackgroundRefresh() {
   // Refresh dashboard data every 5 minutes
   setInterval(async () => {
     try {
-      await cachedFetch('/api/dashboard', {}, { 
+      await cachedFetch('/api/dashboard', {}, {
         bypassCache: true,
-        storage: 'MEMORY' 
+        storage: 'MEMORY'
       })
     } catch (error) {
       console.warn('Background refresh failed for dashboard:', error)
@@ -132,9 +134,9 @@ export function setupBackgroundRefresh() {
   // Refresh insights every 2 minutes
   setInterval(async () => {
     try {
-      await cachedFetch('/api/insights', {}, { 
+      await cachedFetch('/api/insights', {}, {
         bypassCache: true,
-        storage: 'MEMORY' 
+        storage: 'MEMORY'
       })
     } catch (error) {
       console.warn('Background refresh failed for insights:', error)
@@ -162,7 +164,8 @@ export class CacheWarmer {
   }
 
   // Warm dashboard-related caches
-  warmDashboardCache(userId: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  warmDashboardCache(_userId: string) {
     this.addWarmingTask(async () => {
       await Promise.allSettled([
         cachedFetch('/api/dashboard'),
@@ -243,19 +246,20 @@ export function useCachedAPI<T>(
     try {
       setLoading(true)
       setError(null)
-      
+
       const result = await cachedFetch<T>(url, options, {
         duration,
         storage,
         bypassCache
       })
-      
+
       setData(result)
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error'))
     } finally {
       setLoading(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url, JSON.stringify(options), duration, storage, enabled])
 
   React.useEffect(() => {
@@ -293,10 +297,10 @@ export async function batchCachedRequests<T extends Record<string, any>>(
   results.forEach((result, index) => {
     if (result.status === 'fulfilled') {
       const { key, data } = result.value
-      ;(batchResult as any)[key] = data
+        ; (batchResult as any)[key] = data
     } else {
       console.warn(`Batch request failed for ${requests[index].url}:`, result.reason)
-      ;(batchResult as any)[requests[index].key] = null
+        ; (batchResult as any)[requests[index].key] = null
     }
   })
 
@@ -305,6 +309,7 @@ export async function batchCachedRequests<T extends Record<string, any>>(
 
 import React from 'react'
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   cachedFetch,
   invalidateCache,

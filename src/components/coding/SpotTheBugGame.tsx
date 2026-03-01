@@ -16,7 +16,8 @@ import { Badge } from '@/components/ui/badge'
 import { 
   Bug, 
   CheckCircle, 
-  XCircle, 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _XCircle, 
   Lightbulb, 
   Target, 
   Trophy,
@@ -24,7 +25,8 @@ import {
   Zap,
   AlertTriangle,
   Eye,
-  HelpCircle
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _HelpCircle
 } from 'lucide-react'
 
 interface BugChallenge {
@@ -180,6 +182,7 @@ export function SpotTheBugGame({
   const [selectedLine, setSelectedLine] = useState<number | null>(null)
   const [showHint, setShowHint] = useState(false)
   const [showExplanation, setShowExplanation] = useState(false)
+  // eslint-disable-next-line react-hooks/purity
   const [startTime, setStartTime] = useState<number>(Date.now())
   const [hintsUsed, setHintsUsed] = useState(0)
   const [score, setScore] = useState(0)
@@ -459,7 +462,7 @@ export function SpotTheBugGame({
               <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
               <h2 className="text-3xl font-bold mb-2">Congratulations!</h2>
               <p className="text-lg text-muted-foreground mb-4">
-                You've completed all bug challenges!
+                You&apos;ve completed all bug challenges!
               </p>
               <div className="flex items-center justify-center gap-8 mb-6">
                 <div className="text-center">

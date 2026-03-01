@@ -206,7 +206,8 @@ describe('HeroWelcomeSection', () => {
       )
 
       // Get initial message
-      const initialMessage = screen.getByText(/Keep up the great work|Your problem-solving|I've noticed/i).textContent
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _initialMessage = screen.getByText(/Keep up the great work|Your problem-solving|I've noticed/i).textContent
 
       // Fast-forward 8 seconds
       jest.advanceTimersByTime(8000)

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { learningInsightsOperations } from '@/lib/database/operations'
+import { learningInsightsOperations, userProfileOperations } from '@/lib/database/operations'
 import { analyzeUserLearningPatterns } from '@/lib/utils/pattern-detection'
 import { generateProactiveRecommendations } from '@/lib/utils/proactive-recommendations'
 
@@ -8,10 +9,11 @@ import { generateProactiveRecommendations } from '@/lib/utils/proactive-recommen
  * GET /api/insights
  * Get user's learning insights and recommendations
  */
-export async function GET(request: NextRequest) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function GET(_request: NextRequest) {
   try {
     const { userId } = await auth()
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -23,12 +25,24 @@ export async function GET(request: NextRequest) {
     const includeRecommendations = searchParams.get('recommendations') === 'true'
     const includeDismissed = searchParams.get('dismissed') === 'true'
 
-    // Get existing insights from database
-    const existingInsights = await learningInsightsOperations.getActiveByUserId(userId)
-    
+    // Get user profile to get internal UUID
+    const userProfile = await userProfileOperations.getByClerkId(userId)
+
+    if (!userProfile) {
+      return NextResponse.json(
+        { error: 'Profile not found' },
+        { status: 404 }
+      )
+    }
+
+    const supabaseUserId = userProfile.id
+
+    // Get existing insights from database using internal UUID
+    const existingInsights = await learningInsightsOperations.getActiveByUserId(supabaseUserId)
+
     // Filter out dismissed insights unless specifically requested
-    const activeInsights = includeDismissed 
-      ? existingInsights 
+    const activeInsights = includeDismissed
+      ? existingInsights
       : existingInsights.filter(insight => !insight.dismissed)
 
     let recommendations: any[] = []
@@ -37,32 +51,32 @@ export async function GET(request: NextRequest) {
     if (includeRecommendations) {
       try {
         // Generate fresh pattern analysis and recommendations
-        const patternAnalysis = await analyzeUserLearningPatterns(userId)
+        const patternAnalysis = await analyzeUserLearningPatterns(supabaseUserId)
         patterns = patternAnalysis.patterns
-        
+
         // Generate new insights from patterns if needed
         const newInsights = patternAnalysis.insights
-        
+
         // Save new insights to database
         for (const newInsight of newInsights) {
           try {
             // Check if similar insight already exists
-            const existingSimilar = existingInsights.find(existing => 
+            const existingSimilar = existingInsights.find(existing =>
               existing.insight_type === newInsight.insight_type &&
               existing.title === newInsight.title &&
               !existing.dismissed
             )
-            
+
             if (!existingSimilar) {
-              await learningInsightsOperations.create(userId, newInsight)
+              await learningInsightsOperations.create(supabaseUserId, newInsight)
             }
           } catch (error) {
             console.warn('Failed to save new insight:', error)
           }
         }
-        
+
         // Generate proactive recommendations
-        recommendations = await generateProactiveRecommendations(userId)
+        recommendations = await generateProactiveRecommendations(supabaseUserId)
       } catch (error) {
         console.warn('Failed to generate recommendations:', error)
         recommendations = []
@@ -71,12 +85,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Get updated insights after potentially adding new ones
-    const finalInsights = includeRecommendations 
-      ? await learningInsightsOperations.getActiveByUserId(userId)
+    const finalInsights = includeRecommendations
+      ? await learningInsightsOperations.getActiveByUserId(supabaseUserId)
       : activeInsights
 
-    const filteredFinalInsights = includeDismissed 
-      ? finalInsights 
+    const filteredFinalInsights = includeDismissed
+      ? finalInsights
       : finalInsights.filter(insight => !insight.dismissed)
 
     return NextResponse.json({
@@ -106,16 +120,24 @@ export async function GET(request: NextRequest) {
  * POST /api/insights
  * Create a new learning insight
  */
-export async function POST(request: NextRequest) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function POST(_request: NextRequest) {
   try {
     const { userId } = await auth()
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
+
+    // Get user profile to get internal UUID
+    const userProfile = await userProfileOperations.getByClerkId(userId)
+    if (!userProfile) {
+      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+    }
+    const supabaseUserId = userProfile.id
 
     const body = await request.json()
     const {
@@ -135,7 +157,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const newInsight = await learningInsightsOperations.create(userId, {
+    const newInsight = await learningInsightsOperations.create(supabaseUserId, {
       insight_type,
       title,
       message,
@@ -165,10 +187,11 @@ export async function POST(request: NextRequest) {
  * PUT /api/insights
  * Trigger fresh insight generation and analysis
  */
-export async function PUT(request: NextRequest) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function PUT(_request: NextRequest) {
   try {
     const { userId } = await auth()
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -176,15 +199,22 @@ export async function PUT(request: NextRequest) {
       )
     }
 
+    // Get user profile to get internal UUID
+    const userProfile = await userProfileOperations.getByClerkId(userId)
+    if (!userProfile) {
+      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+    }
+    const supabaseUserId = userProfile.id
+
     // Force regeneration of insights and recommendations
-    const patternAnalysis = await analyzeUserLearningPatterns(userId)
-    const recommendations = await generateProactiveRecommendations(userId)
+    const patternAnalysis = await analyzeUserLearningPatterns(supabaseUserId)
+    const recommendations = await generateProactiveRecommendations(supabaseUserId)
 
     // Save new insights to database
     const savedInsights = []
     for (const newInsight of patternAnalysis.insights) {
       try {
-        const saved = await learningInsightsOperations.create(userId, newInsight)
+        const saved = await learningInsightsOperations.create(supabaseUserId, newInsight)
         savedInsights.push(saved)
       } catch (error) {
         console.warn('Failed to save insight during regeneration:', error)
@@ -192,7 +222,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Get all current insights
-    const allInsights = await learningInsightsOperations.getActiveByUserId(userId)
+    const allInsights = await learningInsightsOperations.getActiveByUserId(supabaseUserId)
     const activeInsights = allInsights.filter(insight => !insight.dismissed)
 
     return NextResponse.json({

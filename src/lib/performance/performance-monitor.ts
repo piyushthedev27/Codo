@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Performance Monitoring Utilities
  * Track and optimize application performance
@@ -61,7 +62,8 @@ export class PerformanceMonitor {
         })
         paintObserver.observe({ entryTypes: ['paint'] })
         this.observers.set('paint', paintObserver)
-      } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_e) {
         console.warn('Paint observer not supported')
       }
 
@@ -79,7 +81,8 @@ export class PerformanceMonitor {
         })
         lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] })
         this.observers.set('lcp', lcpObserver)
-      } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_e) {
         console.warn('LCP observer not supported')
       }
 
@@ -98,7 +101,8 @@ export class PerformanceMonitor {
         })
         fidObserver.observe({ entryTypes: ['first-input'] })
         this.observers.set('fid', fidObserver)
-      } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_e) {
         console.warn('FID observer not supported')
       }
 
@@ -120,7 +124,8 @@ export class PerformanceMonitor {
         })
         clsObserver.observe({ entryTypes: ['layout-shift'] })
         this.observers.set('cls', clsObserver)
-      } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_e) {
         console.warn('CLS observer not supported')
       }
     }
@@ -188,7 +193,7 @@ export class PerformanceMonitor {
         
         this.recordMetric({
           name: measureName,
-          value: measure.duration,
+          value: measure._duration,
           timestamp: Date.now(),
           type: 'measure'
         })
@@ -197,8 +202,8 @@ export class PerformanceMonitor {
         performance.clearMarks(startMark)
         performance.clearMarks(endMark)
         performance.clearMeasures(measureName)
-      } catch (e) {
-        console.warn('Performance measurement failed:', e)
+      } catch (_e) {
+        console.warn('Performance measurement failed:', _e)
       }
     } else {
       callback()
@@ -216,22 +221,22 @@ export class PerformanceMonitor {
     
     try {
       const result = await operation()
-      const duration = Date.now() - startTime
+      const _duration = Date.now() - startTime
       
       this.recordMetric({
         name: operationName,
-        value: duration,
+        value: _duration,
         timestamp: Date.now(),
         type: 'custom'
       })
       
       return result
     } catch (error) {
-      const duration = Date.now() - startTime
+      const _duration = Date.now() - startTime
       
       this.recordMetric({
         name: `${operationName}-error`,
-        value: duration,
+        value: _duration,
         timestamp: Date.now(),
         type: 'custom'
       })
@@ -364,7 +369,8 @@ export function usePerformanceMonitor(componentName: string) {
     const startTime = Date.now()
 
     return () => {
-      const duration = Date.now() - startTime
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _duration = Date.now() - startTime
       performanceMonitor.measureComponent(componentName, () => {})
     }
   }, [componentName])

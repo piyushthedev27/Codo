@@ -27,6 +27,12 @@ export function checkSpeechSupport() {
   }
 }
 
+// Check network connectivity
+export function checkNetworkConnectivity(): boolean {
+  if (typeof navigator === 'undefined') return true
+  return navigator.onLine
+}
+
 // Get available voices
 export function getAvailableVoices(): SpeechSynthesisVoice[] {
   if (!('speechSynthesis' in window)) return []

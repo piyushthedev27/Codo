@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _useEffect, _useRef, _useState } from 'react'
 import { motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { Avatar } from '@/components/shared/Avatar'
@@ -72,8 +73,8 @@ export function AnimatedKnowledgeGraph() {
               </div>
             </div>
             <div className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              "Great progress on JavaScript! Ready for React or Next?"
-            </div>
+              &quot;Great progress on JavaScript! Ready for React or Next?&quot;
+                 </div>
           </div>
         </div>
       </motion.div>

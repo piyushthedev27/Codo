@@ -68,7 +68,7 @@ export default function SpotTheBugPage() {
             </div>
             <h3 className="font-medium mb-2">Click the Bug</h3>
             <p className="text-sm text-muted-foreground">
-              Click on the line of code that contains the bug. Use hints if you get stuck, but they'll reduce your score.
+              Click on the line of code that contains the bug. Use hints if you get stuck, but they&apos;ll reduce your score.
             </p>
           </div>
           <div className="text-center">
@@ -90,7 +90,7 @@ export default function SpotTheBugPage() {
       <Card className="p-6">
         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
           <Users className="w-5 h-5 text-green-500" />
-          Common Bug Types You'll Encounter
+          Common Bug Types You&apos;ll Encounter
         </h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div>

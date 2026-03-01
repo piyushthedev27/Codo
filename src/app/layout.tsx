@@ -4,8 +4,6 @@ import './globals.css'
 import '@/styles/mobile-optimizations.css'
 import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from '@/components/ui/ThemeProvider'
-import { Header } from '@/components/layout/Header'
-import { Footer } from '@/components/layout/Footer'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -58,11 +56,7 @@ export default function RootLayout({
             defaultTheme="dark"
             storageKey="codo-ui-theme"
           >
-            <Header />
-            <main className="pt-16">
-              {children}
-            </main>
-            <Footer />
+            {children}
           </ThemeProvider>
         </body>
       </html>

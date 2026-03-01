@@ -278,8 +278,8 @@ export function AIPeerShowcase() {
                     <Avatar peerId="sarah" size="sm" />
                     <div className="bg-white dark:bg-gray-800 p-3 rounded-lg flex-1 border border-gray-200 dark:border-gray-700">
                       <p className="text-sm text-gray-900 dark:text-white">
-                        "I'm confused about useEffect. When does it run exactly?"
-                      </p>
+                        &quot;I&apos;m confused about useEffect. When does it run exactly?&quot;
+                           </p>
                     </div>
                   </div>
                   
@@ -287,8 +287,8 @@ export function AIPeerShowcase() {
                     <Avatar peerId="alex" size="sm" />
                     <div className="bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg flex-1 border border-blue-200 dark:border-blue-700">
                       <p className="text-sm text-gray-900 dark:text-white">
-                        "Great question! It runs after every render by default..."
-                      </p>
+                        &quot;Great question! It runs after every render by default...&quot;
+                           </p>
                     </div>
                   </div>
                   
@@ -296,8 +296,8 @@ export function AIPeerShowcase() {
                     <Avatar peerId="jordan" size="sm" />
                     <div className="bg-green-50 dark:bg-green-900/30 p-3 rounded-lg flex-1 border border-green-200 dark:border-green-700">
                       <p className="text-sm text-gray-900 dark:text-white">
-                        "Nice explanation! Can you spot the bug in my code? 🤔"
-                      </p>
+                        &quot;Nice explanation! Can you spot the bug in my code? 🤔&quot;
+                           </p>
                     </div>
                   </div>
                 </div>

@@ -10,12 +10,31 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Brain } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Brain, Home, Network, BookOpen, Code, Users, BarChart, Settings, Trophy, Target, Lightbulb } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { navigationConfig } from './navigation-config'
+import { navigationConfig, type NavigationIconName } from './navigation-config'
 import { NavigationItem } from './types'
 import { useUser } from '@clerk/nextjs'
-import { Avatar } from '@/components/shared/Avatar'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _Avatar } from '@/components/shared/Avatar'
+
+// Icon mapping for client-side rendering
+const ICON_MAP = {
+  Home,
+  Network,
+  BookOpen,
+  Code,
+  Users,
+  BarChart,
+  Settings,
+  Trophy,
+  Target,
+  Lightbulb
+} as const
+
+function getIconComponent(iconName: NavigationIconName) {
+  return ICON_MAP[iconName]
+}
 
 interface SidebarNavigationProps {
   className?: string
@@ -110,10 +129,10 @@ export function SidebarNavigation({
                 </span>
               </div>
             )}
-            
+
             {section.items.map((item) => {
               const active = isActive(item)
-              const Icon = item.icon
+              const Icon = getIconComponent(item.iconName)
 
               return (
                 <Link key={item.id} href={item.href}>
@@ -205,6 +224,7 @@ export function SidebarNavigation({
           )}>
             <div className="flex-shrink-0">
               {user.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={user.imageUrl}
                   alt={user.firstName || 'User'}
@@ -216,7 +236,7 @@ export function SidebarNavigation({
                 </div>
               )}
             </div>
-            
+
             <AnimatePresence mode="wait">
               {!collapsed && (
                 <motion.div
@@ -230,7 +250,7 @@ export function SidebarNavigation({
                     {user.firstName || 'User'}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                    Level 1 Learner
+                    Level {(user.publicMetadata?.current_level as number) || 1} Learner
                   </div>
                 </motion.div>
               )}

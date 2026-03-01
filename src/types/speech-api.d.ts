@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // TypeScript declarations for Web Speech API
 
 interface SpeechRecognition extends EventTarget {
@@ -7,11 +8,11 @@ interface SpeechRecognition extends EventTarget {
   lang: string
   maxAlternatives: number
   serviceURI: string
-  
+
   start(): void
   stop(): void
   abort(): void
-  
+
   onaudiostart: ((this: SpeechRecognition, ev: Event) => any) | null
   onaudioend: ((this: SpeechRecognition, ev: Event) => any) | null
   onend: ((this: SpeechRecognition, ev: Event) => any) | null
@@ -35,7 +36,7 @@ interface SpeechRecognitionErrorEvent extends Event {
   readonly message: string
 }
 
-type SpeechRecognitionErrorCode = 
+type SpeechRecognitionErrorCode =
   | 'no-speech'
   | 'aborted'
   | 'audio-capture'
@@ -76,12 +77,12 @@ interface SpeechGrammar {
   weight: number
 }
 
-declare var SpeechRecognition: {
+declare let SpeechRecognition: {
   prototype: SpeechRecognition
   new(): SpeechRecognition
 }
 
-declare var webkitSpeechRecognition: {
+declare let webkitSpeechRecognition: {
   prototype: SpeechRecognition
   new(): SpeechRecognition
 }

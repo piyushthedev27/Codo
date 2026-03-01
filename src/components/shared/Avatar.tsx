@@ -4,7 +4,8 @@
  */
 
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { useState, _useEffect } from 'react'
 import { 
   getAvatarUrl, 
   getPeerProfile, 

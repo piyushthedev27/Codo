@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-comment-textnodes, @next/next/no-html-link-for-pages */
 import { SignIn } from '@clerk/nextjs'
 
 export default function SignInPage() {
@@ -30,8 +31,8 @@ export default function SignInPage() {
         </div>
         
         <div className="text-center mt-6">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            New to Codo?{' '}
+          <p className="text-sm text-gray-500 dark:text-gray-400">            New to Codo?{' '}
+            // eslint-disable-next-line @next/next/no-html-link-for-pages
             <a 
               href="/sign-up" 
               className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"

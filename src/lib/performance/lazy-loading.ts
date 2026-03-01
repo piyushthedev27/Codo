@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Lazy Loading and Performance Optimization Utilities
  * Provides efficient component loading and image optimization
@@ -18,9 +19,9 @@ export function lazyWithRetry<T extends ComponentType<any>>(
     for (let i = 0; i < retries; i++) {
       try {
         return await componentImport()
-      } catch (error) {
+      } catch (_error) {
         if (i === retries - 1) {
-          throw error
+          throw _error
         }
         // Wait before retrying
         await new Promise(resolve => setTimeout(resolve, interval * (i + 1)))
@@ -226,7 +227,8 @@ export function measurePerformance(componentName: string, callback: () => void) 
       performance.clearMarks(startMark)
       performance.clearMarks(endMark)
       performance.clearMeasures(measureName)
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       // Ignore errors in performance measurement
     }
   } else {

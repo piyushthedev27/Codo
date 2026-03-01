@@ -40,6 +40,7 @@ export function RecommendedLessons({ lessons: propLessons, enableAPI = false }: 
     if (enableAPI && !propLessons) {
       fetchRecommendations()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enableAPI, propLessons])
 
   const fetchRecommendations = async () => {
@@ -47,7 +48,7 @@ export function RecommendedLessons({ lessons: propLessons, enableAPI = false }: 
       setLoading(true)
       const response = await fetch('/api/recommendations')
       const data = await response.json()
-      
+
       if (data.recommendations) {
         // Transform API response to component format
         const transformedLessons = data.recommendations.map((rec: RecommendedLessonType) => ({
@@ -110,7 +111,11 @@ export function RecommendedLessons({ lessons: propLessons, enableAPI = false }: 
             <BookOpen className="w-5 h-5" />
             Recommended for You
           </CardTitle>
-          <Button variant="ghost" size="sm">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => window.location.href = '/lessons'}
+          >
             <ExternalLink className="w-4 h-4 mr-1" />
             Explore More
           </Button>
@@ -144,7 +149,7 @@ export function RecommendedLessons({ lessons: propLessons, enableAPI = false }: 
         ) : (
           <div className="space-y-4">
             {lessons.map((lesson) => (
-              <div 
+              <div
                 key={lesson.id}
                 className={`group relative bg-white dark:bg-gray-800 rounded-lg border-l-4 ${getPeerAccentColor(lesson.recommendedBy)} border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-200`}
               >
@@ -174,13 +179,12 @@ export function RecommendedLessons({ lessons: propLessons, enableAPI = false }: 
                       </div>
                       <div className="flex items-center gap-1">
                         {[...Array(3)].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            className={`w-4 h-4 ${
-                              i < getDifficultyStars(lesson.difficulty) 
-                                ? 'fill-yellow-400 text-yellow-400' 
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${i < getDifficultyStars(lesson.difficulty)
+                                ? 'fill-yellow-400 text-yellow-400'
                                 : 'text-gray-300 dark:text-gray-600'
-                            }`} 
+                              }`}
                           />
                         ))}
                         <span className="text-sm text-gray-600 dark:text-gray-400 ml-1 capitalize">
@@ -204,7 +208,7 @@ export function RecommendedLessons({ lessons: propLessons, enableAPI = false }: 
                       </span>
                       {lesson.recommendationReason && (
                         <span className="text-xs text-gray-500 dark:text-gray-500 italic">
-                          "{lesson.recommendationReason}"
+                          &quot;{lesson.recommendationReason}&quot;
                         </span>
                       )}
                     </div>
@@ -215,9 +219,10 @@ export function RecommendedLessons({ lessons: propLessons, enableAPI = false }: 
                 </div>
 
                 {/* Start Button */}
-                <Button 
+                <Button
                   className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white group-hover:shadow-md transition-all duration-200"
                   size="sm"
+                  onClick={() => window.location.href = `/lessons/${lesson.id}`}
                 >
                   <Play className="w-4 h-4 mr-2" />
                   Start Lesson
@@ -230,7 +235,11 @@ export function RecommendedLessons({ lessons: propLessons, enableAPI = false }: 
         {/* View More Button */}
         {lessons.length > 0 && (
           <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <Button variant="outline" className="w-full">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => window.location.href = '/lessons'}
+            >
               View All Recommendations
               <ExternalLink className="w-4 h-4 ml-2" />
             </Button>

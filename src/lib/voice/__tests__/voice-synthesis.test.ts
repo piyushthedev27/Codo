@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Mock window objects before importing the modules
 Object.defineProperty(global, 'window', {
   value: {
@@ -87,12 +88,13 @@ describe('VoiceSynthesisManager', () => {
     const onError = jest.fn()
 
     ;(global.window.speechSynthesis.speak as jest.Mock).mockImplementation((utterance) => {
-      setTimeout(() => utterance.onerror?.({ error: 'synthesis-failed' }), 100)
+      setTimeout(() => utterance.onerror?.({ _error: 'synthesis-failed' }), 100)
     })
 
     try {
       await manager.speak({ text, onError })
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       expect(onError).toHaveBeenCalled()
     }
   })

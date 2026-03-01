@@ -104,7 +104,7 @@ export function SocialProof() {
           
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
             Join thousands of developers who have transformed their learning experience 
-            with AI-powered education. Here's what they're achieving:
+            with AI-powered education. Here&apos;s what they&apos;re achieving:
           </p>
         </motion.div>
 
@@ -177,13 +177,13 @@ export function SocialProof() {
 
                 {/* Testimonial Text */}
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-                  "{testimonial.text}"
+                  &quot;{testimonial.text}&quot;
                 </p>
 
                 {/* Highlight */}
                 <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg mb-6">
                   <div className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-                    💡 "{testimonial.highlight}"
+                    💡 &quot;{testimonial.highlight}&quot;
                   </div>
                 </div>
 

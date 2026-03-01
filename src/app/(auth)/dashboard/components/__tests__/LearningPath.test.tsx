@@ -96,7 +96,8 @@ describe('LearningPath', () => {
 
   describe('Lesson Status', () => {
     it('displays completed lessons with checkmark icon', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <LearningPath
           knowledgeGraph={mockKnowledgeGraph}
           upcomingMilestones={mockUpcomingMilestones}
@@ -109,7 +110,8 @@ describe('LearningPath', () => {
     })
 
     it('displays in-progress lessons with circle icon', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <LearningPath
           knowledgeGraph={mockKnowledgeGraph}
           upcomingMilestones={mockUpcomingMilestones}
@@ -122,7 +124,8 @@ describe('LearningPath', () => {
     })
 
     it('displays locked lessons with lock icon', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <LearningPath
           knowledgeGraph={mockKnowledgeGraph}
           upcomingMilestones={mockUpcomingMilestones}
@@ -163,7 +166,8 @@ describe('LearningPath', () => {
     })
 
     it('shows milestone progress bar', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <LearningPath
           knowledgeGraph={mockKnowledgeGraph}
           upcomingMilestones={mockUpcomingMilestones}
@@ -191,7 +195,8 @@ describe('LearningPath', () => {
     })
 
     it('button has proper styling classes', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <LearningPath
           knowledgeGraph={mockKnowledgeGraph}
           upcomingMilestones={mockUpcomingMilestones}
@@ -219,7 +224,8 @@ describe('LearningPath', () => {
 
   describe('Difficulty Badges', () => {
     it('displays difficulty badge for track', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <LearningPath
           knowledgeGraph={mockKnowledgeGraph}
           upcomingMilestones={mockUpcomingMilestones}
@@ -234,7 +240,8 @@ describe('LearningPath', () => {
 
   describe('Responsive Design', () => {
     it('applies responsive classes for mobile', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <LearningPath
           knowledgeGraph={mockKnowledgeGraph}
           upcomingMilestones={mockUpcomingMilestones}
@@ -249,7 +256,8 @@ describe('LearningPath', () => {
 
   describe('Accessibility', () => {
     it('has proper ARIA labels for progress', () => {
-      const { container } = render(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _container } = render(
         <LearningPath
           knowledgeGraph={mockKnowledgeGraph}
           upcomingMilestones={mockUpcomingMilestones}

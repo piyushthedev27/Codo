@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Error Boundary Component
  * Catches React errors and displays user-friendly error messages

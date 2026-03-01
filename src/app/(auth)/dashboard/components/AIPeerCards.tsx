@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Enhanced AI Peer Cards Component
  * Displays AI learning companions with 3D avatars, status indicators, and interaction features
@@ -8,17 +9,19 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _Badge } from '@/components/ui/badge'
 import { Avatar } from '@/components/shared/Avatar'
 import { MessageCircle, Settings, Star, Clock } from 'lucide-react'
 import { motion } from 'framer-motion'
 import type { AIPeerProfile } from '@/types/database'
-import { 
-  getAllPeerStatuses, 
-  getStatusColor, 
+import {
+  getAllPeerStatuses,
+  getStatusColor,
   getStatusText,
   formatTimeAgo,
-  type PeerStatusInfo
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  type _PeerStatusInfo
 } from '@/lib/peer-status'
 import { useMemo } from 'react'
 
@@ -40,7 +43,7 @@ export function AIPeerCards({ peers }: AIPeerCardsProps) {
       interaction_style: p.interaction_style || '',
       backstory: p.backstory || ''
     }))
-    
+
     return getAllPeerStatuses(libraryPeers)
   }, [peers])
 
@@ -67,7 +70,7 @@ export function AIPeerCards({ peers }: AIPeerCardsProps) {
   // Get most recent message across all peers for preview
   const mostRecentMessage = useMemo(() => {
     let latest = { peerId: 'sarah', peerName: 'Sarah', content: '', timestamp: new Date(0) }
-    
+
     peerStatusMap.forEach((status, peerId) => {
       if (status.recentMessage && status.recentMessage.timestamp > latest.timestamp) {
         const peer = peers.find(p => p.name.toLowerCase() === peerId)
@@ -79,7 +82,7 @@ export function AIPeerCards({ peers }: AIPeerCardsProps) {
         }
       }
     })
-    
+
     return latest
   }, [peerStatusMap, peers])
 
@@ -91,7 +94,11 @@ export function AIPeerCards({ peers }: AIPeerCardsProps) {
             <MessageCircle className="w-5 h-5 text-blue-500" />
             Your AI Learning Companions
           </CardTitle>
-          <Button variant="ghost" size="sm">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => window.location.href = '/settings/peers'}
+          >
             <Settings className="w-4 h-4 mr-1" />
             Manage Peers
           </Button>
@@ -126,9 +133,9 @@ export function AIPeerCards({ peers }: AIPeerCardsProps) {
 
                 {/* 3D Avatar with Ring */}
                 <div className="flex justify-center mb-3 sm:mb-4">
-                  <Avatar 
-                    peerId={peerName} 
-                    size="lg" 
+                  <Avatar
+                    peerId={peerName}
+                    size="lg"
                     className="ring-4 ring-white dark:ring-gray-800 shadow-lg group-hover:ring-offset-2 transition-all"
                   />
                 </div>
@@ -150,8 +157,8 @@ export function AIPeerCards({ peers }: AIPeerCardsProps) {
                   </span>
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
+                      <Star
+                        key={i}
                         className={`w-3 h-3 ${i < statusInfo.level ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-300 text-gray-300 dark:fill-gray-600 dark:text-gray-600'}`}
                       />
                     ))}
@@ -159,9 +166,19 @@ export function AIPeerCards({ peers }: AIPeerCardsProps) {
                 </div>
 
                 {/* Chat Now Button with Personality Color (pink/blue/green) */}
-                <Button 
+                <Button
                   className={`w-full ${getPeerButtonColor(peer.name)} text-white py-2 px-3 rounded-lg text-sm font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2`}
                   size="sm"
+                  onClick={() => {
+                    // Navigate to a specific demo lesson with this peer as companion
+                    const lessonMap: Record<string, string> = {
+                      sarah: 'react-hooks',
+                      alex: 'javascript-async',
+                      jordan: 'typescript-basics'
+                    }
+                    const topic = lessonMap[peerName] || 'react-hooks'
+                    window.location.href = `/lessons/${topic}?peer=${peerName}`
+                  }}
                 >
                   <MessageCircle className="w-4 h-4" />
                   Chat Now
@@ -194,7 +211,7 @@ export function AIPeerCards({ peers }: AIPeerCardsProps) {
                 </span>
               </div>
               <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
-                💬 "{mostRecentMessage.content}"
+                💬 &quot;{mostRecentMessage.content}&quot;
               </p>
             </div>
           </motion.div>

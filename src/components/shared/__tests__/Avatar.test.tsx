@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Avatar Component Tests
  * Tests for enhanced 3D avatar display and engaging visual identity features
@@ -11,6 +12,7 @@ import { AI_PEERS } from '@/lib/avatars'
 jest.mock('next/image', () => {
   return function MockImage({ src, alt, onLoad, onError, ...props }: any) {
     return (
+      // eslint-disable-next-line @next/next/no-img-element
       <img 
         src={src} 
         alt={alt} 

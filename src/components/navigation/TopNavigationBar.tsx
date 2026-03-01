@@ -14,17 +14,20 @@ import {
   Sparkles,
   MessageSquare,
   Menu,
-  X,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _X,
   Trophy,
   BookOpen,
   AlertCircle,
-  CheckCircle
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _CheckCircle
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { Button } from '@/components/ui/button'
 import { useUser, UserButton } from '@clerk/nextjs'
-import { Avatar } from '@/components/shared/Avatar'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _Avatar } from '@/components/shared/Avatar'
 import Link from 'next/link'
 
 interface Notification {

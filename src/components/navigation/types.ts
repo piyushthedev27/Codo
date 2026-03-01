@@ -3,13 +3,13 @@
  * Defines the structure for navigation items and configuration
  */
 
-import { LucideIcon } from 'lucide-react'
+import type { NavigationIconName } from './navigation-config'
 
 export interface NavigationItem {
   id: string
   label: string
   href: string
-  icon: LucideIcon
+  iconName: NavigationIconName
   badge?: number
   description?: string
 }

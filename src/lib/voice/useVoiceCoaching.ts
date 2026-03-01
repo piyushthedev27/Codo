@@ -1,9 +1,12 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { voiceRecognition, startVoiceCoaching, stopVoiceRecognition } from './speech-recognition'
-import { voiceSynthesis, speakCoachingResponse, stopSpeaking } from './speech-synthesis'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _voiceRecognition, startVoiceCoaching, stopVoiceRecognition } from './speech-recognition'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { _voiceSynthesis, speakCoachingResponse, stopSpeaking } from './speech-synthesis'
 import { checkSpeechSupport } from './speech-config'
+import { getSupabaseClient } from '../database/supabase-client'
 
 export interface VoiceCoachingState {
   isListening: boolean
@@ -35,83 +38,16 @@ export function useVoiceCoaching(
     error: null
   })
 
+  const supabase = getSupabaseClient()
+
   // Check browser support on mount
   useEffect(() => {
     const support = checkSpeechSupport()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setState(prev => ({
       ...prev,
       isSupported: support.supported,
       fallbackMode: !support.supported
-    }))
-  }, [])
-
-  // Handle voice question
-  const handleVoiceQuestion = useCallback(async (question: string) => {
-    try {
-      setState(prev => ({ ...prev, error: null }))
-      onVoiceQuestion?.(question)
-      
-      // Generate mock response for demo
-      const response = generateMockResponse(question)
-      onCoachingResponse?.(response)
-
-      // Speak the response if supported
-      if (state.isSupported && !state.fallbackMode) {
-        await speakResponse(response)
-      }
-    } catch (error) {
-      setState(prev => ({ 
-        ...prev, 
-        error: 'Failed to process voice question' 
-      }))
-    }
-  }, [state.isSupported, state.fallbackMode, onVoiceQuestion, onCoachingResponse])
-
-  const startListening = useCallback(async () => {
-    if (!state.isSupported) {
-      setState(prev => ({ ...prev, fallbackMode: true }))
-      return
-    }
-
-    try {
-      setState(prev => ({ ...prev, error: null }))
-      
-      await startVoiceCoaching(
-        handleVoiceQuestion,
-        () => setState(prev => ({ 
-          ...prev, 
-          isListening: true, 
-          currentTranscript: '' 
-        })),
-        () => setState(prev => ({ 
-          ...prev, 
-          isListening: false, 
-          currentTranscript: '' 
-        })),
-        (error) => {
-          setState(prev => ({
-            ...prev,
-            isListening: false,
-            error: `Voice recognition error: ${error.error}`,
-            fallbackMode: error.error === 'not-allowed'
-          }))
-        }
-      )
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: 'Failed to start voice recognition',
-        fallbackMode: true
-      }))
-    }
-  }, [state.isSupported, handleVoiceQuestion])
-
-  const stopListening = useCallback(() => {
-    stopVoiceRecognition()
-    setState(prev => ({ 
-      ...prev, 
-      isListening: false, 
-      currentTranscript: '' 
     }))
   }, [])
 
@@ -123,9 +59,83 @@ export function useVoiceCoaching(
         () => setState(prev => ({ ...prev, isSpeaking: true })),
         () => setState(prev => ({ ...prev, isSpeaking: false }))
       )
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
       setState(prev => ({ ...prev, isSpeaking: false }))
     }
+  }, [])
+
+  // Handle voice question
+  const handleVoiceQuestion = useCallback(async (question: string) => {
+    try {
+      setState(prev => ({ ...prev, error: null }))
+      onVoiceQuestion?.(question)
+
+      // Fetch dynamic response from database
+      const response = await fetchCoachingResponse(question, supabase)
+      onCoachingResponse?.(response)
+
+      // Speak the response if supported
+      if (state.isSupported && !state.fallbackMode) {
+        await speakResponse(response)
+      }
+    } catch (err) {
+      console.error('Voice coaching error:', err)
+      setState(prev => ({
+        ...prev,
+        error: 'Failed to process voice question'
+      }))
+    }
+  }, [state.isSupported, state.fallbackMode, onVoiceQuestion, onCoachingResponse, supabase, speakResponse])
+
+  const startListening = useCallback(async () => {
+    if (!state.isSupported) {
+      setState(prev => ({ ...prev, fallbackMode: true }))
+      return
+    }
+
+    try {
+      setState(prev => ({ ...prev, error: null }))
+
+      await startVoiceCoaching(
+        handleVoiceQuestion,
+        () => setState(prev => ({
+          ...prev,
+          isListening: true,
+          currentTranscript: ''
+        })),
+        () => setState(prev => ({
+          ...prev,
+          isListening: false,
+          currentTranscript: ''
+        })),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (err: any) => {
+          setState(prev => ({
+            ...prev,
+            isListening: false,
+            error: `Voice recognition error: ${err.error}`,
+            fallbackMode: err.error === 'not-allowed'
+          }))
+        }
+      )
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      setState(prev => ({
+        ...prev,
+        error: 'Failed to start voice recognition',
+        fallbackMode: true
+      }))
+    }
+  }, [state.isSupported, handleVoiceQuestion])
+
+  const stopListening = useCallback(() => {
+    stopVoiceRecognition()
+    setState(prev => ({
+      ...prev,
+      isListening: false,
+      currentTranscript: ''
+    }))
   }, [])
 
   const stopSpeakingHandler = useCallback(() => {
@@ -148,24 +158,36 @@ export function useVoiceCoaching(
   return [state, actions] as const
 }
 
-// Mock response generator for demo
-function generateMockResponse(question: string): string {
-  const responses: Record<string, string> = {
-    'for loop': "I notice you're using a for loop here. Have you considered using the map method instead?",
-    'async await': "Great use of async/await! This makes your code much more readable.",
-    'useState': "Perfect! useState is the right hook for managing component state.",
-    'function': "That's a good function structure. Consider adding type annotations.",
-    'error': "Let's break this error down step by step. What specific message are you seeing?",
-    'help': "I'm here to help! What specific part of your code are you struggling with?",
-    'default': "That's an interesting approach! Let me help you optimize this code."
+interface CoachingResponse {
+  keyword: string
+  response: string
+}
+
+// Database-driven response fetcher
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function fetchCoachingResponse(question: string, supabase: any): Promise<string> {
+  const questionLower = question.toLowerCase()
+
+  // Get all coaching responses from database
+   
+  const { data: responses, error } = await supabase
+    .from('coaching_responses')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .select('keyword, response') as { data: CoachingResponse[] | null, error: any }
+
+  if (error || !responses) {
+    console.error('Error fetching coaching responses:', error)
+    return "I'm having trouble connecting to my knowledge base right now."
   }
 
-  const questionLower = question.toLowerCase()
-  for (const [keyword, response] of Object.entries(responses)) {
-    if (questionLower.includes(keyword)) {
-      return response
+  // Find matching keyword
+  for (const item of responses) {
+    if (questionLower.includes(item.keyword.toLowerCase())) {
+      return item.response
     }
   }
 
-  return responses.default
+  // Fallback to default response
+  const defaultItem = responses.find((r: CoachingResponse) => r.keyword === 'default')
+  return defaultItem?.response || "That's an interesting question! Let's focus on the core logic first."
 }

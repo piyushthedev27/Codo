@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 /**
@@ -14,7 +15,7 @@ export const CACHE_CONFIG = {
     LONG: 2 * 60 * 60 * 1000,  // 2 hours
     VERY_LONG: 24 * 60 * 60 * 1000, // 24 hours
   },
-  
+
   // Cache keys
   KEYS: {
     USER_PROFILE: 'user_profile',
@@ -28,7 +29,7 @@ export const CACHE_CONFIG = {
     VOICE_SETTINGS: 'voice_settings',
     THEME_PREFERENCE: 'theme_preference',
   },
-  
+
   // Storage types
   STORAGE: {
     MEMORY: 'memory',
@@ -70,21 +71,21 @@ class MemoryCache {
 
   get<T>(key: string, version?: string): T | null {
     const entry = this.cache.get(key)
-    
+
     if (!entry) return null
-    
+
     // Check if expired
     if (Date.now() > entry.expiry) {
       this.cache.delete(key)
       return null
     }
-    
+
     // Check version compatibility
     if (version && entry.version && entry.version !== version) {
       this.cache.delete(key)
       return null
     }
-    
+
     return entry.data as T
   }
 
@@ -116,7 +117,7 @@ class MemoryCache {
 
 // Browser storage cache
 class BrowserCache {
-  constructor(private storage: Storage) {}
+  constructor(private storage: Storage) { }
 
   set<T>(key: string, data: T, duration: number, version?: string): boolean {
     try {
@@ -127,7 +128,7 @@ class BrowserCache {
         key,
         version
       }
-      
+
       this.storage.setItem(key, JSON.stringify(entry))
       return true
     } catch (error) {
@@ -142,19 +143,19 @@ class BrowserCache {
       if (!item) return null
 
       const entry: CacheEntry<T> = JSON.parse(item)
-      
+
       // Check if expired
       if (Date.now() > entry.expiry) {
         this.storage.removeItem(key)
         return null
       }
-      
+
       // Check version compatibility
       if (version && entry.version && entry.version !== version) {
         this.storage.removeItem(key)
         return null
       }
-      
+
       return entry.data
     } catch (error) {
       console.warn('Failed to get cache entry:', error)
@@ -186,15 +187,15 @@ class BrowserCache {
     try {
       const now = Date.now()
       const keysToRemove: string[] = []
-      
+
       for (let i = 0; i < this.storage.length; i++) {
         const key = this.storage.key(i)
         if (!key) continue
-        
+
         try {
           const item = this.storage.getItem(key)
           if (!item) continue
-          
+
           const entry: CacheEntry = JSON.parse(item)
           if (now > entry.expiry) {
             keysToRemove.push(key)
@@ -204,7 +205,7 @@ class BrowserCache {
           keysToRemove.push(key)
         }
       }
-      
+
       keysToRemove.forEach(key => this.storage.removeItem(key))
     } catch (error) {
       console.warn('Failed to cleanup cache:', error)
@@ -239,8 +240,8 @@ class CacheManager {
 
   // Set cache entry with automatic storage selection
   set<T>(
-    key: string, 
-    data: T, 
+    key: string,
+    data: T,
     duration: number = CACHE_CONFIG.DURATIONS.MEDIUM,
     storage: keyof typeof CACHE_CONFIG.STORAGE = 'MEMORY',
     version?: string
@@ -266,7 +267,7 @@ class CacheManager {
 
   // Get cache entry with fallback to other storage types
   get<T>(
-    key: string, 
+    key: string,
     storage: keyof typeof CACHE_CONFIG.STORAGE = 'MEMORY',
     version?: string
   ): T | null {
@@ -387,59 +388,59 @@ export const cacheManager = new CacheManager()
 // Convenience functions for common cache operations
 export const cache = {
   // User data caching
-  setUserProfile: (data: any) => 
+  setUserProfile: (data: any) =>
     cacheManager.set(CACHE_CONFIG.KEYS.USER_PROFILE, data, CACHE_CONFIG.DURATIONS.LONG, 'LOCAL'),
-  
-  getUserProfile: () => 
+
+  getUserProfile: () =>
     cacheManager.get(CACHE_CONFIG.KEYS.USER_PROFILE, 'LOCAL'),
 
   // Dashboard data caching
-  setDashboardData: (data: any) => 
+  setDashboardData: (data: any) =>
     cacheManager.set(CACHE_CONFIG.KEYS.DASHBOARD_DATA, data, CACHE_CONFIG.DURATIONS.MEDIUM, 'MEMORY'),
-  
-  getDashboardData: () => 
+
+  getDashboardData: () =>
     cacheManager.get(CACHE_CONFIG.KEYS.DASHBOARD_DATA, 'MEMORY'),
 
   // AI peers caching
-  setAIPeers: (data: any) => 
+  setAIPeers: (data: any) =>
     cacheManager.set(CACHE_CONFIG.KEYS.AI_PEERS, data, CACHE_CONFIG.DURATIONS.LONG, 'LOCAL'),
-  
-  getAIPeers: () => 
+
+  getAIPeers: () =>
     cacheManager.get(CACHE_CONFIG.KEYS.AI_PEERS, 'LOCAL'),
 
   // Knowledge graph caching
-  setKnowledgeGraph: (data: any) => 
+  setKnowledgeGraph: (data: any) =>
     cacheManager.set(CACHE_CONFIG.KEYS.KNOWLEDGE_GRAPH, data, CACHE_CONFIG.DURATIONS.MEDIUM, 'SESSION'),
-  
-  getKnowledgeGraph: () => 
+
+  getKnowledgeGraph: () =>
     cacheManager.get(CACHE_CONFIG.KEYS.KNOWLEDGE_GRAPH, 'SESSION'),
 
   // Lessons caching
-  setLesson: (lessonId: string, data: any) => 
+  setLesson: (lessonId: string, data: any) =>
     cacheManager.set(`${CACHE_CONFIG.KEYS.LESSONS}_${lessonId}`, data, CACHE_CONFIG.DURATIONS.VERY_LONG, 'LOCAL'),
-  
-  getLesson: (lessonId: string) => 
+
+  getLesson: (lessonId: string) =>
     cacheManager.get(`${CACHE_CONFIG.KEYS.LESSONS}_${lessonId}`, 'LOCAL'),
 
   // Insights caching
-  setInsights: (data: any) => 
+  setInsights: (data: any) =>
     cacheManager.set(CACHE_CONFIG.KEYS.INSIGHTS, data, CACHE_CONFIG.DURATIONS.SHORT, 'MEMORY'),
-  
-  getInsights: () => 
+
+  getInsights: () =>
     cacheManager.get(CACHE_CONFIG.KEYS.INSIGHTS, 'MEMORY'),
 
   // Settings caching
-  setVoiceSettings: (data: any) => 
+  setVoiceSettings: (data: any) =>
     cacheManager.set(CACHE_CONFIG.KEYS.VOICE_SETTINGS, data, CACHE_CONFIG.DURATIONS.VERY_LONG, 'LOCAL'),
-  
-  getVoiceSettings: () => 
+
+  getVoiceSettings: () =>
     cacheManager.get(CACHE_CONFIG.KEYS.VOICE_SETTINGS, 'LOCAL'),
 
   // Theme preference caching
-  setThemePreference: (theme: string) => 
+  setThemePreference: (theme: string) =>
     cacheManager.set(CACHE_CONFIG.KEYS.THEME_PREFERENCE, theme, CACHE_CONFIG.DURATIONS.VERY_LONG, 'LOCAL'),
-  
-  getThemePreference: () => 
+
+  getThemePreference: () =>
     cacheManager.get(CACHE_CONFIG.KEYS.THEME_PREFERENCE, 'LOCAL'),
 
   // Clear specific cache types
@@ -476,10 +477,10 @@ export function withCache<T>(
 
       // Fetch fresh data
       const data = await fetcher()
-      
+
       // Cache the result
       cacheManager.set(key, data, duration, storage)
-      
+
       resolve(data)
     } catch (error) {
       reject(error)
@@ -514,7 +515,7 @@ export function useCachedData<T>(
       try {
         setLoading(true)
         setError(null)
-        
+
         const result = await withCache(key, fetcher, duration, storage)
         setData(result)
       } catch (err) {
@@ -525,16 +526,17 @@ export function useCachedData<T>(
     }
 
     loadData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, enabled])
 
   const refresh = React.useCallback(async () => {
     // Clear cache and refetch
     cacheManager.delete(key, storage)
-    
+
     try {
       setLoading(true)
       setError(null)
-      
+
       const result = await withCache(key, fetcher, duration, storage)
       setData(result)
     } catch (err) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Mobile Layout Optimization Utilities
  * Provides responsive layout adjustments for small screens

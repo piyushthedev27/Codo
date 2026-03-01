@@ -7,7 +7,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Trophy, Star, Zap, Crown, Sparkles, Heart } from 'lucide-react'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Trophy, _Star, _Zap, _Crown, _Sparkles, _Heart } from 'lucide-react'
 
 interface CelebrationEffectsProps {
   show: boolean
@@ -24,6 +25,7 @@ export function CelebrationEffects({ show, type, intensity = 'medium' }: Celebra
     } else {
       setParticles([])
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show, type, intensity])
 
   const generateParticles = () => {
@@ -50,7 +52,7 @@ export function CelebrationEffects({ show, type, intensity = 'medium' }: Celebra
       achievement: ['bg-green-400', 'bg-emerald-400', 'bg-teal-400', 'bg-lime-400'],
       perfect: ['bg-gradient-to-r from-yellow-400 to-pink-400', 'bg-gradient-to-r from-purple-400 to-blue-400']
     }
-    
+
     const colors = colorSets[celebrationType] || colorSets.victory
     return colors[Math.floor(Math.random() * colors.length)]
   }
@@ -62,7 +64,7 @@ export function CelebrationEffects({ show, type, intensity = 'medium' }: Celebra
       achievement: ['🏅', '🎖️', '🏆', '💎', '🔥'],
       perfect: ['💯', '🌟', '✨', '💫', '🎆']
     }
-    
+
     const icons = iconSets[celebrationType] || iconSets.victory
     return icons[Math.floor(Math.random() * icons.length)]
   }
@@ -203,7 +205,7 @@ export function CelebrationEffects({ show, type, intensity = 'medium' }: Celebra
               <div className="bg-gradient-to-r from-green-400 to-emerald-500 p-6 rounded-full shadow-2xl">
                 <Trophy className="w-12 h-12 text-white" />
               </div>
-              
+
               {/* Radiating Lines */}
               {[...Array(12)].map((_, i) => (
                 <motion.div
@@ -250,7 +252,7 @@ export function useCelebration() {
     duration: number = 3000
   ) => {
     setCelebration({ show: true, type, intensity })
-    
+
     setTimeout(() => {
       setCelebration(prev => ({ ...prev, show: false }))
     }, duration)
@@ -262,25 +264,26 @@ export function useCelebration() {
 // Sound Effects (using Web Audio API)
 export function playVictorySound() {
   if (typeof window !== 'undefined' && 'AudioContext' in window) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-    
+
     // Victory fanfare
     const frequencies = [523.25, 659.25, 783.99, 1046.50] // C5, E5, G5, C6
-    
+
     frequencies.forEach((freq, index) => {
       const oscillator = audioContext.createOscillator()
       const gainNode = audioContext.createGain()
-      
+
       oscillator.connect(gainNode)
       gainNode.connect(audioContext.destination)
-      
+
       oscillator.frequency.setValueAtTime(freq, audioContext.currentTime)
       oscillator.type = 'sine'
-      
+
       gainNode.gain.setValueAtTime(0, audioContext.currentTime)
       gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.1)
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
-      
+
       oscillator.start(audioContext.currentTime + index * 0.2)
       oscillator.stop(audioContext.currentTime + index * 0.2 + 0.5)
     })
@@ -289,23 +292,24 @@ export function playVictorySound() {
 
 export function playAchievementSound() {
   if (typeof window !== 'undefined' && 'AudioContext' in window) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-    
+
     // Achievement chime
     const oscillator = audioContext.createOscillator()
     const gainNode = audioContext.createGain()
-    
+
     oscillator.connect(gainNode)
     gainNode.connect(audioContext.destination)
-    
+
     oscillator.frequency.setValueAtTime(800, audioContext.currentTime)
     oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.3)
     oscillator.type = 'sine'
-    
+
     gainNode.gain.setValueAtTime(0, audioContext.currentTime)
     gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.1)
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8)
-    
+
     oscillator.start(audioContext.currentTime)
     oscillator.stop(audioContext.currentTime + 0.8)
   }

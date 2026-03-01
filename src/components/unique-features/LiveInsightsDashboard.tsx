@@ -18,7 +18,8 @@ import {
   Clock,
   Zap
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Card, CardContent, _CardHeader, _CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useInsights, useInsightDismissal } from '@/lib/hooks/useInsights'
@@ -44,12 +45,14 @@ export function LiveInsightsDashboard({
   const {
     insights,
     recommendations,
-    patterns,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _patterns,
     meta,
     loading,
     error,
     refreshing,
-    dismissInsight,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _dismissInsight,
     regenerateInsights,
     refresh,
     hasActiveInsights

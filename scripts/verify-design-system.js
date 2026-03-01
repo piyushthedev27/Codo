@@ -3,7 +3,9 @@
  * Verifies that all design system files are properly integrated
  */
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const fs = require('fs');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('path');
 
 console.log('🎨 Verifying Design System Implementation...\n');

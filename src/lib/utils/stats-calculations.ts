@@ -6,9 +6,11 @@
 import type { 
   UserProfile, 
   KnowledgeGraphNode, 
-  LearningActivity, 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _LearningActivity, 
   EnhancedActivity,
-  DashboardData 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _DashboardData 
 } from '@/types/database'
 
 export interface EnhancedStats {

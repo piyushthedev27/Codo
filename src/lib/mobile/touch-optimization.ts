@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Mobile Touch Optimization Utilities
  * Provides enhanced touch interactions for mobile devices
@@ -208,7 +209,8 @@ export class TouchOptimizer {
    * Enhance touch targets for better accessibility
    */
   private enhanceTouchTargets(element: HTMLElement): void {
-    const computedStyle = window.getComputedStyle(element)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _computedStyle = window.getComputedStyle(element)
     const minTouchTarget = 44 // iOS HIG minimum
 
     // Get current dimensions

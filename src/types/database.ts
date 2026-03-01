@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Database Types
  * TypeScript interfaces for all database tables and operations
@@ -175,7 +176,7 @@ export interface LearningInsight {
 export interface LearningActivity {
   id: string
   user_id: string
-  activity_type: ActivityType
+  activity_type: ActivityType | string
   content_id?: string
   title?: string
   description?: string
@@ -186,6 +187,7 @@ export interface LearningActivity {
   mistakes_made: number
   completion_percentage: number
   metadata: Record<string, any>
+  activity_timestamp?: string
   created_at: string
   updated_at: string
 }
@@ -420,7 +422,7 @@ export interface LiveInsightsData {
 }
 
 // Export utility types
-export type DatabaseTable = 
+export type DatabaseTable =
   | 'user_profiles'
   | 'ai_peer_profiles'
   | 'knowledge_graph_nodes'
@@ -429,6 +431,7 @@ export type DatabaseTable =
   | 'collaborative_coding_sessions'
   | 'learning_insights'
   | 'learning_activities'
+  | 'enhanced_activities'
   | 'challenges'
   | 'challenge_attempts'
   | 'voice_coaching_sessions'

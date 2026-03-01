@@ -64,7 +64,7 @@ export function OnboardingComplete({ onboardingData, onComplete }: OnboardingCom
           🎉 Your Learning Profile is Ready!
         </h2>
         <p className="text-lg text-muted-foreground">
-          We've personalized your experience based on your preferences
+          We&apos;ve personalized your experience based on your preferences
         </p>
       </div>
 
@@ -171,10 +171,10 @@ export function OnboardingComplete({ onboardingData, onComplete }: OnboardingCom
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5" />
-            What's Next?
+            What&apos;s Next?
           </CardTitle>
           <CardDescription>
-            Here's what you can expect in your personalized learning journey
+            Here&apos;s what you can expect in your personalized learning journey
           </CardDescription>
         </CardHeader>
         <CardContent>

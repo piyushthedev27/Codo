@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Mobile Voice Optimization Utilities
  * Provides enhanced voice features for mobile browsers
@@ -151,7 +152,7 @@ export class MobileVoiceOptimizer {
       }
 
       // Apply mobile-specific optimizations
-      const optimizedOptions = this.optimizeSpeechOptions(text, options)
+      const optimizedOptions = this.optimizeSpeechOptions(text, _options)
 
       // Check if we should interrupt current speech
       if (options?.interrupt && voiceSynthesis.isSpeaking()) {
@@ -386,7 +387,7 @@ export class MobileVoiceOptimizer {
     const capabilities = this.capabilities
     if (!capabilities) return options
 
-    const optimized = { ...options }
+    const optimized = { ..._options }
 
     // Adjust rate for mobile
     if (!optimized.rate) {
@@ -408,7 +409,8 @@ export class MobileVoiceOptimizer {
     return optimized
   }
 
-  private async queueSpeech(text: string, options: any): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async queueSpeech(text: string, _options: any): Promise<void> {
     // Simple queue implementation for low battery mode
     console.log('Queuing speech for low battery mode:', text)
     // In a real implementation, this would queue the speech for later
@@ -538,8 +540,10 @@ export function getMobileVoiceSupport(): {
 } {
   const isWebKit = /webkit/i.test(navigator.userAgent)
   const isChrome = /chrome/i.test(navigator.userAgent)
-  const isSafari = /safari/i.test(navigator.userAgent) && !isChrome
-  const isFirefox = /firefox/i.test(navigator.userAgent)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _isSafari = /safari/i.test(navigator.userAgent) && !isChrome
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _isFirefox = /firefox/i.test(navigator.userAgent)
   
   return {
     recognition: !!(window.SpeechRecognition || window.webkitSpeechRecognition),

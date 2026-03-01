@@ -80,6 +80,7 @@ export function AIPeerTypingAnimation({
       }
     })
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTypingSessions(sessions)
   }, [peers, codeSnippets])
 

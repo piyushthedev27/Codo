@@ -82,6 +82,7 @@ export function VictoryCelebration({ score, rank, timeElapsed, onClose }: Victor
               <motion.div
                 key={i}
                 initial={{
+                  // eslint-disable-next-line react-hooks/purity
                   x: Math.random() * window.innerWidth,
                   y: -10,
                   rotate: 0,
@@ -94,12 +95,12 @@ export function VictoryCelebration({ score, rank, timeElapsed, onClose }: Victor
                 }}
                 transition={{
                   duration: 3,
+                  // eslint-disable-next-line react-hooks/purity
                   delay: Math.random() * 2,
                   ease: "easeOut"
                 }}
-                className={`absolute w-3 h-3 ${
-                  ['bg-yellow-400', 'bg-pink-400', 'bg-blue-400', 'bg-green-400', 'bg-purple-400'][i % 5]
-                } rounded-full`}
+                className={`absolute w-3 h-3 ${['bg-yellow-400', 'bg-pink-400', 'bg-blue-400', 'bg-green-400', 'bg-purple-400'][i % 5]
+                  } rounded-full`}
               />
             ))}
           </div>
@@ -172,11 +173,10 @@ export function VictoryCelebration({ score, rank, timeElapsed, onClose }: Victor
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-4 h-4 ${
-                          i < scoreInfo.stars
+                        className={`w-4 h-4 ${i < scoreInfo.stars
                             ? 'text-yellow-400 fill-current'
                             : 'text-gray-300 dark:text-gray-600'
-                        }`}
+                          }`}
                       />
                     ))}
                   </div>
@@ -196,7 +196,7 @@ export function VictoryCelebration({ score, rank, timeElapsed, onClose }: Victor
                       {formatTime(timeElapsed)}
                     </div>
                   </div>
-                  
+
                   <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
                     <Target className="w-5 h-5 text-green-500 mx-auto mb-1" />
                     <div className="text-sm font-medium text-green-700 dark:text-green-300">

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Micro-Lesson Generator for Mistake-Driven Learning
  * 

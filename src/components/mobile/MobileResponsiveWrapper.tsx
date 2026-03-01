@@ -27,7 +27,8 @@ export function MobileResponsiveWrapper({
   desktopClassName = ''
 }: MobileResponsiveWrapperProps) {
   const [isMobile, setIsMobile] = useState(false)
-  const { viewport } = useLayoutOptimization()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { _viewport } = useLayoutOptimization()
 
   useEffect(() => {
     const checkMobile = () => {

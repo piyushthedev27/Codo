@@ -4,9 +4,6 @@
  * Defines activity types, categories, and visual styling for the enhanced activity feed
  */
 
-import { BookOpen, Trophy, Users, Code, Zap, Target, MessageCircle, Award } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
-
 // Activity type definitions
 export type ActivityCategory = 
   | 'lesson_completed' 
@@ -18,9 +15,20 @@ export type ActivityCategory =
   | 'milestone'
   | 'challenge_completed'
 
+// Icon name type for serialization
+export type ActivityIconName = 
+  | 'BookOpen'
+  | 'Trophy'
+  | 'Users'
+  | 'Code'
+  | 'Zap'
+  | 'Target'
+  | 'MessageCircle'
+  | 'Award'
+
 // Activity styling configuration
 export interface ActivityStyle {
-  icon: LucideIcon
+  iconName: ActivityIconName
   bgColor: string
   iconColor: string
   borderColor: string
@@ -30,56 +38,56 @@ export interface ActivityStyle {
 // Activity type to style mapping
 export const ACTIVITY_STYLES: Record<ActivityCategory, ActivityStyle> = {
   lesson_completed: {
-    icon: BookOpen,
+    iconName: 'BookOpen',
     bgColor: 'bg-blue-50 dark:bg-blue-900/20',
     iconColor: 'text-blue-600 dark:text-blue-400',
     borderColor: 'border-blue-200 dark:border-blue-800',
     badgeColor: 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
   },
   achievement: {
-    icon: Trophy,
+    iconName: 'Trophy',
     bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
     iconColor: 'text-yellow-600 dark:text-yellow-400',
     borderColor: 'border-yellow-200 dark:border-yellow-800',
     badgeColor: 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300'
   },
   collaboration: {
-    icon: Users,
+    iconName: 'Users',
     bgColor: 'bg-purple-50 dark:bg-purple-900/20',
     iconColor: 'text-purple-600 dark:text-purple-400',
     borderColor: 'border-purple-200 dark:border-purple-800',
     badgeColor: 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300'
   },
   practice: {
-    icon: Code,
+    iconName: 'Code',
     bgColor: 'bg-green-50 dark:bg-green-900/20',
     iconColor: 'text-green-600 dark:text-green-400',
     borderColor: 'border-green-200 dark:border-green-800',
     badgeColor: 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
   },
   voice_coaching: {
-    icon: Zap,
+    iconName: 'Zap',
     bgColor: 'bg-orange-50 dark:bg-orange-900/20',
     iconColor: 'text-orange-600 dark:text-orange-400',
     borderColor: 'border-orange-200 dark:border-orange-800',
     badgeColor: 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300'
   },
   peer_interaction: {
-    icon: MessageCircle,
+    iconName: 'MessageCircle',
     bgColor: 'bg-pink-50 dark:bg-pink-900/20',
     iconColor: 'text-pink-600 dark:text-pink-400',
     borderColor: 'border-pink-200 dark:border-pink-800',
     badgeColor: 'bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300'
   },
   milestone: {
-    icon: Target,
+    iconName: 'Target',
     bgColor: 'bg-indigo-50 dark:bg-indigo-900/20',
     iconColor: 'text-indigo-600 dark:text-indigo-400',
     borderColor: 'border-indigo-200 dark:border-indigo-800',
     badgeColor: 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300'
   },
   challenge_completed: {
-    icon: Award,
+    iconName: 'Award',
     bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
     iconColor: 'text-emerald-600 dark:text-emerald-400',
     borderColor: 'border-emerald-200 dark:border-emerald-800',

@@ -28,6 +28,7 @@ export function SyntheticPeerChat() {
       peerId: 'sarah',
       type: 'question',
       message: "I'm a bit confused about the difference between let and const. Can you explain when to use each one?",
+      // eslint-disable-next-line react-hooks/purity
       timestamp: new Date(Date.now() - 300000), // 5 minutes ago
       requiresResponse: true
     },
@@ -36,6 +37,7 @@ export function SyntheticPeerChat() {
       peerId: 'alex',
       type: 'comment',
       message: "Great explanation! I like how you broke down the scoping rules step by step.",
+      // eslint-disable-next-line react-hooks/purity
       timestamp: new Date(Date.now() - 120000), // 2 minutes ago
     },
     {
@@ -43,6 +45,7 @@ export function SyntheticPeerChat() {
       peerId: 'jordan',
       type: 'suggestion',
       message: "Have you considered showing a practical example with a for loop? That might help illustrate the difference.",
+      // eslint-disable-next-line react-hooks/purity
       timestamp: new Date(Date.now() - 60000), // 1 minute ago
     }
   ])
