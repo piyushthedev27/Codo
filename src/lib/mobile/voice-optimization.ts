@@ -71,7 +71,7 @@ export class MobileVoiceOptimizer {
   ): Promise<void> {
     try {
       const capabilities = await this.getCapabilities()
-      
+
       if (!capabilities.speechRecognition) {
         throw new Error('Speech recognition not supported on this device')
       }
@@ -146,13 +146,13 @@ export class MobileVoiceOptimizer {
   ): Promise<void> {
     try {
       const capabilities = await this.getCapabilities()
-      
+
       if (!capabilities.speechSynthesis) {
         throw new Error('Speech synthesis not supported on this device')
       }
 
       // Apply mobile-specific optimizations
-      const optimizedOptions = this.optimizeSpeechOptions(text, _options)
+      const optimizedOptions = this.optimizeSpeechOptions(text, options)
 
       // Check if we should interrupt current speech
       if (options?.interrupt && voiceSynthesis.isSpeaking()) {
@@ -207,12 +207,12 @@ export class MobileVoiceOptimizer {
       // Test speech recognition
       if (voiceRecognition.isVoiceRecognitionSupported()) {
         results.recognition = true
-        
+
         // Test continuous recognition
         try {
           await voiceRecognition.startListening({
             continuous: true,
-            onResult: () => {},
+            onResult: () => { },
             onError: (error) => {
               results.errors.push(`Recognition error: ${error.error}`)
             }
@@ -230,7 +230,7 @@ export class MobileVoiceOptimizer {
       if (voiceSynthesis.isVoiceSynthesisSupported()) {
         results.synthesis = true
         results.voiceCount = voiceSynthesis.getAvailableVoices().length
-        
+
         // Test synthesis with short phrase
         try {
           await voiceSynthesis.speak({
@@ -314,11 +314,11 @@ export class MobileVoiceOptimizer {
     const speechRecognition = voiceRecognition.isVoiceRecognitionSupported()
     const speechSynthesis = voiceSynthesis.isVoiceSynthesisSupported()
     const voiceList = speechSynthesis ? voiceSynthesis.getAvailableVoices() : []
-    
+
     // Test continuous recognition
     let continuousRecognition = false
     let interimResults = false
-    
+
     if (speechRecognition) {
       try {
         // Quick test for continuous recognition support
@@ -387,7 +387,7 @@ export class MobileVoiceOptimizer {
     const capabilities = this.capabilities
     if (!capabilities) return options
 
-    const optimized = { ..._options }
+    const optimized = { ...options }
 
     // Adjust rate for mobile
     if (!optimized.rate) {
@@ -418,7 +418,7 @@ export class MobileVoiceOptimizer {
 
   private handleVoiceError(error: any, onError?: (error: any) => void): void {
     console.error('Mobile voice error:', error)
-    
+
     // Handle mobile-specific errors
     if (error?.error === 'not-allowed') {
       voiceFallbackManager.enableFallbackMode('Microphone permission denied. Please enable microphone access in browser settings.')
@@ -477,14 +477,14 @@ export class MobileVoiceOptimizer {
 
   private getNetworkStatus(): 'online' | 'offline' | 'slow' {
     if (!navigator.onLine) return 'offline'
-    
+
     if ('connection' in navigator) {
       const connection = (navigator as any).connection
       if (connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g') {
         return 'slow'
       }
     }
-    
+
     return 'online'
   }
 
@@ -518,7 +518,7 @@ export class MobileVoiceOptimizer {
  */
 export function useMobileVoice(config?: MobileVoiceConfig) {
   const optimizer = new MobileVoiceOptimizer(config)
-  
+
   return {
     getCapabilities: optimizer.getCapabilities.bind(optimizer),
     startVoiceRecognition: optimizer.startVoiceRecognition.bind(optimizer),
@@ -544,7 +544,7 @@ export function getMobileVoiceSupport(): {
   const _isSafari = /safari/i.test(navigator.userAgent) && !isChrome
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _isFirefox = /firefox/i.test(navigator.userAgent)
-  
+
   return {
     recognition: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
     synthesis: !!window.speechSynthesis,

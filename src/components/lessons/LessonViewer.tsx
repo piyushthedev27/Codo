@@ -27,7 +27,7 @@ import { CodeChallenge } from './CodeChallenge'
 import { SyntheticPeerChat } from '@/app/lessons/[id]/components/SyntheticPeerChat'
 import { VoiceCoachingInterface } from '@/components/unique-features/VoiceCoachingInterface'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { GeneratedLesson, _LessonSection } from '@/lib/ai/lesson-generation'
+import type { GeneratedLesson, LessonSection } from '@/lib/ai/lesson-generation'
 import type { LessonProgress } from '@/lib/lessons/progress-tracking'
 
 export interface LessonViewerProps {

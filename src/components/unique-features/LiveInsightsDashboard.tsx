@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  TrendingUp, 
-  AlertTriangle, 
-  Target, 
-  Lightbulb, 
-  Trophy, 
-  RefreshCw, 
+import {
+  TrendingUp,
+  AlertTriangle,
+  Target,
+  Lightbulb,
+  Trophy,
+  RefreshCw,
   Filter,
   Eye,
   EyeOff,
@@ -33,10 +33,10 @@ interface LiveInsightsDashboardProps {
   compact?: boolean
 }
 
-export function LiveInsightsDashboard({ 
-  className = '', 
+export function LiveInsightsDashboard({
+  className = '',
   showFloatingNotifications = true,
-  compact = false 
+  compact = false
 }: LiveInsightsDashboardProps) {
   const [showDismissed, setShowDismissed] = useState(false)
   const [selectedPriority, setSelectedPriority] = useState<'all' | 'high' | 'medium' | 'low'>('all')
@@ -46,13 +46,13 @@ export function LiveInsightsDashboard({
     insights,
     recommendations,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _patterns,
+    patterns: _patterns,
     meta,
     loading,
     error,
     refreshing,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _dismissInsight,
+    dismissInsight: _dismissInsight,
     regenerateInsights,
     refresh,
     hasActiveInsights
@@ -113,10 +113,10 @@ export function LiveInsightsDashboard({
                 <p className="text-sm text-red-500 dark:text-red-300 mt-1">{error}</p>
               </div>
             </div>
-            <Button 
-              onClick={refresh} 
-              variant="outline" 
-              size="sm" 
+            <Button
+              onClick={refresh}
+              variant="outline"
+              size="sm"
               className="mt-4"
               disabled={refreshing}
             >
@@ -161,7 +161,7 @@ export function LiveInsightsDashboard({
             <Sparkles className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
             Generate New
           </Button>
-          
+
           <Button
             onClick={refresh}
             variant="ghost"
@@ -274,7 +274,7 @@ export function LiveInsightsDashboard({
 
         {/* Empty State */}
         {filteredInsights.length === 0 && filteredRecommendations.length === 0 && (
-          <EmptyState 
+          <EmptyState
             hasData={hasActiveInsights}
             onGenerate={handleRegenerateInsights}
             generating={refreshing}
@@ -286,11 +286,11 @@ export function LiveInsightsDashboard({
 }
 
 // Insights Section Component
-function InsightsSection({ 
-  insights, 
-  onDismiss, 
-  isDismissing, 
-  compact 
+function InsightsSection({
+  insights,
+  onDismiss,
+  isDismissing,
+  compact
 }: {
   insights: LearningInsight[]
   onDismiss: (id: string) => void
@@ -305,7 +305,7 @@ function InsightsSection({
         <Lightbulb className="w-5 h-5 text-blue-600 dark:text-blue-400" />
         Learning Insights ({insights.length})
       </h3>
-      
+
       <div className="space-y-3">
         <AnimatePresence mode="popLayout">
           {insights.map((insight) => (
@@ -331,9 +331,9 @@ function InsightsSection({
 }
 
 // Recommendations Section Component
-function RecommendationsSection({ 
-  recommendations, 
-  compact 
+function RecommendationsSection({
+  recommendations,
+  compact
 }: {
   recommendations: ProactiveRecommendation[]
   compact: boolean
@@ -346,7 +346,7 @@ function RecommendationsSection({
         <Target className="w-5 h-5 text-green-600 dark:text-green-400" />
         Proactive Recommendations ({recommendations.length})
       </h3>
-      
+
       <div className="space-y-3">
         <AnimatePresence mode="popLayout">
           {recommendations.map((recommendation) => (
@@ -370,11 +370,11 @@ function RecommendationsSection({
 }
 
 // Individual Insight Card
-function InsightCard({ 
-  insight, 
-  onDismiss, 
-  isDismissing, 
-  compact 
+function InsightCard({
+  insight,
+  onDismiss,
+  isDismissing,
+  compact
 }: {
   insight: LearningInsight
   onDismiss: (id: string) => void
@@ -401,7 +401,7 @@ function InsightCard({
             <div className="flex-shrink-0 mt-0.5">
               {getInsightIcon(insight.insight_type)}
             </div>
-            
+
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
                 <h4 className="font-semibold text-gray-900 dark:text-gray-100">
@@ -414,17 +414,17 @@ function InsightCard({
                   <Badge variant="secondary">Dismissed</Badge>
                 )}
               </div>
-              
+
               <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
                 {insight.message}
               </p>
-              
+
               {insight.action_recommended && (
                 <div className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-2">
                   💡 {insight.action_recommended}
                 </div>
               )}
-              
+
               {!compact && (
                 <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                   <span className="flex items-center gap-1">
@@ -441,7 +441,7 @@ function InsightCard({
               )}
             </div>
           </div>
-          
+
           {!insight.dismissed && (
             <Button
               variant="ghost"
@@ -460,9 +460,9 @@ function InsightCard({
 }
 
 // Individual Recommendation Card
-function RecommendationCard({ 
-  recommendation, 
-  compact 
+function RecommendationCard({
+  recommendation,
+  compact
 }: {
   recommendation: ProactiveRecommendation
   compact: boolean
@@ -486,7 +486,7 @@ function RecommendationCard({
           <div className="flex-shrink-0 mt-0.5">
             {getRecommendationIcon(recommendation.type)}
           </div>
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
               <h4 className="font-semibold text-gray-900 dark:text-gray-100">
@@ -496,15 +496,15 @@ function RecommendationCard({
                 {recommendation.priority}
               </Badge>
             </div>
-            
+
             <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
               {recommendation.description}
             </p>
-            
+
             <div className="text-sm font-medium text-green-600 dark:text-green-400 mb-2">
               🎯 {recommendation.action}
             </div>
-            
+
             {!compact && (
               <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                 <span className="flex items-center gap-1">
@@ -525,11 +525,11 @@ function RecommendationCard({
 }
 
 // Stats Card Component
-function StatsCard({ 
-  title, 
-  value, 
-  icon, 
-  color 
+function StatsCard({
+  title,
+  value,
+  icon,
+  color
 }: {
   title: string
   value: number
@@ -554,10 +554,10 @@ function StatsCard({
 }
 
 // Empty State Component
-function EmptyState({ 
-  hasData, 
-  onGenerate, 
-  generating 
+function EmptyState({
+  hasData,
+  onGenerate,
+  generating
 }: {
   hasData: boolean
   onGenerate: () => void
@@ -572,7 +572,7 @@ function EmptyState({
             {hasData ? 'No Insights Match Your Filters' : 'No Insights Yet'}
           </h3>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {hasData 
+            {hasData
               ? 'Try adjusting your filters to see more insights and recommendations.'
               : 'Start learning to generate personalized insights and recommendations based on your progress.'
             }

@@ -57,8 +57,7 @@ export async function initializeLessonProgress(
   }
 
   // Store in database
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { _data, error } = await supabase
+  const { data, error } = await supabase
     .from('lessons')
     .insert({
       id: lessonId,
@@ -96,14 +95,14 @@ export async function getLessonProgress(
   lessonId: string
 ): Promise<LessonProgress | null> {
   try {
-    const { _data, error } = await supabase
+    const { data, error } = await supabase
       .from('lessons')
       .select('*')
       .eq('user_id', userId)
       .eq('id', lessonId)
       .single()
 
-    if (error || !_data) {
+    if (error || !data) {
       return null
     }
 
@@ -139,7 +138,7 @@ export async function updateLessonProgress(
   try {
     // Get current progress
     let currentProgress = await getLessonProgress(userId, lessonId)
-    
+
     // If progress doesn't exist, initialize it first
     if (!currentProgress) {
       console.log('Lesson progress not found, initializing...')
@@ -170,8 +169,7 @@ export async function updateLessonProgress(
     }
 
     // Update in database
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { _data, error } = await supabase
+    const { data, error } = await supabase
       .from('lessons')
       .update({
         progress_percentage: newProgressPercentage,
@@ -279,8 +277,7 @@ export async function getUserLessonHistory(
   limit: number = 10
 ): Promise<Lesson[]> {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { _data, error } = await supabase
+    const { data, error } = await supabase
       .from('lessons')
       .select('*')
       .eq('user_id', userId)
@@ -311,8 +308,7 @@ export async function getLessonStats(userId: string): Promise<{
   voiceCoachingUsage: number
 }> {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { _data, error } = await supabase
+    const { data: lessons, error } = await supabase
       .from('lessons')
       .select('completion_status, time_spent_minutes, xp_earned, progress_percentage, peer_interactions_count, voice_coaching_used')
       .eq('user_id', userId)
@@ -321,12 +317,12 @@ export async function getLessonStats(userId: string): Promise<{
       throw error
     }
 
-    const lessons = data || []
+
     const completed = lessons.filter(l => l.completion_status === 'completed')
     const totalTime = lessons.reduce((sum, l) => sum + l.time_spent_minutes, 0)
     const totalXP = lessons.reduce((sum, l) => sum + l.xp_earned, 0)
-    const avgProgress = lessons.length > 0 
-      ? lessons.reduce((sum, l) => sum + l.progress_percentage, 0) / lessons.length 
+    const avgProgress = lessons.length > 0
+      ? lessons.reduce((sum, l) => sum + l.progress_percentage, 0) / lessons.length
       : 0
     const totalInteractions = lessons.reduce((sum, l) => sum + l.peer_interactions_count, 0)
     const voiceUsage = lessons.filter(l => l.voice_coaching_used).length

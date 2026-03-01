@@ -11,7 +11,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Trophy, Zap, Clock, Target, TrendingUp } from 'lucide-react'
 import { Avatar } from '@/components/shared/Avatar'
- 
+
 import { getPeerProfile as _getPeerProfile } from '@/lib/avatars'
 import { supabase } from '@/lib/database/supabase-client'
 import { useUser } from '@clerk/nextjs'
@@ -83,7 +83,7 @@ export function LiveLeaderboard() {
     }
   ])
 
-   
+
   const [timeRemaining, setTimeRemaining] = useState(420) // 7 minutes remaining
 
   const { user } = useUser()
@@ -93,8 +93,8 @@ export function LiveLeaderboard() {
 
     // Initial fetch of leaderboard data
     const fetchLeaderboard = async () => {
-       
-      const { data, _error } = await supabase
+
+      const { data, error } = await supabase
         .from('challenge_attempts')
         .select(`
           id,
@@ -151,7 +151,7 @@ export function LiveLeaderboard() {
   // Sort participants by score and assign ranks
   const sortedParticipants = [...participants]
     .sort((a, b) => b.score - a.score)
-     
+
     .map((participant, index) => ({
       ...participant,
       rank: index + 1
@@ -206,7 +206,8 @@ export function LiveLeaderboard() {
       </div>
 
       {/* Leaderboard */}
-      <div className="p-4">        <AnimatePresence>
+      <div className="p-4">
+        <AnimatePresence>
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           {sortedParticipants.map((participant, index) => (
             <motion.div

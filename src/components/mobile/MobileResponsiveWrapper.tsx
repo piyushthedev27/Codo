@@ -28,13 +28,13 @@ export function MobileResponsiveWrapper({
 }: MobileResponsiveWrapperProps) {
   const [isMobile, setIsMobile] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { _viewport } = useLayoutOptimization()
+  const { viewport } = useLayoutOptimization()
 
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(isMobileDevice())
     }
-    
+
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
@@ -65,10 +65,10 @@ interface MobileStackProps {
   spacing?: 'sm' | 'md' | 'lg'
 }
 
-export function MobileStack({ 
-  children, 
-  className = '', 
-  spacing = 'md' 
+export function MobileStack({
+  children,
+  className = '',
+  spacing = 'md'
 }: MobileStackProps) {
   const spacingClasses = {
     sm: 'space-y-2 sm:space-y-3',
@@ -94,9 +94,9 @@ interface MobileGridProps {
   gap?: 'sm' | 'md' | 'lg'
 }
 
-export function MobileGrid({ 
-  children, 
-  className = '', 
+export function MobileGrid({
+  children,
+  className = '',
   cols = { mobile: 1, tablet: 2, desktop: 3 },
   gap = 'md'
 }: MobileGridProps) {
@@ -122,9 +122,9 @@ interface MobileCardProps {
   interactive?: boolean
 }
 
-export function MobileCard({ 
-  children, 
-  className = '', 
+export function MobileCard({
+  children,
+  className = '',
   padding = 'md',
   interactive = false
 }: MobileCardProps) {
@@ -168,7 +168,7 @@ export function MobileButton({
   fullWidth = false
 }: MobileButtonProps) {
   const baseClasses = 'mobile-button touch-target-enhanced font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2'
-  
+
   const variantClasses = {
     primary: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm',
     secondary: 'bg-gray-600 hover:bg-gray-700 text-white shadow-sm',
@@ -284,7 +284,7 @@ export function useMobileLayout() {
 
 export function getMobileBreakpoint(): 'mobile' | 'tablet' | 'desktop' {
   if (typeof window === 'undefined') return 'desktop'
-  
+
   const width = window.innerWidth
   if (width < 768) return 'mobile'
   if (width < 1024) return 'tablet'

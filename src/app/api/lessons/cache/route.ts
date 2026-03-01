@@ -5,9 +5,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { 
-  lessonCache, 
-  demoLessonManager, 
+import {
+  lessonCache,
+  demoLessonManager,
   getCachedOrDemoLesson,
   generateLessonCacheKey,
   isOfflineMode
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
         // Get cache statistics
         const stats = lessonCache.getStats()
         const demoTopics = demoLessonManager.getDemoTopics()
-        
+
         return NextResponse.json({
           success: true,
           stats: {
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       case 'demo-lessons':
         // Get all available demo lessons
         const demoLessons = getDemoLessons()
-        
+
         return NextResponse.json({
           success: true,
           lessons: demoLessons
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
         // Get a specific cached or demo lesson
         if (!lessonId || !topic) {
           return NextResponse.json(
-            { _error: 'lessonId and topic are required' },
+            { error: 'lessonId and topic are required' },
             { status: 400 }
           )
         }
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
         const lesson = await getCachedOrDemoLesson(lessonId, topic)
         if (!lesson) {
           return NextResponse.json(
-            { _error: 'Lesson not found in cache or demo' },
+            { error: 'Lesson not found in cache or demo' },
             { status: 404 }
           )
         }
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
         // Get a specific demo lesson by topic
         if (!topic) {
           return NextResponse.json(
-            { _error: 'topic is required' },
+            { error: 'topic is required' },
             { status: 400 }
           )
         }
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
         const demoLesson = getDemoLesson(topic)
         if (!demoLesson) {
           return NextResponse.json(
-            { _error: 'Demo lesson not found' },
+            { error: 'Demo lesson not found' },
             { status: 404 }
           )
         }
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
       case 'popular':
         // Get most accessed cached lessons
         const popular = lessonCache.getMostAccessed(10)
-        
+
         return NextResponse.json({
           success: true,
           lessons: popular.map(cached => ({
@@ -109,16 +109,16 @@ export async function GET(request: NextRequest) {
 
       default:
         return NextResponse.json(
-          { _error: 'Invalid action' },
+          { error: 'Invalid action' },
           { status: 400 }
         )
     }
 
   } catch (_error) {
     console.error('Error handling cache request:', _error)
-    
+
     return NextResponse.json(
-      { _error: 'Failed to process cache request' },
+      { error: 'Failed to process cache request' },
       { status: 500 }
     )
   }
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
     const { userId } = await auth()
     if (!userId) {
       return NextResponse.json(
-        { _error: 'Unauthorized' },
+        { error: 'Unauthorized' },
         { status: 401 }
       )
     }
@@ -142,13 +142,13 @@ export async function POST(request: NextRequest) {
         // Cache a lesson
         if (!lessonId || !lesson) {
           return NextResponse.json(
-            { _error: 'lessonId and lesson are required' },
+            { error: 'lessonId and lesson are required' },
             { status: 400 }
           )
         }
 
         lessonCache.set(lessonId, lesson)
-        
+
         return NextResponse.json({
           success: true,
           message: 'Lesson cached successfully'
@@ -158,13 +158,13 @@ export async function POST(request: NextRequest) {
         // Generate a cache key for lesson parameters
         if (!topic || !skillLevel || !userDomain) {
           return NextResponse.json(
-            { _error: 'topic, skillLevel, and userDomain are required' },
+            { error: 'topic, skillLevel, and userDomain are required' },
             { status: 400 }
           )
         }
 
         const cacheKey = generateLessonCacheKey(topic, skillLevel, userDomain)
-        
+
         return NextResponse.json({
           success: true,
           cacheKey
@@ -190,10 +190,10 @@ export async function POST(request: NextRequest) {
             preloadedLessons,
             message: `Preloaded ${preloadedLessons.length} demo lessons`
           })
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (_error) {
           return NextResponse.json(
-            { _error: 'Failed to preload demo lessons' },
+            { error: 'Failed to preload demo lessons' },
             { status: 500 }
           )
         }
@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
       case 'clear-cache':
         // Clear all cached lessons
         lessonCache.clear()
-        
+
         return NextResponse.json({
           success: true,
           message: 'Cache cleared successfully'
@@ -211,13 +211,13 @@ export async function POST(request: NextRequest) {
         // Remove a specific lesson from cache
         if (!lessonId) {
           return NextResponse.json(
-            { _error: 'lessonId is required' },
+            { error: 'lessonId is required' },
             { status: 400 }
           )
         }
 
         const removed = lessonCache.delete(lessonId)
-        
+
         return NextResponse.json({
           success: true,
           removed,
@@ -226,16 +226,16 @@ export async function POST(request: NextRequest) {
 
       default:
         return NextResponse.json(
-          { _error: 'Invalid action' },
+          { error: 'Invalid action' },
           { status: 400 }
         )
     }
 
   } catch (_error) {
     console.error('Error handling cache update:', _error)
-    
+
     return NextResponse.json(
-      { _error: 'Failed to update cache' },
+      { error: 'Failed to update cache' },
       { status: 500 }
     )
   }
@@ -246,7 +246,7 @@ export async function DELETE(request: NextRequest) {
     const { userId } = await auth()
     if (!userId) {
       return NextResponse.json(
-        { _error: 'Unauthorized' },
+        { error: 'Unauthorized' },
         { status: 401 }
       )
     }
@@ -257,7 +257,7 @@ export async function DELETE(request: NextRequest) {
     if (lessonId) {
       // Delete specific lesson
       const removed = lessonCache.delete(lessonId)
-      
+
       return NextResponse.json({
         success: true,
         removed,
@@ -266,7 +266,7 @@ export async function DELETE(request: NextRequest) {
     } else {
       // Clear entire cache
       lessonCache.clear()
-      
+
       return NextResponse.json({
         success: true,
         message: 'All cached lessons cleared'
@@ -275,9 +275,9 @@ export async function DELETE(request: NextRequest) {
 
   } catch (_error) {
     console.error('Error deleting from cache:', _error)
-    
+
     return NextResponse.json(
-      { _error: 'Failed to delete from cache' },
+      { error: 'Failed to delete from cache' },
       { status: 500 }
     )
   }

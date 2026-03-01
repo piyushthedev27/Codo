@@ -10,11 +10,10 @@ import { trackMistake, analyzeMistakePatterns } from '@/lib/utils/mistake-patter
 import { updateLearningPathFromMistake } from '@/lib/utils/learning-path-updater'
 import { supabase } from '@/lib/database/supabase-client'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth()
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -113,7 +112,7 @@ export async function POST(_request: NextRequest) {
 export async function GET(_request: NextRequest) {
   try {
     const { userId } = await auth()
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },

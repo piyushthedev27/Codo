@@ -5,18 +5,14 @@
  */
 
 import { supabase, supabaseAdmin } from './supabase-client'
-import type { 
-  UserProfile, 
-  AIPeerProfile, 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _KnowledgeGraphNode, 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _MistakePattern,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _Lesson,
+import type {
+  UserProfile,
+  AIPeerProfile,
+  KnowledgeGraphNode,
+  MistakePattern,
+  Lesson,
   LearningInsight,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _Challenge,
+  Challenge,
   ChallengeAttempt
 } from '../../types/database'
 
@@ -29,7 +25,7 @@ export const userProfileOperations = {
       .insert(profile)
       .select()
       .single()
-    
+
     if (error) throw error
     return data
   },
@@ -41,7 +37,7 @@ export const userProfileOperations = {
       .select('*')
       .eq('clerk_user_id', clerkUserId)
       .single()
-    
+
     if (error && error.code !== 'PGRST116') throw error
     return data
   },
@@ -53,7 +49,7 @@ export const userProfileOperations = {
       .eq('clerk_user_id', clerkUserId)
       .select()
       .single()
-    
+
     if (error) throw error
     return data
   },
@@ -87,13 +83,13 @@ export const userProfileOperations = {
 export const aiPeerOperations = {
   async createForUser(userId: string, peers: Omit<AIPeerProfile, 'id' | 'user_id' | 'created_at' | 'updated_at'>[]) {
     const peersWithUserId = peers.map(peer => ({ ...peer, user_id: userId }))
-    
+
     // Use admin client for initial peer creation to bypass RLS
     const { data, error } = await supabaseAdmin
       .from('ai_peer_profiles')
       .insert(peersWithUserId)
       .select()
-    
+
     if (error) throw error
     return data
   },
@@ -105,7 +101,7 @@ export const aiPeerOperations = {
       .select('*')
       .eq('user_id', userId)
       .eq('is_active', true)
-    
+
     if (error) throw error
     return data || []
   },
@@ -117,7 +113,7 @@ export const aiPeerOperations = {
       .eq('id', peerId)
       .select()
       .single()
-    
+
     if (error) throw error
     return data
   }
@@ -140,7 +136,7 @@ export const knowledgeGraphOperations = {
       .from('knowledge_graph_nodes')
       .insert(nodes)
       .select()
-    
+
     if (error) throw error
     return data
   },
@@ -152,7 +148,7 @@ export const knowledgeGraphOperations = {
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: true })
-    
+
     if (error) throw error
     return data || []
   },
@@ -169,7 +165,7 @@ export const knowledgeGraphOperations = {
       .eq('id', nodeId)
       .select()
       .single()
-    
+
     if (error) throw error
     return data
   },
@@ -216,7 +212,7 @@ export const mistakePatternOperations = {
         .eq('id', existing.id)
         .select()
         .single()
-      
+
       if (error) throw error
       return data
     } else {
@@ -232,7 +228,7 @@ export const mistakePatternOperations = {
         })
         .select()
         .single()
-      
+
       if (error) throw error
       return data
     }
@@ -249,7 +245,7 @@ export const mistakePatternOperations = {
     }
 
     const { data, error } = await query.order('frequency', { ascending: false })
-    
+
     if (error) throw error
     return data || []
   },
@@ -264,7 +260,7 @@ export const mistakePatternOperations = {
       .eq('id', patternId)
       .select()
       .single()
-    
+
     if (error) throw error
     return data
   }
@@ -278,7 +274,7 @@ export const learningInsightsOperations = {
       .insert({ ...insight, user_id: userId })
       .select()
       .single()
-    
+
     if (error) throw error
     return data
   },
@@ -293,7 +289,7 @@ export const learningInsightsOperations = {
       .or('expires_at.is.null,expires_at.gt.now()')
       .order('priority', { ascending: false })
       .order('created_at', { ascending: false })
-    
+
     if (error) throw error
     return data || []
   },
@@ -308,7 +304,7 @@ export const learningInsightsOperations = {
       .eq('id', insightId)
       .select()
       .single()
-    
+
     if (error) throw error
     return data
   }
@@ -331,7 +327,7 @@ export const challengeOperations = {
     }
 
     const { data, error } = await query.order('difficulty_level', { ascending: true })
-    
+
     if (error) throw error
     return data || []
   },
@@ -342,7 +338,7 @@ export const challengeOperations = {
       .select('*')
       .eq('id', challengeId)
       .single()
-    
+
     if (error) throw error
     return data
   },
@@ -366,7 +362,7 @@ export const challengeOperations = {
       .eq('is_active', true)
       .in('difficulty_level', difficulties)
       .limit(limit)
-    
+
     if (error) throw error
     return data || []
   }
@@ -380,7 +376,7 @@ export const challengeAttemptOperations = {
       .insert(attempt)
       .select()
       .single()
-    
+
     if (error) throw error
     return data
   },
@@ -392,7 +388,7 @@ export const challengeAttemptOperations = {
       .eq('id', attemptId)
       .select()
       .single()
-    
+
     if (error) throw error
     return data
   },
@@ -416,7 +412,7 @@ export const challengeAttemptOperations = {
     }
 
     const { data, error } = await query
-    
+
     if (error) throw error
     return data || []
   },
@@ -427,7 +423,7 @@ export const challengeAttemptOperations = {
       .from('challenge_attempts')
       .select('status, score, difficulty_level:challenges(difficulty_level)')
       .eq('user_id', userId)
-    
+
     if (error) throw error
 
     const stats = {
@@ -459,7 +455,7 @@ export async function testDatabaseConnection() {
       .from('user_profiles')
       .select('id')
       .limit(1)
-    
+
     if (error) {
       // If RLS is blocking, that's actually a good sign - the table exists
       if (error.code === 'PGRST301' || error.message.includes('row-level security')) {
@@ -467,12 +463,12 @@ export async function testDatabaseConnection() {
       }
       throw error
     }
-    
+
     return { success: true, message: 'Database connection successful' }
   } catch (error) {
-    return { 
-      success: false, 
-      message: `Database connection failed: ${error instanceof Error ? error.message : 'Unknown error'}` 
+    return {
+      success: false,
+      message: `Database connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`
     }
   }
 }
@@ -559,9 +555,9 @@ export async function initializeUserData(clerkUserId: string, userData: {
     return { success: true, profile }
   } catch (error) {
     console.error('Error initializing user data:', error)
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }

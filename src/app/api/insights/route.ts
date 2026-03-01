@@ -9,8 +9,7 @@ import { generateProactiveRecommendations } from '@/lib/utils/proactive-recommen
  * GET /api/insights
  * Get user's learning insights and recommendations
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth()
 
@@ -120,8 +119,7 @@ export async function GET(_request: NextRequest) {
  * POST /api/insights
  * Create a new learning insight
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth()
 

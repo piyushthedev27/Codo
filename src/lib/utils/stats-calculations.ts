@@ -3,14 +3,12 @@
  * Functions for calculating enhanced dashboard statistics
  */
 
-import type { 
-  UserProfile, 
-  KnowledgeGraphNode, 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _LearningActivity, 
+import type {
+  UserProfile,
+  KnowledgeGraphNode,
+  LearningActivity,
   EnhancedActivity,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _DashboardData 
+  DashboardData
 } from '@/types/database'
 
 export interface EnhancedStats {
@@ -52,20 +50,20 @@ export function calculateLearningProgress(
   const totalLessons = knowledgeGraph.length
   const lessonsCompleted = knowledgeGraph.filter(node => node.status === 'mastered').length
   const percentage = totalLessons > 0 ? Math.round((lessonsCompleted / totalLessons) * 100) : 0
-  
+
   // Calculate weekly change - compare with previous week's completed nodes
   // In production, this would come from historical data
   const previousCompleted = previousWeekData?.completedNodes || Math.max(0, lessonsCompleted - Math.floor(Math.random() * 3 + 1))
   const weeklyChange = lessonsCompleted - previousCompleted
-  const weeklyChangePercentage = previousCompleted > 0 
-    ? Math.round((weeklyChange / previousCompleted) * 100) 
+  const weeklyChangePercentage = previousCompleted > 0
+    ? Math.round((weeklyChange / previousCompleted) * 100)
     : (weeklyChange > 0 ? 100 : 0)
-  
+
   // Determine trend based on weekly change
   let trend: 'up' | 'down' | 'stable' = 'stable'
   if (weeklyChange > 0) trend = 'up'
   else if (weeklyChange < 0) trend = 'down'
-  
+
   return {
     percentage,
     lessonsCompleted,
@@ -86,7 +84,7 @@ export function calculateStreakData(
   // Calculate best streak (use provided or generate realistic mock)
   // In production, this would come from user's historical data
   const bestStreak = previousBestStreak || Math.max(currentStreak + Math.floor(Math.random() * 10 + 5), 14)
-  
+
   // Generate motivational message based on streak milestones
   let message: string
   if (currentStreak === 0) {
@@ -112,7 +110,7 @@ export function calculateStreakData(
   } else {
     message = `${bestStreak - currentStreak} days to beat your record!`
   }
-  
+
   // Determine trend based on current streak status
   let trend: 'up' | 'down' | 'stable' = 'stable'
   if (currentStreak > 0) {
@@ -120,7 +118,7 @@ export function calculateStreakData(
   } else {
     trend = 'down'
   }
-  
+
   return {
     days: currentStreak,
     bestStreak,
@@ -141,7 +139,7 @@ export function calculateSkillsMastered(
   // Count mastered skills from knowledge graph
   const masteredNodes = knowledgeGraph.filter(node => node.status === 'mastered')
   const count = masteredNodes.length
-  
+
   // Extract recent skills from mastered concepts (last 2-3)
   // Sort by updated_at to get most recently mastered
   const sortedMastered = [...masteredNodes].sort((a, b) => {
@@ -149,11 +147,11 @@ export function calculateSkillsMastered(
     const dateB = new Date(b.updated_at || b.created_at).getTime()
     return dateB - dateA
   })
-  
+
   const recentSkills = sortedMastered
     .slice(0, 3)
     .map(node => node.concept)
-  
+
   // If we don't have enough from knowledge graph, add placeholder skills
   const placeholderSkills = ['JavaScript Basics', 'HTML & CSS', 'Git Fundamentals', 'React Hooks', 'Node.js', 'Python Basics']
   while (recentSkills.length < 2 && placeholderSkills.length > 0) {
@@ -162,17 +160,17 @@ export function calculateSkillsMastered(
       recentSkills.push(skill)
     }
   }
-  
+
   // Calculate monthly progress - compare with previous month
   // In production, this would come from historical monthly data
   const previousCount = previousMonthData?.skillCount || Math.max(0, count - Math.floor(Math.random() * 4 + 1))
   const monthlyProgress = count - previousCount
-  
+
   // Determine trend based on monthly progress
   let trend: 'up' | 'down' | 'stable' = 'stable'
   if (monthlyProgress > 0) trend = 'up'
   else if (monthlyProgress < 0) trend = 'down'
-  
+
   return {
     count,
     recentSkills: recentSkills.slice(0, 3),
@@ -191,10 +189,10 @@ export function calculateCodingTime(
 ): EnhancedStats['codingTime'] {
   // Calculate weekly hours based on activities
   // In production, this would come from actual time tracking data
-  
+
   // Base calculation: estimate time from activity count and types
   let totalMinutes = 0
-  
+
   recentActivities.forEach(activity => {
     // Estimate time based on activity type
     if (activity.type === 'lesson_completed') {
@@ -207,25 +205,25 @@ export function calculateCodingTime(
       totalMinutes += 15 // Other activities (achievements, etc.)
     }
   })
-  
+
   // Add some base hours for general coding time
   const baseHours = Math.random() * 5 + 3 // 3-8 hours base
   const activityHours = totalMinutes / 60
   const weeklyHours = Math.round((baseHours + activityHours) * 10) / 10
-  
+
   // Calculate daily average
   const dailyAverage = Math.round((weeklyHours / 7) * 10) / 10
-  
+
   // Calculate weekly change compared to previous week
   // In production, this would come from historical weekly data
   const previousHours = previousWeekData?.weeklyHours || (weeklyHours - (Math.random() * 4 - 2))
   const weeklyChange = Math.round((weeklyHours - previousHours) * 10) / 10
-  
+
   // Determine trend based on weekly change (>0.5h is significant)
   let trend: 'up' | 'down' | 'stable' = 'stable'
   if (weeklyChange > 0.5) trend = 'up'
   else if (weeklyChange < -0.5) trend = 'down'
-  
+
   return {
     weeklyHours,
     dailyAverage,
@@ -250,17 +248,17 @@ export function generateEnhancedStats(
 ): EnhancedStats {
   return {
     learningProgress: calculateLearningProgress(
-      knowledgeGraph, 
+      knowledgeGraph,
       previousData?.completedNodes !== undefined ? { completedNodes: previousData.completedNodes } : undefined
     ),
     currentStreak: calculateStreakData(profile.learning_streak, previousData?.bestStreak),
     skillsMastered: calculateSkillsMastered(
-      knowledgeGraph, 
-      recentActivities, 
+      knowledgeGraph,
+      recentActivities,
       previousData?.skillCount !== undefined ? { skillCount: previousData.skillCount } : undefined
     ),
     codingTime: calculateCodingTime(
-      recentActivities, 
+      recentActivities,
       previousData?.weeklyHours !== undefined ? { weeklyHours: previousData.weeklyHours } : undefined
     )
   }
@@ -310,29 +308,29 @@ export function formatDuration(hours: number): string {
  */
 export function getMotivationalMessage(stats: EnhancedStats): string {
   const { learningProgress, currentStreak, skillsMastered, codingTime } = stats
-  
+
   // Prioritize streak messages
   if (currentStreak.days >= 7) {
     return `Amazing ${currentStreak.days}-day streak! Keep it up! 🔥`
   }
-  
+
   // Progress-based messages
   if (learningProgress.percentage >= 80) {
     return "You're almost there! Finish strong! 💪"
   } else if (learningProgress.percentage >= 50) {
     return "Great progress! You're halfway there! 🎯"
   }
-  
+
   // Skills-based messages
   if (skillsMastered.monthlyProgress >= 3) {
     return `${skillsMastered.monthlyProgress} new skills this month! Impressive! ⭐`
   }
-  
+
   // Time-based messages
   if (codingTime.weeklyHours >= 15) {
     return `${codingTime.weeklyHours} hours this week! Dedication pays off! 💻`
   }
-  
+
   // Default encouraging message
   return "Every step forward is progress! Keep learning! 🚀"
 }

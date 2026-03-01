@@ -13,7 +13,7 @@ import { useTheme } from 'next-themes'
 import { Badge } from '@/components/ui/badge'
 
 export interface CodeExampleProps {
-  _id: string
+  id: string
   language: string
   code: string
   explanation: string
@@ -25,8 +25,7 @@ export interface CodeExampleProps {
 }
 
 export function CodeExample({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _id,
+  id,
   language,
   code,
   explanation,

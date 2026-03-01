@@ -24,7 +24,7 @@ export interface ProactiveRecommendation {
 export interface RecommendationContext {
   userProfile: UserProfile
   recentActivities: LearningActivity[]
-  _knowledgeGraph: KnowledgeGraphNode[]
+  knowledgeGraph: KnowledgeGraphNode[]
   patterns: LearningPattern[]
   currentStreak: number
   weeklyXP: number
@@ -36,20 +36,20 @@ export interface RecommendationContext {
 export async function generateProactiveRecommendations(userId: string): Promise<ProactiveRecommendation[]> {
   try {
     // Gather context data
-    const _context = await gatherRecommendationContext(userId)
+    const context = await gatherRecommendationContext(userId)
 
-    if (!_context) {
+    if (!context) {
       return getDefaultRecommendations()
     }
 
     const recommendations: ProactiveRecommendation[] = []
 
     // Generate different types of recommendations
-    recommendations.push(...generateNextTopicRecommendations(_context))
-    recommendations.push(...generateReviewRecommendations(_context))
-    recommendations.push(...generateSkillGapRecommendations(_context))
-    recommendations.push(...generateOptimizationRecommendations(_context))
-    recommendations.push(...generateMotivationRecommendations(_context))
+    recommendations.push(...generateNextTopicRecommendations(context))
+    recommendations.push(...generateReviewRecommendations(context))
+    recommendations.push(...generateSkillGapRecommendations(context))
+    recommendations.push(...generateOptimizationRecommendations(context))
+    recommendations.push(...generateMotivationRecommendations(context))
 
     // Sort by priority and confidence
     return recommendations
@@ -90,8 +90,7 @@ async function gatherRecommendationContext(userId: string): Promise<Recommendati
       .order('activity_timestamp', { ascending: false })
 
     // Get knowledge graph
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { data: _knowledgeGraph } = await supabase
+    const { data: knowledgeGraph } = await supabase
       .from('knowledge_graph_nodes')
       .select('*')
       .eq('user_id', userId)
@@ -106,13 +105,13 @@ async function gatherRecommendationContext(userId: string): Promise<Recommendati
     return {
       userProfile,
       recentActivities: recentActivities || [],
-      _knowledgeGraph: knowledgeGraph || [],
+      knowledgeGraph: knowledgeGraph || [],
       patterns,
       currentStreak,
       weeklyXP
     }
   } catch (error) {
-    console.error('Error gathering recommendation _context:', error)
+    console.error('Error gathering recommendation context:', error)
     return null
   }
 }
@@ -120,16 +119,16 @@ async function gatherRecommendationContext(userId: string): Promise<Recommendati
 /**
  * Generate next topic recommendations
  */
-function generateNextTopicRecommendations(_context: RecommendationContext): ProactiveRecommendation[] {
+function generateNextTopicRecommendations(context: RecommendationContext): ProactiveRecommendation[] {
   const recommendations: ProactiveRecommendation[] = []
 
   // Find unlocked but not started topics
-  const availableTopics = context.knowledgeGraph.filter(node =>
-    node.status === 'locked' && arePrerequisitesMet(node, context._knowledgeGraph)
+  const availableTopics = context.knowledgeGraph.filter((node: any) =>
+    node.status === 'locked' && arePrerequisitesMet(node, context.knowledgeGraph)
   )
 
   if (availableTopics.length > 0) {
-    const nextTopic = selectBestNextTopic(availableTopics, _context)
+    const nextTopic = selectBestNextTopic(availableTopics, context)
 
     recommendations.push({
       id: `next-topic-${nextTopic.id}`,
@@ -149,9 +148,9 @@ function generateNextTopicRecommendations(_context: RecommendationContext): Proa
   }
 
   // Suggest advanced topics for strong areas
-  const strengthPattern = context.patterns.find(p => p.type === 'strength_identified')
+  const strengthPattern = context.patterns.find((p: any) => p.type === 'strength_identified')
   if (strengthPattern) {
-    const advancedTopics = findAdvancedTopicsForStrength(strengthPattern.data.activityType, context._knowledgeGraph)
+    const advancedTopics = findAdvancedTopicsForStrength(strengthPattern.data.activityType, context.knowledgeGraph)
 
     if (advancedTopics.length > 0) {
       recommendations.push({
@@ -177,12 +176,11 @@ function generateNextTopicRecommendations(_context: RecommendationContext): Proa
 /**
  * Generate review recommendations
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function generateReviewRecommendations(_context: RecommendationContext): ProactiveRecommendation[] {
+function generateReviewRecommendations(context: RecommendationContext): ProactiveRecommendation[] {
   const recommendations: ProactiveRecommendation[] = []
 
   // Find topics that need review (completed but not practiced recently)
-  const completedTopics = context.knowledgeGraph.filter(node => node.status === 'mastered')
+  const completedTopics = context.knowledgeGraph.filter((node: any) => node.status === 'mastered')
   const recentTopics = new Set(
     context.recentActivities
       .filter(a => a.content_id)
@@ -215,7 +213,7 @@ function generateReviewRecommendations(_context: RecommendationContext): Proacti
   }
 
   // Suggest review based on mistake patterns
-  const mistakePatterns = context.patterns.filter(p =>
+  const mistakePatterns = context.patterns.filter((p: any) =>
     p.type === 'pattern_detected' && p.description.includes('Repeated attempts')
   )
 
@@ -245,12 +243,11 @@ function generateReviewRecommendations(_context: RecommendationContext): Proacti
 /**
  * Generate skill gap recommendations
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function generateSkillGapRecommendations(_context: RecommendationContext): ProactiveRecommendation[] {
+function generateSkillGapRecommendations(context: RecommendationContext): ProactiveRecommendation[] {
   const recommendations: ProactiveRecommendation[] = []
 
   // Identify gaps in knowledge graph
-  const gaps = identifyKnowledgeGaps(context._knowledgeGraph)
+  const gaps = identifyKnowledgeGaps(context.knowledgeGraph)
 
   if (gaps.length > 0) {
     const criticalGap = gaps[0] // Most critical gap
@@ -274,7 +271,7 @@ function generateSkillGapRecommendations(_context: RecommendationContext): Proac
 
   // Suggest foundational skills based on user level
   if (context.userProfile.skill_level === 'beginner') {
-    const foundationalGaps = identifyFoundationalGaps(context._knowledgeGraph)
+    const foundationalGaps = identifyFoundationalGaps(context.knowledgeGraph)
 
     if (foundationalGaps.length > 0) {
       recommendations.push({
@@ -300,12 +297,11 @@ function generateSkillGapRecommendations(_context: RecommendationContext): Proac
 /**
  * Generate optimization recommendations
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function generateOptimizationRecommendations(_context: RecommendationContext): ProactiveRecommendation[] {
+function generateOptimizationRecommendations(context: RecommendationContext): ProactiveRecommendation[] {
   const recommendations: ProactiveRecommendation[] = []
 
   // Analyze learning efficiency
-  const timePattern = context.patterns.find(p =>
+  const timePattern = context.patterns.find((p: any) =>
     p.type === 'pattern_detected' && p.description.includes('Prefers learning during')
   )
 
@@ -328,7 +324,7 @@ function generateOptimizationRecommendations(_context: RecommendationContext): P
   }
 
   // Voice coaching optimization
-  const voicePattern = context.patterns.find(p =>
+  const voicePattern = context.patterns.find((p: any) =>
     p.type === 'pattern_detected' && p.description.includes('voice coaching')
   )
 
@@ -362,8 +358,7 @@ function generateOptimizationRecommendations(_context: RecommendationContext): P
 /**
  * Generate motivation recommendations
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function generateMotivationRecommendations(_context: RecommendationContext): ProactiveRecommendation[] {
+function generateMotivationRecommendations(context: RecommendationContext): ProactiveRecommendation[] {
   const recommendations: ProactiveRecommendation[] = []
 
   // Streak motivation
@@ -385,7 +380,7 @@ function generateMotivationRecommendations(_context: RecommendationContext): Pro
   }
 
   // Progress celebration
-  const velocityPattern = context.patterns.find(p => p.type === 'velocity_change')
+  const velocityPattern = context.patterns.find((p: any) => p.type === 'velocity_change')
   if (velocityPattern && velocityPattern.data.changePercentage > 20) {
     recommendations.push({
       id: 'celebrate-progress',
@@ -404,7 +399,7 @@ function generateMotivationRecommendations(_context: RecommendationContext): Pro
   }
 
   // Milestone approaching
-  const completedNodes = context.knowledgeGraph.filter(n => n.status === 'mastered').length
+  const completedNodes = context.knowledgeGraph.filter((n: any) => n.status === 'mastered').length
   const totalNodes = context.knowledgeGraph.length
   const completionPercentage = totalNodes > 0 ? (completedNodes / totalNodes) * 100 : 0
 
@@ -442,16 +437,14 @@ function arePrerequisitesMet(node: KnowledgeGraphNode, allNodes: KnowledgeGraphN
   })
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function selectBestNextTopic(availableTopics: KnowledgeGraphNode[], _context: RecommendationContext): KnowledgeGraphNode {
+function selectBestNextTopic(availableTopics: KnowledgeGraphNode[], context: RecommendationContext): KnowledgeGraphNode {
   // Simple selection - could be enhanced with more sophisticated logic
   return availableTopics[0]
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function findAdvancedTopicsForStrength(activityType: string, _knowledgeGraph: KnowledgeGraphNode[]): KnowledgeGraphNode[] {
+function findAdvancedTopicsForStrength(activityType: string, knowledgeGraph: KnowledgeGraphNode[]): KnowledgeGraphNode[] {
   // This would need to be enhanced with actual topic categorization
-  return knowledgeGraph.filter(node =>
+  return knowledgeGraph.filter((node: any) =>
     node.status === 'locked' &&
     node.concept.toLowerCase().includes(activityType.toLowerCase())
   ).slice(0, 3)
@@ -475,19 +468,17 @@ function calculateDaysSinceLastPractice(topicId: string, activities: LearningAct
   return Math.floor((Date.now() - lastActivity.getTime()) / (24 * 60 * 60 * 1000))
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function identifyKnowledgeGaps(_knowledgeGraph: KnowledgeGraphNode[]): Array<{ area: string, missingConcepts: string[], blockedTopics: string[] }> {
+function identifyKnowledgeGaps(knowledgeGraph: KnowledgeGraphNode[]): Array<{ area: string, missingConcepts: string[], blockedTopics: string[] }> {
   // This would need more sophisticated gap analysis
   // For now, return empty array
   return []
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function identifyFoundationalGaps(_knowledgeGraph: KnowledgeGraphNode[]): string[] {
+function identifyFoundationalGaps(knowledgeGraph: KnowledgeGraphNode[]): string[] {
   const foundationalConcepts = ['Variables', 'Functions', 'Loops', 'Conditionals', 'Data Types']
   const masteredConcepts = knowledgeGraph
-    .filter(n => n.status === 'mastered')
-    .map(n => n.concept)
+    .filter((n: any) => n.status === 'mastered')
+    .map((n: any) => n.concept)
 
   return foundationalConcepts.filter(concept =>
     !masteredConcepts.some(mastered => mastered.includes(concept))

@@ -20,8 +20,7 @@ export interface TextInputFallbackProps {
 export function TextInputFallback({
   onSubmit,
   placeholder = "Type your question or message here...",
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _submitButtonText = "Send",
+  submitButtonText = "Send",
   disabled = false,
   className = "",
   fallbackReason,

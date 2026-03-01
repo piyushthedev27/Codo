@@ -16,11 +16,11 @@ export interface TestCase {
 }
 
 export interface CodeChallengeProps {
-  _id: string
+  id: string
   title: string
   description: string
   starterCode: string
-  _language: string
+  language: string
   testCases: TestCase[]
   hints?: string[]
   onSubmit?: (code: string, passed: boolean) => void
@@ -29,11 +29,11 @@ export interface CodeChallengeProps {
 
 export function CodeChallenge({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _id,
+  id,
   title,
   description,
   starterCode,
-  _language,
+  language,
   testCases,
   hints = [],
   onSubmit,
@@ -59,9 +59,9 @@ export function CodeChallenge({
 
     try {
       // Simulate test execution (in a real implementation, this would run in a sandboxed environment)
-      const results = await simulateTestExecution(code, testCases, _language)
+      const results = await simulateTestExecution(code, testCases, language)
       setTestResults(results)
-      
+
       const allPassed = results.every(result => result.passed)
       if (!submitted) {
         setSubmitted(true)
@@ -69,7 +69,7 @@ export function CodeChallenge({
       }
     } catch (_error) {
       console.error('Error running tests:', _error)
-      setTestResults([{ passed: false, _error: 'Failed to execute code' }])
+      setTestResults([{ passed: false, error: 'Failed to execute code' }])
     } finally {
       setIsRunning(false)
     }
@@ -98,7 +98,7 @@ export function CodeChallenge({
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Your Code ({_language})
+              Your Code ({language})
             </label>
             <div className="flex items-center gap-2">
               {showHints && hints.length > 0 && (
@@ -120,7 +120,7 @@ export function CodeChallenge({
               </button>
             </div>
           </div>
-          
+
           <textarea
             ref={textareaRef}
             value={code}
@@ -162,11 +162,10 @@ export function CodeChallenge({
               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Test Results
               </h4>
-              <div className={`flex items-center gap-1 text-sm font-medium ${
-                allTestsPassed 
-                  ? 'text-green-600 dark:text-green-400' 
-                  : 'text-red-600 dark:text-red-400'
-              }`}>
+              <div className={`flex items-center gap-1 text-sm font-medium ${allTestsPassed
+                ? 'text-green-600 dark:text-green-400'
+                : 'text-red-600 dark:text-red-400'
+                }`}>
                 {allTestsPassed ? (
                   <CheckCircle className="w-4 h-4" />
                 ) : (
@@ -180,11 +179,10 @@ export function CodeChallenge({
               {testResults.map((result, index) => (
                 <div
                   key={index}
-                  className={`p-2 rounded border ${
-                    result.passed
-                      ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                      : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
-                  }`}
+                  className={`p-2 rounded border ${result.passed
+                    ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                    : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                    }`}
                 >
                   <div className="flex items-center gap-2 text-sm">
                     {result.passed ? (
@@ -198,7 +196,7 @@ export function CodeChallenge({
                   </div>
                   {result.error && (
                     <p className="mt-1 text-xs text-red-600 dark:text-red-400 font-mono">
-                      Error: {result._error}
+                      Error: {result.error}
                     </p>
                   )}
                   {result.output && (
@@ -230,7 +228,7 @@ export function CodeChallenge({
           <div className="text-sm text-gray-600 dark:text-gray-400">
             {testCases.length} test case{testCases.length !== 1 ? 's' : ''} to pass
           </div>
-          
+
           <button
             onClick={handleRunTests}
             disabled={isRunning || !code.trim()}
@@ -264,10 +262,10 @@ async function simulateTestExecution(
     try {
       // For demo purposes, randomly pass/fail some tests based on code content
       const codeLength = code.trim().length
-      const hasKeywords = ['function', 'return', 'if', 'for', 'while'].some(keyword => 
+      const hasKeywords = ['function', 'return', 'if', 'for', 'while'].some(keyword =>
         code.toLowerCase().includes(keyword)
       )
-      
+
       // Simple heuristic: longer code with keywords is more likely to pass
       const passChance = Math.min(0.9, (codeLength / 100) * (hasKeywords ? 1.5 : 0.5))
       const passed = Math.random() < passChance
@@ -275,13 +273,13 @@ async function simulateTestExecution(
       return {
         passed,
         output: passed ? testCase.expected : 'undefined',
-        _error: passed ? undefined : 'Logic error in implementation'
+        error: passed ? undefined : 'Logic error in implementation'
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       return {
         passed: false,
-        _error: 'Syntax error'
+        error: 'Syntax error'
       }
     }
   })

@@ -151,7 +151,7 @@ class ErrorHandler {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private getAPIErrorMessage(_error: any): UserFriendlyError {
     // OpenAI API specific errors
-    if (error.message?.includes('OpenAI')) {
+    if (_error.message?.includes('OpenAI')) {
       return {
         title: 'AI Service Unavailable',
         message: 'Our AI features are temporarily unavailable. You can still access cached lessons and practice challenges.',
@@ -164,7 +164,7 @@ class ErrorHandler {
     }
 
     // Database errors
-    if (error.message?.includes('database') || error.message?.includes('Supabase')) {
+    if (_error.message?.includes('database') || _error.message?.includes('Supabase')) {
       return {
         title: 'Data Sync Issue',
         message: 'We\'re having trouble syncing your progress. Your local progress is saved and will sync when the connection is restored.',
@@ -177,7 +177,7 @@ class ErrorHandler {
     }
 
     // Voice API errors
-    if (error.message?.includes('speech') || error.message?.includes('voice')) {
+    if (_error.message?.includes('speech') || _error.message?.includes('voice')) {
       return {
         title: 'Voice Feature Unavailable',
         message: 'Voice coaching is temporarily unavailable. You can continue with text-based learning.',
@@ -204,24 +204,24 @@ class ErrorHandler {
   public handleError(_error: any, context?: Partial<ErrorContext>): UserFriendlyError {
     const fullContext: ErrorContext = {
       timestamp: new Date().toISOString(),
-      ..._context
+      ...context
     }
 
     // Log error for debugging
     console.error('Error handled:', _error, fullContext)
 
     // Network errors (fetch failures)
-    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+    if (_error.name === 'TypeError' && _error.message.includes('fetch')) {
       return this.getNetworkErrorMessage(_error)
     }
 
     // HTTP errors
-    if (error.status && typeof error.status === 'number') {
-      return this.getHttpErrorMessage(error.status, error.statusText || '')
+    if (_error.status && typeof _error.status === 'number') {
+      return this.getHttpErrorMessage(_error.status, _error.statusText || '')
     }
 
     // API-specific errors
-    if (error.message) {
+    if (_error.message) {
       return this.getAPIErrorMessage(_error)
     }
 
@@ -245,16 +245,16 @@ class ErrorHandler {
       case 'dashboard':
         return {
           ...baseError,
-          message: 'We couldn\'t load your dashboard data. ' + (baseError.retryable 
-            ? 'We\'ll show you cached information while we try to reconnect.' 
+          message: 'We couldn\'t load your dashboard data. ' + (baseError.retryable
+            ? 'We\'ll show you cached information while we try to reconnect.'
             : baseError.message)
         }
 
       case 'lessons':
         return {
           ...baseError,
-          message: 'We couldn\'t load this lesson. ' + (baseError.retryable 
-            ? 'You can try a cached lesson or wait for the connection to restore.' 
+          message: 'We couldn\'t load this lesson. ' + (baseError.retryable
+            ? 'You can try a cached lesson or wait for the connection to restore.'
             : baseError.message)
         }
 
@@ -281,8 +281,8 @@ class ErrorHandler {
       case 'knowledge-graph':
         return {
           ...baseError,
-          message: 'We couldn\'t update your learning progress. ' + (baseError.retryable 
-            ? 'Your progress is saved locally and will sync when possible.' 
+          message: 'We couldn\'t update your learning progress. ' + (baseError.retryable
+            ? 'Your progress is saved locally and will sync when possible.'
             : baseError.message)
         }
 
@@ -333,11 +333,11 @@ export const errorHandler = ErrorHandler.getInstance()
 
 // Utility functions for common error scenarios
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const handleNetworkError = (_error: any, context?: Partial<ErrorContext>) => 
-  errorHandler.handleError(_error, _context)
+export const handleNetworkError = (_error: any, context?: Partial<ErrorContext>) =>
+  errorHandler.handleError(_error, context)
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const handleAPIError = (_error: any, feature: string, context?: Partial<ErrorContext>) => 
+export const handleAPIError = (_error: any, feature: string, context?: Partial<ErrorContext>) =>
   errorHandler.getContextualMessage(_error, feature)
 
 export const getOfflineMessage = () => errorHandler.getOfflineMessage()
@@ -345,5 +345,5 @@ export const getOfflineMessage = () => errorHandler.getOfflineMessage()
 export const getMaintenanceMessage = () => errorHandler.getMaintenanceMessage()
 
 // Error boundary helper
-export const createErrorBoundary = (_error: Error, _errorInfo: any) => 
+export const createErrorBoundary = (_error: Error, _errorInfo: any) =>
   errorHandler.createErrorBoundaryMessage(_error, _errorInfo)

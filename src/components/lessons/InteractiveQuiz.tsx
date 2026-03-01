@@ -10,13 +10,13 @@ import { CheckCircle, XCircle, HelpCircle, Lightbulb } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export interface QuizOption {
-  _id: string
+  id: string
   text: string
   isCorrect: boolean
 }
 
 export interface InteractiveQuizProps {
-  _id: string
+  id: string
   question: string
   options: QuizOption[]
   explanation: string
@@ -27,8 +27,7 @@ export interface InteractiveQuizProps {
 }
 
 export function InteractiveQuiz({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _id,
+  id,
   question,
   options,
   explanation,
@@ -46,10 +45,9 @@ export function InteractiveQuiz({
     if (submitted) return
 
     if (multipleChoice) {
-      setSelectedOptions(prev => 
+      setSelectedOptions(prev =>
         prev.includes(optionId)
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          ? prev.filter(_id => id !== optionId)
+          ? prev.filter(_id => _id !== optionId)
           : [...prev, optionId]
       )
     } else {
@@ -64,10 +62,10 @@ export function InteractiveQuiz({
     setShowExplanation(true)
 
     // Check if answer is correct
-    const correctOptions = options.filter(opt => opt.isCorrect).map(opt => opt._id)
+    const correctOptions = options.filter(opt => opt.isCorrect).map(opt => opt.id)
     const isCorrect = multipleChoice
-      ? selectedOptions.length === correctOptions.length && 
-        selectedOptions.every(_id => correctOptions.includes(_id))
+      ? selectedOptions.length === correctOptions.length &&
+      selectedOptions.every(id => correctOptions.includes(id))
       : correctOptions.includes(selectedOptions[0])
 
     onAnswer?.(isCorrect, selectedOptions)
@@ -82,11 +80,11 @@ export function InteractiveQuiz({
 
   const getOptionStatus = (option: QuizOption) => {
     if (!submitted) return 'default'
-    
-    if (selectedOptions.includes(option._id)) {
+
+    if (selectedOptions.includes(option.id)) {
       return option.isCorrect ? 'correct' : 'incorrect'
     }
-    
+
     return option.isCorrect ? 'missed' : 'default'
   }
 
@@ -117,8 +115,8 @@ export function InteractiveQuiz({
   }
 
   const correctCount = options.filter(opt => opt.isCorrect).length
-  const selectedCorrectCount = selectedOptions.filter(_id => 
-    options.find(opt => opt._id === _id)?.isCorrect
+  const selectedCorrectCount = selectedOptions.filter(id =>
+    options.find(opt => opt.id === id)?.isCorrect
   ).length
 
   return (
@@ -142,16 +140,15 @@ export function InteractiveQuiz({
       <div className="space-y-3 mb-4">
         {options.map((option) => {
           const status = getOptionStatus(option)
-          const isSelected = selectedOptions.includes(option._id)
-          
+          const isSelected = selectedOptions.includes(option.id)
+
           return (
             <motion.button
-              key={option._id}
-              onClick={() => handleOptionSelect(option._id)}
+              key={option.id}
+              onClick={() => handleOptionSelect(option.id)}
               disabled={submitted}
-              className={`w-full p-4 rounded-lg border-2 text-left transition-all duration-200 ${getOptionStyles(status)} ${
-                isSelected && !submitted ? 'ring-2 ring-blue-500' : ''
-              } ${submitted ? 'cursor-default' : 'cursor-pointer'}`}
+              className={`w-full p-4 rounded-lg border-2 text-left transition-all duration-200 ${getOptionStyles(status)} ${isSelected && !submitted ? 'ring-2 ring-blue-500' : ''
+                } ${submitted ? 'cursor-default' : 'cursor-pointer'}`}
               whileHover={!submitted ? { scale: 1.01 } : {}}
               whileTap={!submitted ? { scale: 0.99 } : {}}
             >
@@ -187,7 +184,7 @@ export function InteractiveQuiz({
               Try Again
             </button>
           )}
-          
+
           {!submitted && (
             <button
               onClick={handleSubmit}
@@ -228,7 +225,7 @@ export function InteractiveQuiz({
           >
             <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">Explanation</h4>
             <p className="text-sm text-blue-700 dark:text-blue-300">{explanation}</p>
-            
+
             {submitted && (
               <div className="mt-3 flex items-center gap-2">
                 {selectedCorrectCount === correctCount && selectedOptions.length === correctCount ? (

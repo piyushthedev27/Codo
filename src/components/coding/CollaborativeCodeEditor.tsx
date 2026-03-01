@@ -99,8 +99,7 @@ export function CollaborativeCodeEditor({
     enhancedTouchTargets: true
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { viewport, optimizeForMobile } = useLayoutOptimization()
+  const { viewport: _viewport, optimizeForMobile } = useLayoutOptimization()
 
   // Detect mobile device
   useEffect(() => {

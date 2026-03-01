@@ -96,18 +96,18 @@ export async function updateLearningPathFromMistake(
 ): Promise<LearningPath> {
   try {
     // Get current learning path
-    let _learningPath = await getLearningPath(userId)
-    
-    if (!_learningPath) {
+    let learningPath = await getLearningPath(userId)
+
+    if (!learningPath) {
       // Create initial learning path if none exists
-      _learningPath = await createInitialLearningPath(userId)
+      learningPath = await createInitialLearningPath(userId)
     }
 
     // Analyze the mistake and determine adjustments
-    const adjustments = await analyzeMistakeForPathAdjustments(parsedError, mistakePattern, _learningPath)
+    const adjustments = await analyzeMistakeForPathAdjustments(parsedError, mistakePattern, learningPath)
 
     // Apply adjustments to learning path
-    const updatedPath = await applyPathAdjustments(_learningPath, adjustments)
+    const updatedPath = await applyPathAdjustments(learningPath, adjustments)
 
     // Save updated learning path
     return await saveLearningPath(updatedPath)
@@ -125,17 +125,17 @@ export async function updateLearningPathFromAnalysis(
   mistakeAnalysis: MistakeAnalysis
 ): Promise<LearningPath> {
   try {
-    let _learningPath = await getLearningPath(userId)
-    
-    if (!_learningPath) {
-      _learningPath = await createInitialLearningPath(userId)
+    let learningPath = await getLearningPath(userId)
+
+    if (!learningPath) {
+      learningPath = await createInitialLearningPath(userId)
     }
 
     // Generate comprehensive adjustments based on analysis
-    const adjustments = await generateComprehensiveAdjustments(mistakeAnalysis, _learningPath)
+    const adjustments = await generateComprehensiveAdjustments(mistakeAnalysis, learningPath)
 
     // Apply all adjustments
-    const updatedPath = await applyPathAdjustments(_learningPath, adjustments)
+    const updatedPath = await applyPathAdjustments(learningPath, adjustments)
 
     // Update progress milestones based on trends
     updatedPath.progressMilestones = updateProgressMilestones(
@@ -239,8 +239,7 @@ async function createInitialLearningPath(userId: string): Promise<LearningPath> 
 async function analyzeMistakeForPathAdjustments(
   parsedError: ParsedError,
   mistakePattern: MistakePattern,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _learningPath: LearningPath
+  learningPath: LearningPath
 ): Promise<AdaptiveAdjustment[]> {
   const adjustments: AdaptiveAdjustment[] = []
 
@@ -258,7 +257,7 @@ async function analyzeMistakeForPathAdjustments(
   }
 
   // New error categories get topic addition
-  const hasRelatedTopic = learningPath.priorityTopics.some(topic =>
+  const hasRelatedTopic = learningPath.priorityTopics.some((topic: any) =>
     topic.relatedMistakes.includes(parsedError.errorType) ||
     topic.category.toLowerCase().includes(parsedError.category.toLowerCase())
   )
@@ -296,8 +295,7 @@ async function analyzeMistakeForPathAdjustments(
  */
 async function generateComprehensiveAdjustments(
   mistakeAnalysis: MistakeAnalysis,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _learningPath: LearningPath
+  learningPath: LearningPath
 ): Promise<AdaptiveAdjustment[]> {
   const adjustments: AdaptiveAdjustment[] = []
 
@@ -336,10 +334,10 @@ async function generateComprehensiveAdjustments(
  * Apply adjustments to learning path
  */
 async function applyPathAdjustments(
-  _learningPath: LearningPath,
+  learningPath: LearningPath,
   adjustments: AdaptiveAdjustment[]
 ): Promise<LearningPath> {
-  const updatedPath = { ..._learningPath }
+  const updatedPath = { ...learningPath }
 
   for (const adjustment of adjustments) {
     switch (adjustment.adjustmentType) {
@@ -397,7 +395,7 @@ function boostTopicPriorities(
   topics: LearningTopic[],
   triggerMistakes: string[]
 ): LearningTopic[] {
-  return topics.map(topic => {
+  return topics.map((topic: any) => {
     const hasRelatedMistake = triggerMistakes.some(mistake =>
       topic.relatedMistakes.includes(mistake) ||
       mistake.toLowerCase().includes(topic.name.toLowerCase())
@@ -405,7 +403,7 @@ function boostTopicPriorities(
 
     if (hasRelatedMistake) {
       // Boost priority
-      const priorityMap = { low: 'medium', medium: 'high', high: 'critical', critical: 'critical' }
+      const priorityMap: Record<string, string> = { low: 'medium', medium: 'high', high: 'critical', critical: 'critical' }
       return {
         ...topic,
         priority: priorityMap[topic.priority] as any
@@ -460,7 +458,7 @@ function addNewTopics(
   for (const mistake of triggerMistakes) {
     for (const [mistakeType, topicTemplate] of Object.entries(mistakeToTopicMap)) {
       if (mistake.includes(mistakeType)) {
-        const topicExists = existingTopics.some(topic =>
+        const topicExists = existingTopics.some((topic: any) =>
           topic.name === topicTemplate.name
         )
 
@@ -491,7 +489,7 @@ function adjustTopicDifficulty(
   topics: LearningTopic[],
   triggerMistakes: string[]
 ): LearningTopic[] {
-  return topics.map(topic => {
+  return topics.map((topic: any) => {
     const hasRelatedMistake = triggerMistakes.some(mistake =>
       topic.relatedMistakes.includes(mistake)
     )
@@ -514,7 +512,7 @@ function adjustLearningPace(
   lessons: RecommendedLesson[],
   shouldSlowDown: boolean
 ): RecommendedLesson[] {
-  return lessons.map(lesson => ({
+  return lessons.map((lesson: any) => ({
     ...lesson,
     estimatedDuration: shouldSlowDown
       ? Math.round(lesson.estimatedDuration * 1.3)
@@ -525,8 +523,7 @@ function adjustLearningPace(
 /**
  * Generate recommended lessons based on learning path
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function generateRecommendedLessons(_learningPath: LearningPath): RecommendedLesson[] {
+function generateRecommendedLessons(learningPath: LearningPath): RecommendedLesson[] {
   const lessons: RecommendedLesson[] = []
 
   // Generate lessons for high-priority topics
@@ -577,8 +574,7 @@ function generateRecommendedLessons(_learningPath: LearningPath): RecommendedLes
 /**
  * Identify knowledge gaps based on learning path
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function identifyKnowledgeGaps(_learningPath: LearningPath): KnowledgeGap[] {
+function identifyKnowledgeGaps(learningPath: LearningPath): KnowledgeGap[] {
   const gaps: KnowledgeGap[] = []
 
   // Find topics with low mastery and related mistakes
@@ -591,8 +587,8 @@ function identifyKnowledgeGaps(_learningPath: LearningPath): KnowledgeGap[] {
       id: `gap_${topic.id}`,
       concept: topic.name,
       category: topic.category,
-      severity: topic.priority === 'critical' ? 'critical' : 
-                topic.priority === 'high' ? 'major' : 'minor',
+      severity: topic.priority === 'critical' ? 'critical' :
+        topic.priority === 'high' ? 'major' : 'minor',
       evidenceMistakes: topic.relatedMistakes,
       suggestedResources: [
         `${topic.name} micro-lesson`,
@@ -614,11 +610,11 @@ function updateProgressMilestones(
   milestones: ProgressMilestone[],
   mistakeAnalysis: MistakeAnalysis
 ): ProgressMilestone[] {
-  return milestones.map(milestone => {
+  return milestones.map((milestone: any) => {
     // Check if milestone should be marked as completed
-    const relatedTopicsImproved = milestone.relatedTopics.every(topicId => {
+    const relatedTopicsImproved = milestone.relatedTopics.every((topicId: string) => {
       // Check if mistakes for this topic have decreased
-      const relatedErrors = mistakeAnalysis.mostCommonErrors.filter(error =>
+      const relatedErrors = mistakeAnalysis.mostCommonErrors.filter((error: any) =>
         error.errorType.toLowerCase().includes(topicId.toLowerCase())
       )
       return relatedErrors.length === 0 || relatedErrors.every(error => error.resolved)
@@ -643,7 +639,7 @@ function convertKnowledgeGraphToLearningPath(
   userId: string,
   nodes: any[]
 ): LearningPath {
-  const priorityTopics: LearningTopic[] = nodes.map(node => ({
+  const priorityTopics: LearningTopic[] = nodes.map((node: any) => ({
     id: node.id,
     name: node.concept,
     category: node.category || 'General',
@@ -659,8 +655,8 @@ function convertKnowledgeGraphToLearningPath(
     id: `path_${userId}_converted`,
     userId,
     currentFocus: nodes
-      .filter(node => node.status === 'in_progress')
-      .map(node => node.concept)
+      .filter((node: any) => node.status === 'in_progress')
+      .map((node: any) => node.concept)
       .slice(0, 3),
     priorityTopics,
     recommendedLessons: [],
@@ -680,11 +676,11 @@ function convertKnowledgeGraphToLearningPath(
 /**
  * Save learning path to database
  */
-async function saveLearningPath(_learningPath: LearningPath): Promise<LearningPath> {
+async function saveLearningPath(learningPath: LearningPath): Promise<LearningPath> {
   try {
     // For now, we'll update the knowledge graph nodes
     // In a full implementation, you'd have a dedicated learning_paths table
-    
+
     for (const topic of learningPath.priorityTopics) {
       await supabase
         .from('knowledge_graph_nodes')
@@ -693,8 +689,8 @@ async function saveLearningPath(_learningPath: LearningPath): Promise<LearningPa
           user_id: learningPath.userId,
           concept: topic.name,
           category: topic.category,
-          status: topic.masteryLevel > 80 ? 'mastered' : 
-                  topic.masteryLevel > 0 ? 'in_progress' : 'locked',
+          status: topic.masteryLevel > 80 ? 'mastered' :
+            topic.masteryLevel > 0 ? 'in_progress' : 'locked',
           mastery_percentage: topic.masteryLevel,
           difficulty_level: topic.difficultyLevel,
           estimated_duration_minutes: topic.estimatedDuration,
@@ -702,7 +698,7 @@ async function saveLearningPath(_learningPath: LearningPath): Promise<LearningPa
         })
     }
 
-    return _learningPath
+    return learningPath
   } catch (error) {
     console.error('Error saving learning path:', error)
     throw new Error('Failed to save learning path')
@@ -719,9 +715,9 @@ export async function getLearningPathSummary(userId: string): Promise<{
   adaptiveAdjustments: number
 }> {
   try {
-    const _learningPath = await getLearningPath(userId)
-    
-    if (!_learningPath) {
+    const learningPath = await getLearningPath(userId)
+
+    if (!learningPath) {
       return {
         currentFocus: [],
         nextRecommendations: [],
@@ -732,14 +728,14 @@ export async function getLearningPathSummary(userId: string): Promise<{
 
     const nextRecommendations = learningPath.recommendedLessons
       .slice(0, 3)
-      .map(lesson => lesson.title)
+      .map((lesson: any) => lesson.title)
 
     const totalTopics = learningPath.priorityTopics.length
     const masteredTopics = learningPath.priorityTopics.filter(
-      topic => topic.masteryLevel >= 80
+      (topic: any) => topic.masteryLevel >= 80
     ).length
-    
-    const progressPercentage = totalTopics > 0 
+
+    const progressPercentage = totalTopics > 0
       ? Math.round((masteredTopics / totalTopics) * 100)
       : 0
 

@@ -4,8 +4,7 @@
  * Requirements: 23.4
  */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { UserProfile, _KnowledgeGraphNode, LearningActivity, AIPeerProfile } from '@/types/database'
+import type { UserProfile, KnowledgeGraphNode, LearningActivity, AIPeerProfile } from '@/types/database'
 import type { LessonMetadata, RecommendedLesson, RecommendationContext } from './lesson-recommender'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { generateRecommendations, calculateRelevanceScore as _calculateRelevanceScore } from './lesson-recommender'
@@ -73,7 +72,7 @@ export function analyzeUserBehavior(
       topicFrequency.set(activity.content_id, count + 1)
     }
   })
-  
+
   const preferredTopics = Array.from(topicFrequency.entries())
     .map(([topic, frequency]) => ({ topic, frequency }))
     .sort((a, b) => b.frequency - a.frequency)
@@ -85,7 +84,7 @@ export function analyzeUserBehavior(
 
   // Determine preferred difficulty based on completion patterns
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _completedActivities = activities.filter(a => 
+  const _completedActivities = activities.filter(a =>
     a.activity_type === 'lesson' || a.activity_type === 'challenge'
   )
   const preferredDifficulty = profile.skill_level as 'beginner' | 'intermediate' | 'advanced'
@@ -93,7 +92,7 @@ export function analyzeUserBehavior(
   // Calculate learning velocity (lessons per week)
   const oneWeekAgo = new Date()
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-  const recentActivities = activities.filter(a => 
+  const recentActivities = activities.filter(a =>
     new Date(a.created_at) > oneWeekAgo
   )
   const learningVelocity = recentActivities.length
@@ -105,10 +104,10 @@ export function analyzeUserBehavior(
   const peakLearningTimes = determinePeakLearningTimes(activities)
 
   // Calculate completion rate
-  const startedLessons = activities.filter(a => 
+  const startedLessons = activities.filter(a =>
     a.activity_type === 'lesson'
   ).length
-  const completedLessons = activities.filter(a => 
+  const completedLessons = activities.filter(a =>
     a.activity_type === 'lesson' && a.completion_percentage === 100
   ).length
   const completionRate = startedLessons > 0 ? completedLessons / startedLessons : 0
@@ -203,7 +202,7 @@ export function collaborativeFiltering(
 
   // Find popular lessons among similar users
   const lessonCounts = new Map<string, { count: number; ratings: number[] }>()
-  
+
   similarUsers.forEach(({ userId: similarUserId }) => {
     const similarUser = allUsers.find(u => u.userId === similarUserId)
     if (similarUser) {
@@ -312,7 +311,7 @@ export function assignPeerRecommendations(
   return recommendations.map(lesson => {
     // Find best matching peer based on specialty and lesson topic
     const matchingPeer = findBestMatchingPeer(lesson, aiPeers, _userBehavior)
-    
+
     return {
       ...lesson,
       recommendedBy: matchingPeer.id,

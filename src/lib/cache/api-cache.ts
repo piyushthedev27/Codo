@@ -93,9 +93,8 @@ export function invalidateCache(pattern: keyof typeof API_CACHE_CONFIG.INVALIDAT
 }
 
 // Preload critical data
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function preloadCriticalData(userId?: string) {
-  if (!_userId) return
+  if (!userId) return
 
   const preloadPromises = [
     // Preload user profile

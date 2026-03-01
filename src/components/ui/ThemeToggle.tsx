@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 
 export function ThemeToggle() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { _theme } = useTheme()
+  const { theme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
   // Handle mounting state to prevent hydration mismatch
@@ -38,7 +38,7 @@ export function ThemeToggle() {
           opacity: 1,
           rotate: 0,
         }}
-        transition={{ 
+        transition={{
           duration: 0.3,
           ease: "easeInOut"
         }}

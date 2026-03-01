@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 interface CodeDuelArenaProps {
   duelState: 'waiting' | 'active' | 'completed'
   onProgressUpdate: (progress: number, score: number, tests?: number) => void
-  _timeRemaining: number
+  timeRemaining: number
 }
 
 interface TestCase {
@@ -38,8 +38,7 @@ interface Challenge {
   hints: string[]
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function CodeDuelArena({ duelState, onProgressUpdate, _timeRemaining }: CodeDuelArenaProps) {
+export function CodeDuelArena({ duelState, onProgressUpdate, timeRemaining: _timeRemaining }: CodeDuelArenaProps) {
   const [userCode, setUserCode] = useState('')
   const [testResults, setTestResults] = useState<TestCase[]>([])
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -269,10 +268,10 @@ export function CodeDuelArena({ duelState, onProgressUpdate, _timeRemaining }: C
                   <div
                     key={testCase.id}
                     className={`p-4 rounded-lg border-2 ${testCase.passed === undefined
-                        ? 'border-gray-200 dark:border-gray-700'
-                        : testCase.passed
-                          ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
-                          : 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20'
+                      ? 'border-gray-200 dark:border-gray-700'
+                      : testCase.passed
+                        ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
+                        : 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20'
                       }`}
                   >
                     <div className="flex items-center justify-between mb-2">

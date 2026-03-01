@@ -115,7 +115,7 @@ function getTimeTrendText(trend: string, current: number, previous: number): str
 // ============================================================================
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function fetchAIPeerStatus(userId: string, _aiPeers: any[]) {
+async function fetchAIPeerStatus(userId: string, aiPeers: any[]) {
   try {
     return await userAIPeersOperations.getByUserId(userId)
   } catch (error) {
@@ -181,7 +181,7 @@ async function fetchMilestoneData(userId: string, trackId?: string) {
 // Lesson Recommendation Generation (Requirement 23.4)
 // ============================================================================
 
-async function fetchLessonRecommendations(userId: string, _aiPeers: any[], limit: number = 3) {
+async function fetchLessonRecommendations(userId: string, aiPeers: any[], limit: number = 3) {
   try {
     return await lessonRecommendationsOperations.getActiveByUserId(userId, limit)
   } catch (error) {
@@ -283,10 +283,10 @@ export async function GET(_request: NextRequest) {
     }
 
     // Try to get additional data
-    let _aiPeers, knowledgeGraph, activeInsights, challengeStats
+    let aiPeers, knowledgeGraph, activeInsights, challengeStats
 
     try {
-      _aiPeers = await aiPeerOperations.getByUserId(profile.id)
+      aiPeers = await aiPeerOperations.getByUserId(profile.id)
       knowledgeGraph = await knowledgeGraphOperations.getByUserId(profile.id)
       activeInsights = await learningInsightsOperations.getActiveByUserId(profile.id)
       challengeStats = await challengeAttemptOperations.getUserStats(profile.id)
@@ -306,7 +306,7 @@ export async function GET(_request: NextRequest) {
     const enhancedStatsData = await fetchEnhancedStats(profile.id, profile, knowledgeGraph)
 
     // Fetch AI peer status and messages (Requirement 23.2)
-    const peerStatuses = await fetchAIPeerStatus(profile.id, _aiPeers)
+    const peerStatuses = await fetchAIPeerStatus(profile.id, aiPeers)
     const recentMessages = await fetchRecentMessages(profile.id, 10)
 
     // Fetch learning path and milestone data (Requirement 23.3)
@@ -314,7 +314,7 @@ export async function GET(_request: NextRequest) {
     const nextMilestone = currentTrack ? await fetchMilestoneData(profile.id, currentTrack.track_id) : null
 
     // Fetch lesson recommendations (Requirement 23.4)
-    const recommendations = await fetchLessonRecommendations(profile.id, _aiPeers, 3)
+    const recommendations = await fetchLessonRecommendations(profile.id, aiPeers, 3)
 
     // Fetch enhanced activities (Requirement 23.5)
     const enhancedActivitiesData = await fetchEnhancedActivities(profile.id, 10)
@@ -369,7 +369,7 @@ export async function GET(_request: NextRequest) {
 
     const dashboardData: DashboardData = {
       profile,
-      _aiPeers,
+      aiPeers,
       knowledgeGraph,
       recentActivities,
       activeInsights,

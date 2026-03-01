@@ -11,12 +11,12 @@ type ThemeProviderProps = {
 }
 
 type ThemeProviderState = {
-  _theme: Theme
-  setTheme: (_theme: Theme) => void
+  theme: Theme
+  setTheme: (theme: Theme) => void
 }
 
 const initialState: ThemeProviderState = {
-  _theme: 'dark',
+  theme: 'dark',
   setTheme: () => null,
 }
 
@@ -24,10 +24,8 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({
   children,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _defaultTheme = 'dark',
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _storageKey = 'codo-ui-theme',
+  defaultTheme = 'dark',
+  storageKey = 'codo-ui-theme',
   ...props
 }: ThemeProviderProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -44,23 +42,23 @@ export function ThemeProvider({
     if (!mounted) return
 
     const root = window.document.documentElement
-    
+
     // Always apply dark theme
     root.classList.remove('light')
     root.classList.add('dark')
     root.setAttribute('data-theme', 'dark')
     root.style.colorScheme = 'dark'
-    
+
     // Force dark background
     document.body.style.background = 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%)'
     document.body.style.backgroundAttachment = 'fixed'
     document.body.style.color = 'hsl(210 40% 98%)'
     document.body.style.minHeight = '100vh'
-    
+
   }, [mounted])
 
   const value = {
-    _theme: 'dark' as Theme,
+    theme: 'dark' as Theme,
     setTheme: () => {
       // Do nothing - theme is always dark
     },
@@ -69,7 +67,7 @@ export function ThemeProvider({
   // Prevent flash of unstyled content during hydration
   if (!mounted) {
     return (
-      <div className="min-h-screen" style={{ 
+      <div className="min-h-screen" style={{
         background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%)',
         color: 'hsl(210 40% 98%)'
       }}>

@@ -3,8 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { initializeUserData, userProfileOperations, testDatabaseConnection } from '@/lib/database/operations'
 import type { OnboardingData } from '@/types/database'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     // Test database connection first
     const dbTest = await testDatabaseConnection()
@@ -18,7 +17,7 @@ export async function POST(_request: NextRequest) {
     }
 
     const { userId } = await auth()
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -39,7 +38,7 @@ export async function POST(_request: NextRequest) {
     try {
       // Check if user profile already exists
       const existingProfile = await userProfileOperations.getByClerkId(userId)
-      
+
       if (existingProfile) {
         // Update existing profile
         const updatedProfile = await userProfileOperations.update(userId, {
@@ -113,7 +112,7 @@ export async function GET(_request: NextRequest) {
     }
 
     const { userId } = await auth()
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -123,7 +122,7 @@ export async function GET(_request: NextRequest) {
 
     try {
       const profile = await userProfileOperations.getByClerkId(userId)
-      
+
       if (!profile) {
         return NextResponse.json({
           success: true,

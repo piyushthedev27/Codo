@@ -2,12 +2,12 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from 'react'
-import { 
-  select, 
-  forceSimulation, 
-  forceLink, 
-  forceManyBody, 
-  forceCenter, 
+import {
+  select,
+  forceSimulation,
+  forceLink,
+  forceManyBody,
+  forceCenter,
   forceCollide,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   transition as _transition,
@@ -144,7 +144,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
   const getNodeStrokeColor = useCallback((status: string, isHovered: boolean, isSelected: boolean) => {
     if (isSelected) return '#3b82f6' // blue-500
     if (isHovered) return '#6366f1' // indigo-500
-    
+
     switch (status) {
       case 'mastered':
         return '#059669' // green-600
@@ -158,15 +158,13 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
   }, [])
 
   // Handle node interactions
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleNodeClick = useCallback((event: MouseEvent, _d: D3Node) => {
+  const handleNodeClick = useCallback((event: MouseEvent, d: D3Node) => {
     event.stopPropagation()
     setSelectedNode(d.id)
     onNodeClick?.(d.id)
   }, [onNodeClick])
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleNodeMouseEnter = useCallback((event: MouseEvent, _d: D3Node) => {
+  const handleNodeMouseEnter = useCallback((event: MouseEvent, d: D3Node) => {
     setHoveredNode(d.id)
     onNodeHover?.(d.id)
   }, [onNodeHover])
@@ -186,11 +184,11 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
     // Create simulation
     const simulation = forceSimulation(d3Nodes)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .force('link', forceLink(d3Links).id((_d: any) => d.id).distance(100))
+      .force('link', forceLink(d3Links).id((d: any) => d.id).distance(100))
       .force('charge', forceManyBody().strength(-400))
       .force('center', forceCenter(width / 2, height / 2))
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .force('collision', forceCollide().radius((_d: any) => getNodeRadius(d.difficulty_level, d.status) + 5))
+      .force('collision', forceCollide().radius((d: any) => getNodeRadius(d.difficulty_level, d.status) + 5))
 
     simulationRef.current = simulation
 
@@ -233,26 +231,26 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const _circles = nodeGroup.append('circle')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .attr('r', _d => getNodeRadius(d.difficulty_level, d.status))
+      .attr('r', d => getNodeRadius(d.difficulty_level, d.status))
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .attr('fill', _d => getNodeColor(d.status, d.mastery_percentage))
+      .attr('fill', d => getNodeColor(d.status, d.mastery_percentage))
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .attr('stroke', _d => getNodeStrokeColor(d.status, false, false))
+      .attr('stroke', d => getNodeStrokeColor(d.status, false, false))
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .attr('stroke-width', _d => getNodeStrokeWidth(d.status, false, false))
+      .attr('stroke-width', d => getNodeStrokeWidth(d.status, false, false))
 
     // Add progress rings for in-progress nodes
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    nodeGroup.filter(_d => d.status === 'in_progress')
+    nodeGroup.filter(d => d.status === 'in_progress')
       .append('circle')
       .attr('class', 'progress-ring')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .attr('r', _d => getNodeRadius(d.difficulty_level, d.status) + 8)
+      .attr('r', d => getNodeRadius(d.difficulty_level, d.status) + 8)
       .attr('fill', 'none')
       .attr('stroke', '#f59e0b')
       .attr('stroke-width', 3)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .attr('stroke-dasharray', _d => {
+      .attr('stroke-dasharray', d => {
         const circumference = 2 * Math.PI * (getNodeRadius(d.difficulty_level, d.status) + 8)
         const progress = d.mastery_percentage / 100
         return `${circumference * progress} ${circumference * (1 - progress)}`
@@ -267,10 +265,10 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
       .attr('dy', '.35em')
       .attr('fill', 'white')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .attr('font-size', _d => `${Math.max(12, getNodeRadius(d.difficulty_level, d.status) * 0.6)}px`)
+      .attr('font-size', d => `${Math.max(12, getNodeRadius(d.difficulty_level, d.status) * 0.6)}px`)
       .attr('font-weight', 'bold')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .text(_d => getNodeIcon(d.status))
+      .text(d => getNodeIcon(d.status))
       .style('pointer-events', 'none')
 
     // Add concept labels
@@ -278,27 +276,27 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
       .attr('class', 'node-label')
       .attr('text-anchor', 'middle')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .attr('dy', _d => getNodeRadius(d.difficulty_level, d.status) + 20)
+      .attr('dy', d => getNodeRadius(d.difficulty_level, d.status) + 20)
       .attr('fill', '#374151')
       .attr('font-size', '12px')
       .attr('font-weight', '600')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .text(_d => d.concept)
+      .text(d => d.concept)
       .style('pointer-events', 'none')
 
     // Add mastery percentage for in-progress nodes
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    nodeGroup.filter(_d => d.status === 'in_progress')
+    nodeGroup.filter(d => d.status === 'in_progress')
       .append('text')
       .attr('class', 'mastery-percentage')
       .attr('text-anchor', 'middle')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .attr('dy', _d => getNodeRadius(d.difficulty_level, d.status) + 35)
+      .attr('dy', d => getNodeRadius(d.difficulty_level, d.status) + 35)
       .attr('fill', '#f59e0b')
       .attr('font-size', '10px')
       .attr('font-weight', '500')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .text(_d => `${d.mastery_percentage}%`)
+      .text(d => `${d.mastery_percentage}%`)
       .style('pointer-events', 'none')
 
     // Add event listeners
@@ -307,21 +305,21 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
       .on('mouseenter', handleNodeMouseEnter)
       .on('mouseleave', handleNodeMouseLeave)
 
-      // Update positions on simulation tick with smooth transitions
+    // Update positions on simulation tick with smooth transitions
     simulation.on('tick', () => {
       link
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('x1', (_d: any) => d.source.x)
+        .attr('x1', (d: any) => d.source.x)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('y1', (_d: any) => d.source.y)
+        .attr('y1', (d: any) => d.source.y)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('x2', (_d: any) => d.target.x)
+        .attr('x2', (d: any) => d.target.x)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('y2', (_d: any) => d.target.y)
+        .attr('y2', (d: any) => d.target.y)
 
       nodeGroup
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('transform', (_d: any) => `translate(${d.x},${d.y})`)
+        .attr('transform', (d: any) => `translate(${d.x},${d.y})`)
     })
 
     // Add smooth animations for node state changes
@@ -331,19 +329,15 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
         .duration(duration)
         .ease(easeElastic.period(0.3))
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('r', (_d: any) => getNodeRadius(d.difficulty_level, d.status))
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('fill', (_d: any) => getNodeColor(d.status, d.mastery_percentage))
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('stroke', (_d: any) => getNodeStrokeColor(d.status, false, false))
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('stroke-width', (_d: any) => getNodeStrokeWidth(d.status, false, false))
+        .attr('r', (d: any) => getNodeRadius(d.difficulty_level, d.status))
+        .attr('fill', (d: any) => getNodeColor(d.status, d.mastery_percentage))
+        .attr('stroke', (d: any) => getNodeStrokeColor(d.status, false, false))
+        .attr('stroke-width', (d: any) => getNodeStrokeWidth(d.status, false, false))
     }
 
     // Add pulse animation for in-progress nodes
     const addPulseAnimation = () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      nodeGroup.filter((_d: any) => d.status === 'in_progress')
+      nodeGroup.filter((d: any) => d.status === 'in_progress')
         .select('circle:not(.progress-ring)')
         .style('animation', 'pulse 2s infinite')
     }
@@ -351,21 +345,21 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
     // Add celebration animation for newly mastered nodes
     const addCelebrationAnimation = (nodeId: string) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const node = nodeGroup.filter((_d: any) => d.id === nodeId)
-      
+      const node = nodeGroup.filter((d: any) => d.id === nodeId)
+
       // Create celebration particles
       const particles = svg.append('g').attr('class', 'celebration-particles')
-      
+
       for (let i = 0; i < 8; i++) {
         const angle = (i / 8) * 2 * Math.PI
         const distance = 40
-        
+
         particles.append('circle')
           .attr('r', 3)
           .attr('fill', '#10b981')
           .attr('opacity', 1)
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          .attr('transform', (_d: any) => {
+          .attr('transform', (d: any) => {
             const nodeData = node.datum() as any
             return `translate(${nodeData.x}, ${nodeData.y})`
           })
@@ -373,7 +367,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
           .duration(800)
           .ease(easeQuadOut)
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          .attr('transform', (_d: any) => {
+          .attr('transform', (d: any) => {
             const nodeData = node.datum() as any
             const x = nodeData.x + Math.cos(angle) * distance
             const y = nodeData.y + Math.sin(angle) * distance
@@ -382,49 +376,42 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
           .attr('opacity', 0)
           .remove()
       }
-      
+
       // Scale animation for the node
       node.select('circle:not(.progress-ring)')
         .transition()
         .duration(300)
         .ease(easeBackOut.overshoot(1.7))
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('r', (_d: any) => getNodeRadius(d.difficulty_level, d.status) * 1.3)
+        .attr('r', (d: any) => getNodeRadius(d.difficulty_level, d.status) * 1.3)
         .transition()
         .duration(300)
         .ease(easeBackIn)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('r', (_d: any) => getNodeRadius(d.difficulty_level, d.status))
+        .attr('r', (d: any) => getNodeRadius(d.difficulty_level, d.status))
     }
 
     // Add unlock animation for newly unlocked nodes
     const addUnlockAnimation = (nodeId: string) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const node = nodeGroup.filter((_d: any) => d.id === nodeId)
-      
+      const node = nodeGroup.filter((d: any) => d.id === nodeId)
+
       // Shake animation
       node
         .transition()
         .duration(100)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('transform', (_d: any) => `translate(${d.x - 3}, ${d.y})`)
+        .attr('transform', (d: any) => `translate(${d.x - 3}, ${d.y})`)
         .transition()
         .duration(100)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('transform', (_d: any) => `translate(${d.x + 3}, ${d.y})`)
+        .attr('transform', (d: any) => `translate(${d.x + 3}, ${d.y})`)
         .transition()
         .duration(100)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('transform', (_d: any) => `translate(${d.x - 2}, ${d.y})`)
+        .attr('transform', (d: any) => `translate(${d.x - 2}, ${d.y})`)
         .transition()
         .duration(100)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('transform', (_d: any) => `translate(${d.x + 2}, ${d.y})`)
+        .attr('transform', (d: any) => `translate(${d.x + 2}, ${d.y})`)
         .transition()
         .duration(100)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .attr('transform', (_d: any) => `translate(${d.x}, ${d.y})`)
-      
+        .attr('transform', (d: any) => `translate(${d.x}, ${d.y})`)
+
       // Glow effect
       node.select('circle:not(.progress-ring)')
         .style('filter', 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.8))')
@@ -433,11 +420,11 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
         .style('filter', 'none')
     }
 
-    // Store animation functions for external use
-    ;(svg.node() as any).__animateStateChange = animateNodeStateChange
-    ;(svg.node() as any).__addCelebrationAnimation = addCelebrationAnimation
-    ;(svg.node() as any).__addUnlockAnimation = addUnlockAnimation
-    
+      // Store animation functions for external use
+      ; (svg.node() as any).__animateStateChange = animateNodeStateChange
+      ; (svg.node() as any).__addCelebrationAnimation = addCelebrationAnimation
+      ; (svg.node() as any).__addUnlockAnimation = addUnlockAnimation
+
     // Apply initial animations
     addPulseAnimation()
 
@@ -454,18 +441,16 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
     if (!svgRef.current) return
 
     const svg = select(svgRef.current)
-    
+
     // Smooth transition for stroke changes
     svg.selectAll('.node circle:not(.progress-ring)')
       .transition()
       .duration(200)
       .ease(easeQuadInOut)
+      .attr('stroke', (d: any) => getNodeStrokeColor(d.status, d.id === hoveredNode, d.id === selectedNode))
+      .attr('stroke-width', (d: any) => getNodeStrokeWidth(d.status, d.id === hoveredNode, d.id === selectedNode))
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .attr('stroke', (_d: any) => getNodeStrokeColor(d.status, d.id === hoveredNode, d.id === selectedNode))
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .attr('stroke-width', (_d: any) => getNodeStrokeWidth(d.status, d.id === hoveredNode, d.id === selectedNode))
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .style('filter', (_d: any) => {
+      .style('filter', (d: any) => {
         if (d.id === selectedNode) return 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.5))'
         if (d.id === hoveredNode) return 'drop-shadow(0 0 6px rgba(99, 102, 241, 0.4))'
         return 'none'
@@ -477,7 +462,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
       .duration(300)
       .ease(easeQuadInOut)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .attr('stroke-dasharray', (_d: any) => {
+      .attr('stroke-dasharray', (d: any) => {
         const circumference = 2 * Math.PI * (getNodeRadius(d.difficulty_level, d.status) + 8)
         const progress = d.mastery_percentage / 100
         return `${circumference * progress} ${circumference * (1 - progress)}`
@@ -489,7 +474,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
       .duration(200)
       .ease(easeQuadInOut)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .attr('transform', (_d: any) => {
+      .attr('transform', (d: any) => {
         const scale = d.id === hoveredNode ? 1.1 : d.id === selectedNode ? 1.05 : 1
         return `translate(${d.x}, ${d.y}) scale(${scale})`
       })
@@ -500,17 +485,16 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
   useImperativeHandle(ref, () => ({
     animateNodeStateChange: (nodeId: string, newStatus: 'locked' | 'in_progress' | 'mastered') => {
       if (!svgRef.current) return
-      
+
       const svg = select(svgRef.current)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const node = svg.selectAll('.node').filter((_d: any) => d.id === nodeId)
-      
+      const node = svg.selectAll('.node').filter((d: any) => d.id === nodeId)
+
       // Update the node data
       const nodeData = d3Nodes.find(n => n.id === nodeId)
       if (nodeData) {
         nodeData.status = newStatus
       }
-      
+
       // Animate the change
       node.select('circle:not(.progress-ring)')
         .transition()
@@ -518,7 +502,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
         .ease(easeElastic.period(0.3))
         .attr('fill', getNodeColor(newStatus, nodeData?.mastery_percentage || 0))
         .attr('stroke', getNodeStrokeColor(newStatus, false, false))
-      
+
       // Update icon
       node.select('.status-icon')
         .transition()
@@ -529,41 +513,39 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
         .style('opacity', 1)
         .text(getNodeIcon(newStatus))
     },
-    
+
     animateNodeUnlock: (nodeId: string) => {
       if (!svgRef.current) return
-      
+
       const svg = select(svgRef.current)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const node = svg.selectAll('.node').filter((_d: any) => d.id === nodeId)
-      
+      const node = svg.selectAll('.node').filter((d: any) => d.id === nodeId)
+
       // Add unlock animation class
       node.classed('unlocked', true)
-      
+
       // Remove class after animation
       setTimeout(() => {
         node.classed('unlocked', false)
       }, 1500)
     },
-    
+
     animateNodeCompletion: (nodeId: string) => {
       if (!svgRef.current) return
-      
+
       const svg = select(svgRef.current)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const node = svg.selectAll('.node').filter((_d: any) => d.id === nodeId)
-      
+      const node = svg.selectAll('.node').filter((d: any) => d.id === nodeId)
+
       // Add celebration animation
       node.classed('mastered', true)
-      
+
       // Create celebration particles
       const nodeData = node.datum() as any
       const particles = svg.append('g').attr('class', 'celebration-particles')
-      
+
       for (let i = 0; i < 12; i++) {
         const angle = (i / 12) * 2 * Math.PI
         const distance = 50
-        
+
         particles.append('circle')
           .attr('r', 4)
           .attr('fill', '#10b981')
@@ -576,7 +558,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
           .attr('opacity', 0)
           .remove()
       }
-      
+
       // Remove class after animation
       setTimeout(() => {
         node.classed('mastered', false)
@@ -588,7 +570,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      _transition={{ duration: 0.5 }}
+      transition={{ duration: 0.5 }}
       className={`knowledge-graph-container ${className}`}
     >
       <svg
@@ -598,7 +580,7 @@ const KnowledgeGraphD3 = forwardRef<KnowledgeGraphD3Ref, KnowledgeGraphD3Props>(
         className="w-full h-auto border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900"
         viewBox={`0 0 ${width} ${height}`}
       />
-      
+
       {/* Legend */}
       <div className="mt-4 flex flex-wrap gap-4 justify-center text-sm">
         <div className="flex items-center gap-2">

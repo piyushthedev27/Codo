@@ -91,8 +91,7 @@ export async function GET(_request: NextRequest) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth()
 

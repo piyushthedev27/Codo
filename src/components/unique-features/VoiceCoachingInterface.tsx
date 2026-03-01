@@ -56,7 +56,7 @@ export function VoiceCoachingInterface({
     shouldUseTextInput,
     shouldUseTextOutput,
     canRetryVoice,
-    _handleVoiceError: handleFallbackError,
+    handleVoiceError: handleFallbackError,
     disableFallback
   } = useVoiceFallback()
 
@@ -130,9 +130,9 @@ export function VoiceCoachingInterface({
       }
     }
 
-     
+
     return responses.default
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userCode, context])
 
   // Handle voice question
@@ -186,7 +186,7 @@ export function VoiceCoachingInterface({
     } catch (error) {
       console.error('Voice coaching error:', error)
       setError('Failed to process question')
-      handleFallbackError(error)
+      handleFallbackError({ error: 'unknown' })
     }
   }, [generateCoachingResponse, voiceSynthesisAvailable, shouldUseTextOutput, onVoiceQuestion, onCoachingResponse, handleFallbackError])
 
@@ -227,7 +227,7 @@ export function VoiceCoachingInterface({
       if (!errorMessage.includes('network') && !errorMessage.includes('internet')) {
         setError('Failed to start voice recognition')
       }
-      handleFallbackError(error)
+      handleFallbackError({ error: 'unknown' })
     }
   }, [voiceRecognitionAvailable, handleVoiceQuestion, handleFallbackError])
 
@@ -360,8 +360,8 @@ export function VoiceCoachingInterface({
               {conversation.slice(-6).map((entry) => (
                 <div key={entry.id} className={`flex flex-col ${entry.type === 'user' ? 'items-end' : 'items-start'}`}>
                   <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm ${entry.type === 'user'
-                      ? 'bg-blue-600 text-white rounded-tr-none'
-                      : 'bg-slate-800 text-slate-200 rounded-tl-none border border-slate-700/50'
+                    ? 'bg-blue-600 text-white rounded-tr-none'
+                    : 'bg-slate-800 text-slate-200 rounded-tl-none border border-slate-700/50'
                     }`}>
                     <p>{entry.content}</p>
                   </div>
@@ -386,7 +386,7 @@ export function VoiceCoachingInterface({
             </li>
             <li className="flex items-center gap-2">
               <span className="text-blue-500/50">•</span> Say &quot;help&quot; for general guidance
-                 </li>
+            </li>
             <li className="flex items-center gap-2">
               <span className="text-blue-500/50">•</span> Mention error messages for debugging help
             </li>

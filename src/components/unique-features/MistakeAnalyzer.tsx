@@ -13,15 +13,15 @@ import React, { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
- 
+
 import { Progress as _Progress } from '@/components/ui/progress'
-import { 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
-  TrendingUp, 
-   
-  TrendingDown as _TrendingDown, 
+import {
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  TrendingUp,
+
+  TrendingDown as _TrendingDown,
   BookOpen,
   Target,
   Lightbulb,
@@ -42,7 +42,7 @@ interface ParsedError {
   commonMistake: boolean
 }
 
- 
+
 interface MistakePattern {
   id: string
   errorType: string
@@ -51,7 +51,7 @@ interface MistakePattern {
   lastOccurrence: Date
 }
 
- 
+
 interface MicroLesson {
   id: string
   title: string
@@ -103,7 +103,7 @@ export default function MistakeAnalyzer() {
     if (!errorInput.trim()) return
 
     setIsAnalyzing(true)
-    
+
     try {
       // Simulate API call to analyze mistake
       const response = await fetch('/api/mistakes/analyze', {
@@ -121,7 +121,7 @@ export default function MistakeAnalyzer() {
       if (response.ok) {
         const result = await response.json()
         setAnalysisResult(result.data)
-        
+
         // Add to mistake history
         if (result.data.parsedError) {
           setMistakeHistory(prev => [result.data.parsedError, ...prev.slice(0, 4)])
@@ -148,11 +148,11 @@ export default function MistakeAnalyzer() {
     const isReferenceError = error.toLowerCase().includes('referenceerror')
     const isTypeError = error.toLowerCase().includes('typeerror')
     const isSyntaxError = error.toLowerCase().includes('syntaxerror')
-    
+
     let category = 'LOGIC_ERROR'
     let severity: 'low' | 'medium' | 'high' = 'medium'
     let suggestion = 'Review your code logic and syntax.'
-    
+
     if (isReferenceError) {
       category = 'REFERENCE_ERROR'
       severity = 'high'
@@ -310,7 +310,7 @@ export default function MistakeAnalyzer() {
             />
           </div>
 
-          <Button 
+          <Button
             onClick={analyzeError}
             disabled={!errorInput.trim() || isAnalyzing}
             className="w-full"
@@ -346,7 +346,7 @@ export default function MistakeAnalyzer() {
                 <span className="font-medium">Error Type:</span>
                 <Badge variant="outline">{analysisResult.parsedError.errorType}</Badge>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span className="font-medium">Category:</span>
                 <Badge className={getSeverityColor(analysisResult.parsedError.severity)}>
@@ -372,7 +372,7 @@ export default function MistakeAnalyzer() {
                   <span className="font-medium">Related Concepts:</span>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {analysisResult.parsedError.relatedConcepts.map((concept: string, _index: number) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
+                      <Badge key={_index} variant="secondary" className="text-xs">
                         {concept}
                       </Badge>
                     ))}
@@ -404,7 +404,7 @@ export default function MistakeAnalyzer() {
                 <h4 className="font-medium mb-2">Current Focus Areas:</h4>
                 <div className="flex flex-wrap gap-1">
                   {analysisResult.learningPathUpdates.currentFocus.map((focus: string, _index: number) => (
-                    <Badge key={index} variant="outline" className="text-xs">
+                    <Badge key={_index} variant="outline" className="text-xs">
                       {focus}
                     </Badge>
                   ))}
@@ -416,7 +416,7 @@ export default function MistakeAnalyzer() {
                   <h4 className="font-medium mb-2">New Recommendations:</h4>
                   <div className="space-y-2">
                     {analysisResult.learningPathUpdates.newRecommendations.map((rec: LearningRecommendation, _index: number) => (
-                      <div key={index} className="p-2 border rounded-lg">
+                      <div key={_index} className="p-2 border rounded-lg">
                         <div className="flex items-center justify-between">
                           <span className="font-medium text-sm">{rec.title}</span>
                           <Badge variant="secondary" className="text-xs">
@@ -427,12 +427,11 @@ export default function MistakeAnalyzer() {
                           <Badge variant="outline" className="text-xs">
                             {rec.type}
                           </Badge>
-                          <Badge 
-                            className={`text-xs ${
-                              rec.priority === 'high' ? 'bg-red-100 text-red-800' : 
-                              rec.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' : 
-                              'bg-green-100 text-green-800'
-                            }`}
+                          <Badge
+                            className={`text-xs ${rec.priority === 'high' ? 'bg-red-100 text-red-800' :
+                              rec.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-green-100 text-green-800'
+                              }`}
                           >
                             {rec.priority} priority
                           </Badge>
@@ -472,11 +471,11 @@ export default function MistakeAnalyzer() {
                     <div className="text-purple-700 text-sm">Reward</div>
                   </div>
                 </div>
-                
+
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <h3 className="font-bold mb-2">{analysisResult.microLesson.title}</h3>
                   <p className="text-gray-700 text-sm">
-                    This micro-lesson will help you understand and prevent {analysisResult.parsedError.errorType} errors. 
+                    This micro-lesson will help you understand and prevent {analysisResult.parsedError.errorType} errors.
                     You&apos;ll learn the fundamentals, see common examples, and practice with targeted exercises.
                   </p>
                 </div>
@@ -503,7 +502,8 @@ export default function MistakeAnalyzer() {
               Track your error patterns and learning progress
             </CardDescription>
           </CardHeader>
-          <CardContent>            <div className="space-y-3">
+          <CardContent>
+            <div className="space-y-3">
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
               {mistakeHistory.map((mistake, index) => (
                 <div key={mistake.id} className="flex items-center justify-between p-3 border rounded-lg">

@@ -37,7 +37,7 @@ export class PerformanceMonitor {
 
   constructor(thresholds: Partial<PerformanceThresholds> = {}) {
     this.thresholds = { ...DEFAULT_THRESHOLDS, ...thresholds }
-    
+
     if (typeof window !== 'undefined') {
       this.initializeObservers()
     }
@@ -62,7 +62,7 @@ export class PerformanceMonitor {
         })
         paintObserver.observe({ entryTypes: ['paint'] })
         this.observers.set('paint', paintObserver)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (_e) {
         console.warn('Paint observer not supported')
       }
@@ -81,7 +81,7 @@ export class PerformanceMonitor {
         })
         lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] })
         this.observers.set('lcp', lcpObserver)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (_e) {
         console.warn('LCP observer not supported')
       }
@@ -101,7 +101,7 @@ export class PerformanceMonitor {
         })
         fidObserver.observe({ entryTypes: ['first-input'] })
         this.observers.set('fid', fidObserver)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (_e) {
         console.warn('FID observer not supported')
       }
@@ -124,7 +124,7 @@ export class PerformanceMonitor {
         })
         clsObserver.observe({ entryTypes: ['layout-shift'] })
         this.observers.set('cls', clsObserver)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (_e) {
         console.warn('CLS observer not supported')
       }
@@ -136,10 +136,10 @@ export class PerformanceMonitor {
    */
   private recordMetric(metric: PerformanceMetric) {
     this.metrics.push(metric)
-    
+
     // Check against thresholds
     this.checkThreshold(metric)
-    
+
     // Log in development
     if (process.env.NODE_ENV === 'development') {
       console.log(`[Performance] ${metric.name}: ${metric.value.toFixed(2)}ms`)
@@ -190,10 +190,10 @@ export class PerformanceMonitor {
       try {
         performance.measure(measureName, startMark, endMark)
         const measure = performance.getEntriesByName(measureName)[0]
-        
+
         this.recordMetric({
           name: measureName,
-          value: measure._duration,
+          value: measure.duration,
           timestamp: Date.now(),
           type: 'measure'
         })
@@ -218,29 +218,29 @@ export class PerformanceMonitor {
     operation: () => Promise<T>
   ): Promise<T> {
     const startTime = Date.now()
-    
+
     try {
       const result = await operation()
       const _duration = Date.now() - startTime
-      
+
       this.recordMetric({
         name: operationName,
         value: _duration,
         timestamp: Date.now(),
         type: 'custom'
       })
-      
+
       return result
     } catch (error) {
       const _duration = Date.now() - startTime
-      
+
       this.recordMetric({
         name: `${operationName}-error`,
         value: _duration,
         timestamp: Date.now(),
         type: 'custom'
       })
-      
+
       throw error
     }
   }
@@ -371,7 +371,7 @@ export function usePerformanceMonitor(componentName: string) {
     return () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const _duration = Date.now() - startTime
-      performanceMonitor.measureComponent(componentName, () => {})
+      performanceMonitor.measureComponent(componentName, () => { })
     }
   }, [componentName])
 }

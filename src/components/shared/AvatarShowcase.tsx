@@ -5,14 +5,13 @@
 
 'use client'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useState, _useEffect } from 'react'
-import { 
-  Avatar, 
+import React, { useState, useEffect } from 'react'
+import {
+  Avatar,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  PeerAvatarSmall as _PeerAvatarSmall, 
+  PeerAvatarSmall as _PeerAvatarSmall,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  PeerAvatarMedium as _PeerAvatarMedium, 
+  PeerAvatarMedium as _PeerAvatarMedium,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   PeerAvatarLarge as _PeerAvatarLarge,
   TypingAvatar,
@@ -52,11 +51,10 @@ export function AvatarShowcase() {
           <button
             key={demo.id}
             onClick={() => setActiveDemo(demo.id)}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              activeDemo === demo.id
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${activeDemo === demo.id
                 ? 'bg-blue-500 text-white'
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-            }`}
+              }`}
           >
             {demo.label}
           </button>
@@ -90,11 +88,11 @@ export function AvatarShowcase() {
           <div className="flex items-center justify-center gap-8">
             {peers.map(peer => (
               <div key={peer.id} className="text-center">
-                <Avatar 
-                  peerId={peer.id} 
-                  size="lg" 
-                  showPersonalityBadge 
-                  showTooltip 
+                <Avatar
+                  peerId={peer.id}
+                  size="lg"
+                  showPersonalityBadge
+                  showTooltip
                 />
                 <p className="mt-2 text-sm font-medium text-gray-900 dark:text-white">{peer.name}</p>
                 <p className="text-xs text-gray-600 dark:text-gray-400">{peer.personality}</p>
@@ -152,16 +150,16 @@ export function AvatarShowcase() {
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Avatar Groups</h3>
           <div className="space-y-4">
             <div className="text-center">
-              <AvatarGroup 
-                peerIds={['sarah', 'alex', 'jordan']} 
-                interactive 
-                showStatus 
+              <AvatarGroup
+                peerIds={['sarah', 'alex', 'jordan']}
+                interactive
+                showStatus
               />
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Interactive Group</p>
             </div>
             <div className="text-center">
-              <AvatarGroup 
-                peerIds={['sarah', 'alex', 'jordan', 'sarah', 'alex']} 
+              <AvatarGroup
+                peerIds={['sarah', 'alex', 'jordan', 'sarah', 'alex']}
                 maxDisplay={3}
                 size="md"
               />
@@ -176,7 +174,7 @@ export function AvatarShowcase() {
         <div className="space-y-6">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Collaborative Coding</h3>
           <div className="flex justify-center">
-            <CollaborativeAvatarStack 
+            <CollaborativeAvatarStack
               peerIds={['sarah', 'alex', 'jordan']}
               activeId={activePeer}
               onPeerClick={setActivePeer}
@@ -250,8 +248,8 @@ function InteractiveAvatarDemo({ peerId }: { peerId: string }) {
 
   return (
     <div className="text-center">
-      <InteractiveAvatar 
-        peerId={peerId} 
+      <InteractiveAvatar
+        peerId={peerId}
         isActive={isActive}
         onClick={handleClick}
       />
