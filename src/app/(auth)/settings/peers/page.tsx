@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
+import { Avatar } from '@/components/shared/Avatar'
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Users as _Users,
@@ -93,11 +94,8 @@ export default function PeerSettingsPage() {
                             <CardHeader className="pb-4">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                        <div className={`p-3 rounded-full bg-gradient-to-br ${index === 0 ? 'from-pink-500 to-rose-500' :
-                                                index === 1 ? 'from-blue-500 to-cyan-500' :
-                                                    'from-purple-500 to-indigo-500'
-                                            } text-white`}>
-                                            <Brain className="w-6 h-6" />
+                                        <div className="smooth-transition hover:scale-110">
+                                            <Avatar peerId={peer.id} size="lg" />
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-2">

@@ -156,7 +156,7 @@ CREATE TABLE IF NOT EXISTS user_track_progress (
   status TEXT DEFAULT 'not_started' CHECK (status IN ('not_started', 'in_progress', 'completed')),
   progress_percentage INTEGER DEFAULT 0 CHECK (progress_percentage >= 0 AND progress_percentage <= 100),
   lessons_completed INTEGER DEFAULT 0,
-  current_lesson_id UUID,
+  current_lesson_id TEXT,
   
   -- Milestone Tracking
   next_milestone_id UUID,
@@ -222,7 +222,7 @@ CREATE TABLE IF NOT EXISTS lesson_recommendations (
   user_id UUID NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
   
   -- Lesson Information
-  lesson_id UUID, -- Can be null for external content
+  lesson_id TEXT, -- Can be null for external content
   title TEXT NOT NULL,
   description TEXT,
   duration_minutes INTEGER DEFAULT 0,

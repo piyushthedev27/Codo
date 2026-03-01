@@ -33,7 +33,7 @@ export class VoiceFallbackManager {
 
   private initialize() {
     const support = checkSpeechSupport()
-    
+
     this.state = {
       voiceRecognitionAvailable: support.recognition,
       voiceSynthesisAvailable: support.synthesis,
@@ -79,7 +79,7 @@ export class VoiceFallbackManager {
 
   public handleVoiceError(error: any): void {
     let reason = 'Voice feature temporarily unavailable'
-    
+
     if (error?.error) {
       switch (error.error) {
         case 'not-allowed':
@@ -92,7 +92,7 @@ export class VoiceFallbackManager {
           reason = 'Microphone not available. Check your audio settings.'
           break
         case 'network':
-          reason = 'Network error. Voice recognition requires an internet connection. Using text mode instead.'
+          reason = 'Network error. Voice recognition requires a stable internet connection or browser voice services may be temporarily unavailable. Using text mode instead.'
           break
         case 'service-not-allowed':
           reason = 'Voice service not available. Using text mode.'
@@ -110,7 +110,7 @@ export class VoiceFallbackManager {
 
   public subscribe(listener: (state: FallbackState) => void): () => void {
     this.listeners.push(listener)
-    
+
     // Return unsubscribe function
     return () => {
       const index = this.listeners.indexOf(listener)
@@ -134,9 +134,9 @@ export class VoiceFallbackManager {
   }
 
   public canRetryVoice(): boolean {
-    return this.state.voiceRecognitionAvailable && 
-           this.state.voiceSynthesisAvailable &&
-           this.state.fallbackReason !== 'not-allowed'
+    return this.state.voiceRecognitionAvailable &&
+      this.state.voiceSynthesisAvailable &&
+      this.state.fallbackReason !== 'not-allowed'
   }
 }
 

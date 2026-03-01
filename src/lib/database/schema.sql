@@ -85,7 +85,7 @@ CREATE TABLE mistake_patterns (
 
 -- Enhanced lessons with peer interactions
 CREATE TABLE lessons (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id TEXT PRIMARY KEY,
   user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   topic TEXT NOT NULL,
@@ -203,7 +203,7 @@ CREATE TABLE challenge_attempts (
 CREATE TABLE voice_coaching_sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
-  lesson_id UUID REFERENCES lessons(id) ON DELETE CASCADE,
+  lesson_id TEXT REFERENCES lessons(id) ON DELETE CASCADE,
   challenge_id UUID REFERENCES challenges(id) ON DELETE CASCADE,
   session_duration_minutes INTEGER DEFAULT 0,
   questions_asked INTEGER DEFAULT 0,

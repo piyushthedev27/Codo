@@ -109,7 +109,7 @@ export class VoiceRecognitionManager {
     return this.isSupported
   }
 
-  public startListening(options: SpeechRecognitionOptions = {}): Promise<void> {
+  public startListening(options: SpeechRecognitionOptions = {}, retryCount = 0): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.isSupported || !this.recognition) {
         reject(new Error('Speech recognition not supported'))
@@ -117,6 +117,8 @@ export class VoiceRecognitionManager {
       }
 
       if (this.isListening) {
+        // If already listening, we can resolve if it's the same session, 
+        // or just stop and restart if needed. For now, let's reject.
         reject(new Error('Already listening'))
         return
       }
@@ -144,11 +146,37 @@ export class VoiceRecognitionManager {
         this.recognition.lang = options.lang
       }
 
+      // Custom error wrapper for retries
+      const originalOnError = this.recognition.onerror
+      this.recognition.onerror = (error: SpeechRecognitionErrorEvent) => {
+        if (error.error === 'network' && retryCount < 2) {
+          console.warn(`Speech recognition network error. Retrying... (${retryCount + 1}/2)`)
+          this.isListening = false
+          setTimeout(() => {
+            this.startListening(options, retryCount + 1)
+              .then(resolve)
+              .catch(reject)
+          }, 1000)
+          return
+        }
+
+        // Restore original handler and call it
+        this.recognition!.onerror = originalOnError
+        this.isListening = false
+        this.currentOptions?.onError?.(error)
+        reject(error)
+      }
+
       try {
         this.recognition.start()
         resolve()
       } catch (error) {
-        reject(error)
+        // If error is "already started", we can resolve
+        if (error instanceof Error && error.message.includes('already started')) {
+          resolve()
+        } else {
+          reject(error)
+        }
       }
     })
   }

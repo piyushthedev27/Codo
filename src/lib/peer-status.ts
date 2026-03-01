@@ -114,12 +114,12 @@ export function simulatePeerStatus(peerId: string, userLearningFocus?: string): 
   const patterns = STATUS_PATTERNS[peerId.toLowerCase()] || ['online', 'away', 'studying']
   const hour = new Date().getHours()
   const index = Math.floor(hour / 5) % patterns.length
-  
+
   // Adjust status based on user's learning focus
   if (userLearningFocus === 'active-learning' && patterns[index] === 'away') {
     return 'online' // Keep peers available during active learning
   }
-  
+
   return patterns[index]
 }
 
@@ -151,7 +151,7 @@ export function generatePeerStatusInfo(
   const status = simulatePeerStatus(peer.id, userLearningFocus)
   const specialty = getPeerSpecialty(peer.id)
   const level = getPeerLevel(peer.skill_level)
-  
+
   return {
     status,
     lastActive: new Date(),
@@ -173,11 +173,11 @@ export function getAllPeerStatuses(
   userLearningFocus?: string
 ): Map<string, PeerStatusInfo> {
   const statusMap = new Map<string, PeerStatusInfo>()
-  
+
   peers.forEach(peer => {
     statusMap.set(peer.id, generatePeerStatusInfo(peer, userLearningFocus))
   })
-  
+
   return statusMap
 }
 
@@ -186,7 +186,7 @@ export function getAllPeerStatuses(
  */
 export function formatTimeAgo(date: Date): string {
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000)
-  
+
   if (seconds < 60) return 'just now'
   if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`
   if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`
@@ -203,7 +203,7 @@ export function getStatusColor(status: PeerStatus): string {
     away: 'bg-gray-400',
     studying: 'bg-orange-500'
   }
-  return colors[status]
+  return colors[status] || 'bg-gray-400'
 }
 
 /**

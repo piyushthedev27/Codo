@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card as _Card, CardContent as _CardContent, CardHeader as _CardHeader, CardTitle as _CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Mic, MicOff, Volume2 as _Volume2, VolumeX as _VolumeX, Play as _Play, Pause as _Pause, Square } from 'lucide-react'
+import { Mic, MicOff, Volume2 as _Volume2, VolumeX as _VolumeX, Play as _Play, Pause as _Pause, Square, AlertCircle, RotateCcw } from 'lucide-react'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { voiceRecognition as _voiceRecognition, startVoiceCoaching, stopVoiceRecognition } from '@/lib/voice/speech-recognition'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -279,15 +279,36 @@ export function VoiceCoachingInterface({
       <div className="p-5 space-y-6 flex-1 overflow-y-auto custom-scrollbar">
         {/* Voice Controls or Text Fallback */}
         {shouldUseTextInput ? (
-          <TextInputFallback
-            onSubmit={handleTextSubmit}
-            placeholder="Type your coding question here..."
-            submitButtonText="Ask Coach"
-            fallbackReason={fallbackReason}
-            onRetryVoice={canRetryVoice ? retryVoice : undefined}
-            canRetryVoice={canRetryVoice}
-            disabled={isSpeaking}
-          />
+          <div className="space-y-4">
+            {fallbackReason && (
+              <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-start gap-4">
+                <div className="p-2 bg-amber-500/20 rounded-xl mt-0.5">
+                  <AlertCircle className="w-4 h-4 text-amber-500" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-amber-200">{fallbackReason}</p>
+                  {canRetryVoice && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={retryVoice}
+                      className="mt-3 bg-amber-500/10 hover:bg-amber-500/20 border-amber-500/30 text-amber-400 font-black h-8"
+                    >
+                      <RotateCcw className="w-3 h-3 mr-2" />
+                      RETRY VOICE
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <TextInputFallback
+              onSubmit={handleTextSubmit}
+              placeholder="Type your coding question here..."
+              submitButtonText="Ask Coach"
+              disabled={isSpeaking}
+            />
+          </div>
         ) : (
           <div className="flex items-center gap-2">
             <Button

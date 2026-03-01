@@ -168,7 +168,10 @@ export function CodeExample({
             fontSize: '14px',
             lineHeight: '1.7',
             background: 'transparent',
-            letterSpacing: '-0.01em'
+            letterSpacing: '-0.01em',
+            color: '#f8fafc', // Force high contrast base color
+            WebkitFontSmoothing: 'antialiased',
+            MozOsxFontSmoothing: 'grayscale'
           }}
         >
           {code}

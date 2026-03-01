@@ -23,7 +23,7 @@ import {
   CheckCircle as _CheckCircle
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
+
 import { Button } from '@/components/ui/button'
 import { useUser, UserButton } from '@clerk/nextjs'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -59,39 +59,8 @@ export function TopNavigationBar({
   const notificationRef = useRef<HTMLDivElement>(null)
   const searchRef = useRef<HTMLDivElement>(null)
 
-  // Mock notifications - in production, fetch from API
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: '1',
-      type: 'message',
-      title: 'New message from Sarah',
-      description: 'Great job on completing the React lesson!',
-      timestamp: '5 min ago',
-      read: false,
-      icon: <MessageSquare className="w-4 h-4" />,
-      href: '/dashboard#ai-peers'
-    },
-    {
-      id: '2',
-      type: 'achievement',
-      title: 'Achievement Unlocked!',
-      description: 'You earned the "10 Day Streak" badge',
-      timestamp: '1 hour ago',
-      read: false,
-      icon: <Trophy className="w-4 h-4" />,
-      href: '/dashboard#achievements'
-    },
-    {
-      id: '3',
-      type: 'lesson',
-      title: 'Lesson Completed',
-      description: 'React Hooks Deep Dive - 150 XP earned',
-      timestamp: '2 hours ago',
-      read: true,
-      icon: <BookOpen className="w-4 h-4" />,
-      href: '/lessons'
-    }
-  ])
+  // Notifications - initialized empty for new users
+  const [notifications, setNotifications] = useState<Notification[]>([])
 
   const unreadCount = notifications.filter(n => !n.read).length
 
@@ -238,7 +207,7 @@ export function TopNavigationBar({
             <Button
               variant="ghost"
               size="sm"
-              className="hidden lg:flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              className="hidden lg:flex items-center gap-2 text-[#00D1FF] hover:bg-[#00D1FF]/10"
             >
               <MessageSquare className="w-4 h-4" />
               <span className="text-sm font-medium">Ask AI Peer</span>
@@ -246,7 +215,7 @@ export function TopNavigationBar({
           </Link>
 
           {/* Theme Toggle */}
-          <ThemeToggle />
+
 
           {/* Notifications */}
           <div className="relative" ref={notificationRef}>
@@ -369,7 +338,14 @@ export function TopNavigationBar({
               <UserButton
                 appearance={{
                   elements: {
-                    avatarBox: 'w-9 h-9 ring-2 ring-gray-200 dark:ring-gray-700'
+                    avatarBox: 'w-9 h-9 ring-2 ring-[#1E293B] hover:ring-[#00D1FF] transition-all',
+                    userButtonPopoverCard: 'bg-[#0F172A] border border-[#1E293B] shadow-2xl rounded-none',
+                    userButtonPopoverActionButton: 'hover:bg-[#1E293B] transition-colors',
+                    userButtonPopoverActionButtonText: 'text-white font-bold uppercase tracking-tight',
+                    userButtonPopoverActionButtonIcon: 'text-[#00D1FF]',
+                    userButtonPopoverFooter: 'hidden', // Clean up footer to save space
+                    userPreviewMainIdentifier: 'text-white font-black uppercase tracking-tight',
+                    userPreviewSecondaryIdentifier: 'text-[#94A3B8] font-mono'
                   }
                 }}
                 afterSignOutUrl="/"

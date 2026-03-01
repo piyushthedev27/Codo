@@ -149,6 +149,10 @@ export function LiveInsightsDashboard({
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Real-time pattern recognition and personalized recommendations
           </p>
+          <div className="flex items-center gap-1.5 mt-2 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20 w-fit px-2 py-1 rounded-md border border-blue-100 dark:border-blue-800/50">
+            <Clock className="w-3.5 h-3.5" />
+            <span>Data as of {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">

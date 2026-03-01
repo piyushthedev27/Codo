@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Brain, Menu, X } from 'lucide-react'
-import { ThemeToggle } from '../ui/ThemeToggle'
+// Removed ThemeToggle import
 import { useState } from 'react'
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
@@ -32,10 +32,10 @@ export function Header() {
               whileHover={{ scale: 1.05 }}
               className="flex items-center gap-2 cursor-pointer"
             >
-              <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
-                <Brain className="w-6 h-6 text-white" />
+              <div className="p-2 bg-[#00D1FF] rounded-sm">
+                <Brain className="w-6 h-6 text-[#020617]" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-black text-white tracking-tighter uppercase">
                 Codo
               </span>
             </motion.div>
@@ -55,10 +55,7 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
-            <ThemeToggle />
-
             {/* Show different content based on authentication status */}
             <SignedOut>
               <Link href="/sign-in">
@@ -75,9 +72,9 @@ export function Header() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
+                  className="bg-[#FF5C00] text-[#020617] px-6 py-2 rounded-none font-black uppercase tracking-widest hover:shadow-[0_0_20px_rgba(255,92,0,0.4)] transition-all duration-300"
                 >
-                  Get Started Free
+                  Get Started
                 </motion.button>
               </Link>
             </SignedOut>
@@ -96,7 +93,14 @@ export function Header() {
               <UserButton
                 appearance={{
                   elements: {
-                    avatarBox: "w-10 h-10"
+                    avatarBox: 'w-10 h-10 ring-2 ring-[#1E293B] hover:ring-[#00D1FF] transition-all',
+                    userButtonPopoverCard: 'bg-[#0F172A] border border-[#1E293B] shadow-2xl rounded-none',
+                    userButtonPopoverActionButton: 'hover:bg-[#1E293B] transition-colors',
+                    userButtonPopoverActionButtonText: 'text-white font-bold uppercase tracking-tight',
+                    userButtonPopoverActionButtonIcon: 'text-[#00D1FF]',
+                    userButtonPopoverFooter: 'hidden',
+                    userPreviewMainIdentifier: 'text-white font-black uppercase tracking-tight',
+                    userPreviewSecondaryIdentifier: 'text-[#94A3B8] font-mono'
                   }
                 }}
                 afterSignOutUrl="/"
@@ -106,7 +110,6 @@ export function Header() {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
-            <ThemeToggle />
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -154,8 +157,8 @@ export function Header() {
                 </Link>
 
                 <Link href="/sign-up">
-                  <button className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold text-center">
-                    Get Started Free
+                  <button className="block w-full bg-[#FF5C00] text-[#020617] px-6 py-3 rounded-none font-black uppercase tracking-widest text-center">
+                    Get Started
                   </button>
                 </Link>
               </SignedOut>
@@ -171,7 +174,11 @@ export function Header() {
                   <UserButton
                     appearance={{
                       elements: {
-                        avatarBox: "w-10 h-10"
+                        avatarBox: 'w-10 h-10 ring-2 ring-[#1E293B]',
+                        userButtonPopoverCard: 'bg-[#0F172A] border border-[#1E293B] rounded-none',
+                        userButtonPopoverActionButtonText: 'text-white font-bold uppercase tracking-tight',
+                        userButtonPopoverActionButtonIcon: 'text-[#00D1FF]',
+                        userButtonPopoverFooter: 'hidden'
                       }
                     }}
                     afterSignOutUrl="/"

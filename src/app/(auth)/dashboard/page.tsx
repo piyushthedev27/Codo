@@ -11,6 +11,7 @@ import { Progress as _Progress } from '@/components/ui/progress'
 import { Badge as _Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import '@/styles/dashboard-animations.css'
+import { Avatar } from '@/components/shared/Avatar'
 import {
   Target,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -30,11 +31,12 @@ import {
   Trophy,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ArrowRight,
+  ChevronRight,
   Sparkles
 } from 'lucide-react'
 import { DashboardLayout } from '@/components/navigation/DashboardLayout'
 import { generateEnhancedStats } from '@/lib/utils/stats-calculations'
-import { DashboardLoadingSkeleton, AIPeerLoadingSkeleton, SkeletonCard } from '@/components/ui/loading'
+import { DashboardLoadingSkeleton, SkeletonCard } from '@/components/ui/loading'
 import { DashboardSyncManager } from '@/lib/realtime/dashboard-sync'
 import { createEnhancedActivity, type EnhancedActivity as UIActivity } from '@/lib/activities/activity-tracker'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -45,9 +47,6 @@ const HeroWelcomeSection = dynamic(() => import('./components/HeroWelcomeSection
   loading: () => <SkeletonCard lines={4} />
 })
 
-const AIPeerCards = dynamic(() => import('./components/AIPeerCards').then(mod => ({ default: mod.AIPeerCards })), {
-  loading: () => <AIPeerLoadingSkeleton />
-})
 const LearningPath = dynamic(() => import('./components/LearningPath').then(mod => ({ default: mod.LearningPath })), {
   loading: () => <SkeletonCard lines={4} />
 })
@@ -253,23 +252,49 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - 2/3 width */}
           <div className="lg:col-span-2 space-y-6">
-            {/* AI Peers Section */}
-            <div id="ai-peers-section">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="w-5 h-5 text-blue-600" />
-                    Your AI Learning Companions
-                  </CardTitle>
-                  <CardDescription>
-                    Interact with your personalized AI peers
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <AIPeerCards peers={aiPeers} />
-                </CardContent>
-              </Card>
-            </div>
+            {/* Peer Network Status - Project Themed Widget */}
+            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-100 dark:border-blue-800 rounded-2xl overflow-hidden relative group card-hover-effect">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Users className="w-24 h-24 text-blue-500" />
+              </div>
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between relative z-10">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-[10px] uppercase tracking-widest">
+                      <Zap className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      <span>Live Connection</span>
+                    </div>
+                    <CardTitle className="text-xl font-bold text-white tracking-tight">Peer Network</CardTitle>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 hover:text-cyan-400"
+                    onClick={() => router.push('/ai-peers')}
+                  >
+                    Manage <ChevronRight className="w-3 h-3 ml-1" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <div className="flex items-center gap-4 py-2">
+                  <div className="flex -space-x-3">
+                    {aiPeers.slice(0, 3).map((peer) => (
+                      <div key={peer.id} className="relative ring-4 ring-white dark:ring-gray-900 rounded-full">
+                        <Avatar peerId={peer.name.toLowerCase()} size="sm" className="h-10 w-10" />
+                        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-950 rounded-full" />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="ml-2 border-l border-gray-200 dark:border-gray-700 pl-4">
+                    <p className="text-sm font-bold text-gray-700 dark:text-gray-300 leading-tight">
+                      {aiPeers.length} AI companions online
+                    </p>
+                    <span className="text-xs text-gray-500">Ready for cooperative learning</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Recent Activity */}
             <Card>
@@ -332,44 +357,6 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-yellow-600" />
-                  Quick Actions
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button
-                  className="w-full justify-start"
-                  variant="outline"
-                  onClick={() => router.push('/lessons')}
-                >
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  Start New Lesson
-                </Button>
-                <Button
-                  className="w-full justify-start"
-                  variant="outline"
-                  onClick={() => router.push('/coding/duel')}
-                >
-                  <Trophy className="w-4 h-4 mr-2" />
-                  Take Challenge
-                </Button>
-                <Button
-                  className="w-full justify-start"
-                  variant="outline"
-                  onClick={() => {
-                    const el = document.getElementById('ai-peers-section')
-                    el?.scrollIntoView({ behavior: 'smooth' })
-                  }}
-                >
-                  <Users className="w-4 h-4 mr-2" />
-                  Chat with AI Peer
-                </Button>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>

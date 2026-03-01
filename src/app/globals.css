@@ -40,7 +40,7 @@
   }
 
   body {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%);
+    background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
     background-attachment: fixed;
     color: hsl(var(--foreground));
     min-height: 100vh;
@@ -61,7 +61,7 @@ body {
 
 /* Landing page gradient background */
 .bg-gradient-landing {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
 }
 
 /* Custom styles for consistent dark theme */
@@ -175,14 +175,29 @@ body {
 
 /* Button styling */
 .btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  color: white;
+  background: linear-gradient(135deg, #00d1ff 0%, #00b8e6 100%);
+  color: #020617;
   border: none;
+  font-weight: 700;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, #00b8e6 0%, #0099cc 100%);
+  box-shadow: 0 10px 25px rgba(0, 209, 255, 0.3);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #020617;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 0;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #00d1ff;
 }
 
 /* Reduced motion preferences */

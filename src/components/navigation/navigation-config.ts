@@ -68,7 +68,7 @@ export const navigationConfig: NavigationConfig = {
         {
           id: 'ai-peers',
           label: 'AI Peers',
-          href: '/dashboard#ai-peers',
+          href: '/ai-peers',
           iconName: 'Users',
           description: 'Your study companions'
         }
@@ -81,7 +81,7 @@ export const navigationConfig: NavigationConfig = {
         {
           id: 'settings',
           label: 'Settings',
-          href: '/dashboard#settings',
+          href: '/settings',
           iconName: 'Settings',
           description: 'Preferences and account'
         }

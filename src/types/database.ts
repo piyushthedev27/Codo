@@ -19,6 +19,7 @@ export type CompletionStatus = 'not_started' | 'in_progress' | 'completed'
 
 // Core database interfaces
 export interface UserProfile {
+  achievements_count: number
   id: string
   clerk_user_id: string
   email?: string

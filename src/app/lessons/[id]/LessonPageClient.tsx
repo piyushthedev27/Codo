@@ -9,7 +9,6 @@ import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import dynamic from 'next/dynamic'
 import { getCachedOrDemoLesson } from '@/lib/lessons/lesson-cache'
-import { getLessonProgress, initializeLessonProgress } from '@/lib/lessons/progress-tracking'
 import { LessonLoadingSkeleton } from '@/components/ui/loading'
 import { cachedFetch, CACHE_CONFIG } from '@/lib/cache/api-cache'
 import { LessonCompletionModal } from '@/components/lessons/LessonCompletionModal'
@@ -35,7 +34,7 @@ export function LessonPageClient({ lessonId }: { lessonId: string }) {
 
     // Check if lessonId is a UUID (knowledge graph node ID)
     const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(lessonId)
-    
+
     if (isUUID) {
       // UUID-based IDs are knowledge graph nodes, not actual lessons
       // Redirect to lessons browse page
@@ -55,23 +54,38 @@ export function LessonPageClient({ lessonId }: { lessonId: string }) {
 
       // Try to get lesson from cache or demo
       const cachedLesson = await getCachedOrDemoLesson(lessonId, lessonId)
-      
+
       if (cachedLesson) {
         setLesson(cachedLesson)
-        
+
         // Load progress if user is authenticated
         if (user) {
-          const userProgress = await getLessonProgress(user.id, lessonId)
-          if (userProgress) {
-            setProgress(userProgress)
-          } else {
-            // Initialize progress for new lesson
-            const initialProgress = await initializeLessonProgress(
-              user.id,
-              lessonId,
-              cachedLesson.content.sections.length
-            )
-            setProgress(initialProgress)
+          try {
+            const response = await fetch(`/api/lessons/${lessonId}/progress`)
+            if (response.ok) {
+              const data = await response.json()
+              if (data.success && data.progress) {
+                setProgress(data.progress)
+              } else {
+                // Initialize progress for new lesson via API
+                const initResponse = await fetch(`/api/lessons/${lessonId}/progress`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    action: 'initialize',
+                    totalSections: cachedLesson.content.sections.length
+                  })
+                })
+                if (initResponse.ok) {
+                  const initData = await initResponse.json()
+                  if (initData.success) {
+                    setProgress(initData.progress)
+                  }
+                }
+              }
+            }
+          } catch (progressError) {
+            console.error('Error handling lesson progress:', progressError)
           }
         }
       } else {
@@ -92,7 +106,7 @@ export function LessonPageClient({ lessonId }: { lessonId: string }) {
             setError('Lesson not found. Please check the lesson ID or try generating a new lesson.')
             setLesson(null)
           }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (_apiError) {
           // Silently handle 404 - lesson doesn't exist
           console.log(`Lesson ${lessonId} not found in cache or API`)
@@ -218,7 +232,7 @@ export function LessonPageClient({ lessonId }: { lessonId: string }) {
         onComplete={handleLessonComplete}
         voiceCoachingEnabled={user ? true : false}
       />
-      
+
       {/* Completion Modal */}
       <LessonCompletionModal
         isOpen={showCompletionModal}

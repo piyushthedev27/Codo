@@ -9,6 +9,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import {
   getLessonProgress,
   updateLessonProgress,
+  initializeLessonProgress,
   completeLessonSection,
   completePeerInteraction,
   recordVoiceCoachingUsage,
@@ -72,12 +73,18 @@ export async function GET(
     }
 
     // Get current progress
-    const progress = await getLessonProgress(userId, lessonId)
+    let progress = await getLessonProgress(userId, lessonId)
+
+    // If progress doesn't exist, we might want to try initializing it
+    // But we need totalSections for that, which GET doesn't usually have
+    // So we'll return a special flag or handle it in POST
+
     if (!progress) {
-      return NextResponse.json(
-        { error: 'Lesson progress not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({
+        success: true,
+        progress: null,
+        message: 'No progress found'
+      })
     }
 
     return NextResponse.json({
@@ -169,6 +176,14 @@ export async function POST(
 
       case 'update_progress':
         updatedProgress = await updateLessonProgress(userId, lessonId, data)
+        break
+
+      case 'initialize':
+        updatedProgress = await initializeLessonProgress(
+          userId,
+          lessonId,
+          data.totalSections || 1
+        )
         break
 
       default:

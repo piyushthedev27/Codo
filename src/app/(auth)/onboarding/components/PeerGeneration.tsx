@@ -8,6 +8,7 @@ import { Sparkles, Users, ArrowRight } from 'lucide-react'
 import { Avatar } from '@/components/shared/Avatar'
 import { getAllPeers } from '@/lib/avatars'
 import type { OnboardingData } from '@/types/database'
+import { motion } from 'framer-motion'
 
 interface PeerGenerationProps {
   onboardingData: OnboardingData
@@ -17,11 +18,11 @@ interface PeerGenerationProps {
 export function PeerGeneration({ onboardingData, onComplete }: PeerGenerationProps) {
   const [isGenerating, setIsGenerating] = useState(true)
   const [currentStep, setCurrentStep] = useState(0)
-   
+
   const [_isComplete, setIsComplete] = useState(false)
 
   const allPeers = getAllPeers()
-  
+
   const steps = [
     'Analyzing your learning preferences...',
     'Selecting compatible AI personalities...',
@@ -55,196 +56,162 @@ export function PeerGeneration({ onboardingData, onComplete }: PeerGenerationPro
   if (isGenerating) {
     return (
       <div className="max-w-2xl mx-auto text-center">
-        <div className="mb-8">
-          <div className="mx-auto mb-6 p-4 bg-purple-100 dark:bg-purple-900/20 rounded-full w-fit animate-pulse">
-            <Sparkles className="w-12 h-12 text-purple-600 dark:text-purple-400" />
+        <div className="mb-8 font-mono">
+          <div className="mx-auto mb-6 p-4 border border-[#3a86ff]/20 bg-[#3a86ff]/5 rounded-none w-fit animate-pulse">
+            <Sparkles className="w-12 h-12 text-[#3a86ff]" />
           </div>
-          <h2 className="text-2xl font-bold mb-4">
-            Generating Your AI Study Buddies
+          <h2 className="text-2xl font-bold mb-4 uppercase tracking-[0.2em] text-white">
+            BOOT_INIT: AI_PEERS
           </h2>
-          <p className="text-muted-foreground mb-8">
-            We&apos;re creating personalized AI peers based on your learning preferences
+          <p className="text-[10px] opacity-50 uppercase tracking-widest mb-8">
+            synthesizing_personalized_study_buddies
           </p>
         </div>
 
-        <Card className="mb-8">
-          <CardContent className="pt-6">
-            <div className="space-y-6">
-              {steps.map((step, index) => (
-                <div 
-                  key={index}
-                  className={`flex items-center gap-4 p-4 rounded-lg transition-all duration-500 ${
-                    index <= currentStep 
-                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-900 dark:text-blue-100' 
-                      : 'bg-gray-50 dark:bg-gray-800/50 text-gray-500'
+        <div className="mb-8 border border-white/10 bg-white/[0.02] p-6">
+          <div className="space-y-4">
+            {steps.map((step, index) => (
+              <div
+                key={index}
+                className={`flex items-center gap-4 p-4 transition-all duration-500 font-mono border-l-2 ${index <= currentStep
+                    ? 'bg-blue-500/5 border-[#3a86ff] text-white'
+                    : 'bg-white/[0.02] border-white/10 text-white/20'
                   }`}
-                >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    index < currentStep 
-                      ? 'bg-green-500 text-white' 
-                      : index === currentStep 
-                      ? 'bg-blue-500 text-white animate-pulse' 
-                      : 'bg-gray-300 text-gray-600'
+              >
+                <div className={`w-8 h-8 rounded-none border flex items-center justify-center text-[10px] font-mono ${index < currentStep
+                    ? 'bg-green-500/20 border-green-500 text-green-500'
+                    : index === currentStep
+                      ? 'bg-blue-500/20 border-blue-500 text-blue-500 animate-pulse'
+                      : 'bg-white/5 border-white/10 text-white/20'
                   }`}>
-                    {index < currentStep ? '✓' : index + 1}
+                  {index < currentStep ? 'DONE' : `0${index + 1}`}
+                </div>
+                <span className="text-xs tracking-wider uppercase">{step.replace(' ', '_')}</span>
+                {index === currentStep && (
+                  <div className="ml-auto flex gap-1">
+                    <div className="w-1 h-1 bg-[#3a86ff] animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <div className="w-1 h-1 bg-[#3a86ff] animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <div className="w-1 h-1 bg-[#3a86ff] animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
-                  <span className="font-medium">{step}</span>
-                  {index === currentStep && (
-                    <div className="ml-auto">
-                      <div className="flex gap-1">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                      </div>
-                    </div>
-                  )}
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 pt-8 border-t border-white/10">
+            <h4 className="text-[9px] font-mono uppercase tracking-[0.3em] text-center mb-6 opacity-30">
+              manifesting_peer_profiles...
+            </h4>
+            <div className="flex justify-center gap-6">
+              {allPeers.map((peer, index) => (
+                <div
+                  key={peer.id}
+                  className={`transition-all duration-1000 ${currentStep > index ? 'opacity-100 scale-100' : 'opacity-10 scale-90 blur-sm'
+                    }`}
+                >
+                  <div className="text-center">
+                    <Avatar
+                      peerId={peer.id}
+                      size="md"
+                      showRing={false}
+                      className={currentStep > index ? 'ring-1 ring-[#3a86ff]/30' : ''}
+                    />
+                    <p className="font-mono text-[9px] mt-3 opacity-50 uppercase">{peer.name}</p>
+                  </div>
                 </div>
               ))}
             </div>
-            
-            {/* Preview of AI Peers being generated */}
-            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <h4 className="text-sm font-medium text-center mb-4 text-muted-foreground">
-                Preparing your AI study buddies...
-              </h4>              <div className="flex justify-center gap-4">
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                {allPeers.map((peer, index) => (
-                  <div 
-                    key={peer.id}
-                    className={`transition-all duration-1000 ${
-                      currentStep > index ? 'opacity-100 scale-100' : 'opacity-30 scale-75'
-                    }`}
-                  >
-                    <div className="text-center">
-                      <Avatar 
-                        peerId={peer.id} 
-                        size="md" 
-                        showRing={true}
-                        animated={true}
-                        className={currentStep > index ? 'animate-pulse' : ''}
-                      />
-                      <p className="text-xs mt-2 font-medium">{peer.name}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{peer.personality}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <p className="text-sm text-muted-foreground">
-          This process is tailored to your {onboardingData.skillLevel} level and {onboardingData.primaryDomain} focus
+        <p className="font-mono text-[8px] opacity-20 uppercase tracking-widest leading-relaxed">
+          configuration_context: {onboardingData.skillLevel}_LEVEL // DOMAIN: {onboardingData.primaryDomain.toUpperCase()}
         </p>
       </div>
     )
   }
 
   return (
-    <div className="max-w-3xl mx-auto text-center">
-      <div className="mb-8">
-        <div className="mx-auto mb-6 p-4 bg-green-100 dark:bg-green-900/20 rounded-full w-fit animate-bounce">
-          <Users className="w-12 h-12 text-green-600 dark:text-green-400" />
+    <div className="max-w-4xl mx-auto text-center">
+      <div className="mb-12">
+        <div className="mx-auto mb-6 p-4 border border-green-500/20 bg-green-500/5 rounded-none w-fit animate-pulse">
+          <Users className="w-12 h-12 text-[#06d6a0]" />
         </div>
-        <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-          Meet Your AI Study Buddies! 🎉
+        <h2 className="text-4xl font-mono uppercase tracking-[0.2em] mb-4 text-white">
+          PEER_SYNC_COMPLETE! 🎉
         </h2>
-        <p className="text-lg text-muted-foreground">
-          Your personalized learning companions are ready to help you succeed
+        <p className="font-mono text-[10px] opacity-50 uppercase tracking-widest">
+          personalized_learning_companions_ready_for_deployment
         </p>
-      </div>      <div className="grid md:grid-cols-3 gap-6 mb-8">
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        {allPeers.map((peer, index) => (
-          <Card key={peer.id} className="text-left transform hover:scale-105 transition-transform duration-300 border-2 hover:border-opacity-50" style={{
-            borderColor: peer.personality === 'curious' ? '#f472b6' : 
-                        peer.personality === 'analytical' ? '#60a5fa' : 
-                        peer.personality === 'supportive' ? '#4ade80' : '#6b7280'
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-6 mb-12 items-stretch">
+        {allPeers.map((peer) => (
+          <Card key={peer.id} className="h-full flex flex-col text-left border-2 bg-[#0c0c0e] text-white rounded-none transition-all duration-300 hover:bg-[#161618]" style={{
+            borderColor: peer.personality === 'curious' ? '#ff4d6d' :
+              peer.personality === 'analytical' ? '#3a86ff' :
+                peer.personality === 'supportive' ? '#06d6a0' : '#27272a'
           }}>
-            <CardHeader className="text-center pb-4">
-              <div className="mx-auto mb-4 relative">
-                <Avatar 
-                  peerId={peer.id} 
-                  size="xl" 
-                  showRing={true}
+            <CardHeader className="text-center pb-6 border-b border-white/5">
+              <div className="mx-auto mb-6 relative">
+                <Avatar
+                  peerId={peer.id}
+                  size="xl"
+                  showRing={false}
                   animated={true}
                   priority={true}
                   interactive={true}
-                  showPersonalityBadge={true}
                 />
-                {/* Personality glow effect */}
-                <div className={`absolute inset-0 rounded-full opacity-20 animate-pulse ${
-                  peer.personality === 'curious' ? 'bg-pink-400' :
-                  peer.personality === 'analytical' ? 'bg-blue-400' :
-                  peer.personality === 'supportive' ? 'bg-green-400' : 'bg-gray-400'
-                }`} />
+                <div className={`absolute inset-0 rounded-full opacity-10 animate-pulse blur-2xl ${peer.personality === 'curious' ? 'bg-[#ff4d6d]' :
+                    peer.personality === 'analytical' ? 'bg-[#3a86ff]' :
+                      peer.personality === 'supportive' ? 'bg-[#06d6a0]' : 'bg-white'
+                  }`} />
               </div>
-              <CardTitle className="text-xl flex items-center justify-center gap-2">
+              <CardTitle className="text-xl font-mono uppercase tracking-tighter flex items-center justify-center gap-2 mb-1 text-white">
                 {peer.name}
-                <span className="text-lg">
+                <span className="text-lg opacity-80">
                   {peer.personality === 'curious' ? '🤔' :
-                   peer.personality === 'analytical' ? '🧠' :
-                   peer.personality === 'supportive' ? '🤝' : '🤖'}
+                    peer.personality === 'analytical' ? '🧠' :
+                      peer.personality === 'supportive' ? '🤝' : '🤖'}
                 </span>
               </CardTitle>
-              <CardDescription className="capitalize font-medium">
-                {peer.personality} • {peer.skill_level} level
+              <CardDescription className="font-mono text-[9px] opacity-40 uppercase tracking-widest">
+                ID_{peer.personality.slice(0, 3).toUpperCase()}_{peer.skill_level.toUpperCase()}
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className={`p-3 rounded-lg ${
-                  peer.personality === 'curious' ? 'bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800' :
-                  peer.personality === 'analytical' ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' :
-                  peer.personality === 'supportive' ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' :
-                  'bg-gray-50 dark:bg-gray-800/50'
-                }`}>
-                  <h4 className="font-medium text-sm mb-1 flex items-center gap-2">
-                    <span className="text-lg">
-                      {peer.personality === 'curious' ? '💭' :
-                       peer.personality === 'analytical' ? '🔍' :
-                       peer.personality === 'supportive' ? '💪' : '🎯'}
-                    </span>
-                    Personality
+            <CardContent className="pt-6 flex-1 flex flex-col gap-6">
+              <div className="space-y-6 flex-1">
+                <div className="relative pl-4 border-l border-white/10">
+                  <h4 className="font-mono text-[9px] mb-2 opacity-30 uppercase tracking-[0.2em]">
+                    interaction_protocol
                   </h4>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs font-medium leading-relaxed opacity-90">
                     {peer.interaction_style}
                   </p>
                 </div>
-                
-                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                  <h4 className="font-medium text-sm mb-1 flex items-center gap-2">
-                    <span className="text-lg">⚠️</span>
-                    Common Learning Areas
+
+                <div className="relative pl-4 border-l border-red-500/30">
+                  <h4 className="font-mono text-[9px] mb-2 text-red-400/50 uppercase tracking-[0.2em]">
+                    known_error_patterns
                   </h4>
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-2">
                     {peer.common_mistakes.slice(0, 2).map((mistake, idx) => (
-                      <span 
+                      <span
                         key={idx}
-                        className="text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-1 rounded-full border border-red-200 dark:border-red-700"
+                        className="text-[9px] font-mono bg-red-500/10 text-red-400 px-2 py-0.5 border border-red-500/20 uppercase"
                       >
                         {mistake}
                       </span>
                     ))}
                   </div>
                 </div>
-                
-                <div className={`p-3 rounded-lg ${
-                  peer.personality === 'curious' ? 'bg-pink-100 dark:bg-pink-900/30 border border-pink-300 dark:border-pink-700' :
-                  peer.personality === 'analytical' ? 'bg-blue-100 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-700' :
-                  peer.personality === 'supportive' ? 'bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700' :
-                  'bg-blue-50 dark:bg-blue-900/20'
-                }`}>
-                  <h4 className="font-medium text-sm mb-1 flex items-center gap-2">
-                    <span className="text-lg">✨</span>
-                    About {peer.name}
+
+                <div className="pt-4 border-t border-white/5 mt-auto">
+                  <h4 className="font-mono text-[8px] mb-2 opacity-20 uppercase tracking-[0.3em]">
+                    system_backstory
                   </h4>
-                  <p className={`text-xs ${
-                    peer.personality === 'curious' ? 'text-pink-700 dark:text-pink-300' :
-                    peer.personality === 'analytical' ? 'text-blue-700 dark:text-blue-300' :
-                    peer.personality === 'supportive' ? 'text-green-700 dark:text-green-300' :
-                    'text-blue-700 dark:text-blue-300'
-                  }`}>
-                    {peer.backstory}
+                  <p className="text-[10px] opacity-50 leading-relaxed italic">
+                    "{peer.backstory}"
                   </p>
                 </div>
               </div>
@@ -253,54 +220,68 @@ export function PeerGeneration({ onboardingData, onComplete }: PeerGenerationPro
         ))}
       </div>
 
-      <Card className="mb-8 text-left">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5" />
-            How Your AI Peers Will Help
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10 rounded-lg">
-              <h4 className="font-medium mb-2">🤔 Ask Questions</h4>
-              <p className="text-sm text-muted-foreground">
-                Your peers will ask thoughtful questions during lessons to help reinforce learning
-              </p>
-            </div>
-            
-            <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10 rounded-lg">
-              <h4 className="font-medium mb-2">🎯 Make Mistakes</h4>
-              <p className="text-sm text-muted-foreground">
-                They&apos;ll make common errors for you to spot and correct, earning bonus XP
-              </p>
-            </div>
-            
-            <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/10 rounded-lg">
-              <h4 className="font-medium mb-2">🤝 Collaborate</h4>
-              <p className="text-sm text-muted-foreground">
-                Code together in real-time and compare different approaches to problems
-              </p>
-            </div>
-            
-            <div className="p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/10 rounded-lg">
-              <h4 className="font-medium mb-2">🏆 Compete</h4>
-              <p className="text-sm text-muted-foreground">
-                Challenge you in coding duels and celebrate your achievements
-              </p>
-            </div>
+      <div className="mb-12 border border-white/10 bg-[#0c0c0e] p-10 text-left relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-3 opacity-5">
+          <Sparkles className="w-32 h-32" />
+        </div>
+        <h3 className="flex items-center gap-3 text-xl font-mono uppercase tracking-[0.2em] mb-10 text-white">
+          <Sparkles className="w-5 h-5 text-[#3a86ff]" />
+          SUPPORT_SYSTEM_MODULES
+        </h3>
+        <div className="grid md:grid-cols-2 gap-8 relative z-10">
+          <div className="group p-6 border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
+            <h4 className="font-mono text-xs mb-3 text-[#3a86ff] tracking-widest flex items-center gap-2">
+              <span className="opacity-30">01_</span> INQUIRY_SEQUENCE
+            </h4>
+            <p className="text-[11px] opacity-40 leading-relaxed uppercase tracking-tighter">
+              PEERS WILL EXECUTE THOUGHTFUL INQUIRY SEQUENCES TO STIMULATE DEEP KNOWLEDGE RETRIEVAL AND VALIDATION.
+            </p>
           </div>
-        </CardContent>
-      </Card>
 
-      <Button 
-        size="lg" 
-        onClick={handleContinue}
-        className="px-8 py-3 text-lg font-medium bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
-      >
-        Start Learning with My AI Peers
-        <ArrowRight className="w-5 h-5 ml-2" />
-      </Button>
+          <div className="group p-6 border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
+            <h4 className="font-mono text-xs mb-3 text-[#06d6a0] tracking-widest flex items-center gap-2">
+              <span className="opacity-30">02_</span> FAULT_INJECTION
+            </h4>
+            <p className="text-[11px] opacity-40 leading-relaxed uppercase tracking-tighter">
+              INTENTIONAL LOGIC FAULTS WILL BE INJECTED INTO SESSIONS FOR SYSTEMATIC IDENTIFICATION AND RESOLUTION TRAINING.
+            </p>
+          </div>
+
+          <div className="group p-6 border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
+            <h4 className="font-mono text-xs mb-3 text-[#ff4d6d] tracking-widest flex items-center gap-2">
+              <span className="opacity-30">03_</span> MULTI_THREAD_DEV
+            </h4>
+            <p className="text-[11px] opacity-40 leading-relaxed uppercase tracking-tighter">
+              COLLABORATIVE CODE EXECUTION WITH REAL-TIME SYNCHRONIZATION AND MULTI-PERSPECTIVE CONTEXT SHARING.
+            </p>
+          </div>
+
+          <div className="group p-6 border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
+            <h4 className="font-mono text-xs mb-3 text-[#ffd166] tracking-widest flex items-center gap-2">
+              <span className="opacity-30">04_</span> PERFORMANCE_DUELS
+            </h4>
+            <p className="text-[11px] opacity-40 leading-relaxed uppercase tracking-tighter">
+              SYNCHRONOUS CODING CHALLENGES TO BENCHMARK KNOWLEDGE ACQUISITION AND SYSTEM OPTIMIZATION PATHS.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center gap-6">
+        <button
+          onClick={handleContinue}
+          className="group relative px-16 py-5 bg-[#3a86ff] text-white font-mono uppercase tracking-[0.3em] overflow-hidden transition-all hover:bg-[#3a86ff]/90 active:scale-95"
+        >
+          <span className="relative z-10 flex items-center gap-4">
+            INIT_LEARNING_HUB
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+          </span>
+          <div className="absolute inset-x-0 bottom-0 h-1 bg-white/30 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+        </button>
+        <p className="font-mono text-[8px] opacity-20 uppercase tracking-widest">
+          awaiting_user_confirmation // secure_link_established
+        </p>
+      </div>
     </div>
   )
 }

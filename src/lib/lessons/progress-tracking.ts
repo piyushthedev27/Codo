@@ -3,7 +3,7 @@
  * Manages lesson progress, completion status, and XP rewards
  */
 
-import { supabase } from '@/lib/database/supabase-client'
+import { supabaseAdmin } from '@/lib/database/supabase-client'
 import { userProfileOperations } from '@/lib/database/operations'
 import type { Lesson, CompletionStatus } from '@/types/database'
 
@@ -57,7 +57,7 @@ export async function initializeLessonProgress(
   }
 
   // Store in database
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('lessons')
     .insert({
       id: lessonId,
@@ -95,7 +95,7 @@ export async function getLessonProgress(
   lessonId: string
 ): Promise<LessonProgress | null> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('lessons')
       .select('*')
       .eq('user_id', userId)
@@ -169,7 +169,7 @@ export async function updateLessonProgress(
     }
 
     // Update in database
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('lessons')
       .update({
         progress_percentage: newProgressPercentage,
@@ -277,7 +277,7 @@ export async function getUserLessonHistory(
   limit: number = 10
 ): Promise<Lesson[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('lessons')
       .select('*')
       .eq('user_id', userId)
@@ -308,7 +308,7 @@ export async function getLessonStats(userId: string): Promise<{
   voiceCoachingUsage: number
 }> {
   try {
-    const { data: lessons, error } = await supabase
+    const { data: lessons, error } = await supabaseAdmin
       .from('lessons')
       .select('completion_status, time_spent_minutes, xp_earned, progress_percentage, peer_interactions_count, voice_coaching_used')
       .eq('user_id', userId)
@@ -364,7 +364,7 @@ export async function resumeLesson(
     }
 
     // Update last accessed time
-    await supabase
+    await supabaseAdmin
       .from('lessons')
       .update({ updated_at: new Date().toISOString() })
       .eq('user_id', userId)

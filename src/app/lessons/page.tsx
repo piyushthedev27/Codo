@@ -41,11 +41,10 @@ const sampleLessons: Lesson[] = [
     duration: '2 hours',
     difficulty: 'intermediate',
     category: 'React',
-    recommendedBy: 'sarah',
     xpReward: 150,
     enrolled: 1234,
     icon: '⚛️',
-    progress: 33,
+    progress: 0,
     rating: 4.8,
     sections: 3
   },
@@ -56,7 +55,6 @@ const sampleLessons: Lesson[] = [
     duration: '3 hours',
     difficulty: 'intermediate',
     category: 'JavaScript',
-    recommendedBy: 'alex',
     xpReward: 200,
     enrolled: 2156,
     icon: '⚡',
@@ -70,7 +68,6 @@ const sampleLessons: Lesson[] = [
     duration: '2.5 hours',
     difficulty: 'beginner',
     category: 'TypeScript',
-    recommendedBy: 'jordan',
     xpReward: 120,
     enrolled: 3421,
     icon: '📘',
@@ -97,11 +94,10 @@ const sampleLessons: Lesson[] = [
     duration: '2 hours',
     difficulty: 'beginner',
     category: 'CSS',
-    recommendedBy: 'sarah',
     xpReward: 100,
     enrolled: 4532,
     icon: '🎨',
-    progress: 100,
+    progress: 0,
     rating: 4.9,
     sections: 3
   },
@@ -112,7 +108,6 @@ const sampleLessons: Lesson[] = [
     duration: '5 hours',
     difficulty: 'intermediate',
     category: 'Node.js',
-    recommendedBy: 'jordan',
     xpReward: 300,
     enrolled: 1876,
     icon: '🚀',
@@ -126,7 +121,6 @@ const sampleLessons: Lesson[] = [
     duration: '6 hours',
     difficulty: 'advanced',
     category: 'Next.js',
-    recommendedBy: 'alex',
     xpReward: 350,
     enrolled: 1543,
     icon: '▲',
@@ -153,7 +147,6 @@ const sampleLessons: Lesson[] = [
     duration: '4 hours',
     difficulty: 'intermediate',
     category: 'GraphQL',
-    recommendedBy: 'sarah',
     xpReward: 220,
     enrolled: 1234,
     icon: '◆',
@@ -421,8 +414,8 @@ export default function LessonsPage() {
               {/* Completed Badge */}
               {lesson.progress === 100 && (
                 <div className="absolute top-4 left-4 z-10">
-                  <Badge className="bg-emerald-500 text-white border-0 shadow-lg">
-                    <CheckCircle2 className="w-3 h-3 mr-1" />
+                  <Badge className="bg-emerald-500 text-white border-0 shadow-lg px-2 py-0.5 text-[10px] uppercase font-bold">
+                    <CheckCircle2 className="w-2.5 h-2.5 mr-1" />
                     Completed
                   </Badge>
                 </div>
@@ -433,8 +426,8 @@ export default function LessonsPage() {
                 {lesson.icon}
               </div>
 
-              <CardHeader className="pb-4 pt-6">
-                <div className="flex items-start justify-between mb-3">
+              <CardHeader className="pb-4 pt-8">
+                <div className="flex items-start justify-between mb-4">
                   <Badge className={`${getDifficultyColor(lesson.difficulty)} border font-bold px-3 py-1.5 text-xs uppercase tracking-wide`}>
                     {lesson.difficulty}
                   </Badge>

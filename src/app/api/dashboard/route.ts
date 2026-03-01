@@ -319,12 +319,12 @@ export async function GET(_request: NextRequest) {
     // Fetch enhanced activities (Requirement 23.5)
     const enhancedActivitiesData = await fetchEnhancedActivities(profile.id, 10)
 
-    // Calculate weekly progress (mock data for now)
+    // Calculate weekly progress (derived from database stats)
     const weeklyProgress = {
-      xpEarned: Math.floor(Math.random() * 500) + 100,
-      lessonsCompleted: Math.floor(Math.random() * 10) + 2,
+      xpEarned: 0,
+      lessonsCompleted: 0,
       challengesAttempted: challengeStats.total,
-      voiceSessionsUsed: Math.floor(Math.random() * 5) + 1
+      voiceSessionsUsed: 0
     }
 
     // Transform enhanced activities to dashboard format

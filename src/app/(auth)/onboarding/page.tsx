@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
+import { motion } from 'framer-motion'
 import { SkillAssessment } from './components/SkillAssessment'
 import { PeerGeneration } from './components/PeerGeneration'
 import { OnboardingComplete } from './components/OnboardingComplete'
@@ -41,31 +42,37 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="min-h-screen bg-[#09090b] text-white selection:bg-[#3a86ff]/30">
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            Welcome to Codo, {user?.firstName || 'Learner'}!
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-mono uppercase tracking-[0.2em] mb-4 text-white">
+            BOOT_INIT: {user?.firstName?.toUpperCase() || 'LEARNER'}
           </h1>
-          <p className="text-lg text-muted-foreground mb-6">
-            Let&apos;s personalize your AI-powered learning experience
+          <p className="text-xs font-mono opacity-50 uppercase tracking-[0.3em] mb-12">
+            configuring_personalized_learning_environment
           </p>
-          
-          {/* Progress Bar */}
-          <div className="max-w-md mx-auto mb-8">
-            <div className="flex justify-between text-sm text-muted-foreground mb-2">
-              <span>Step {currentStepIndex + 1} of {steps.length}</span>
-              <span>{Math.round(progress)}% Complete</span>
+
+          {/* Progress Bar - Technical */}
+          <div className="max-w-md mx-auto mb-16 px-4">
+            <div className="flex justify-between font-mono text-[10px] opacity-50 mb-3 tracking-widest">
+              <span>MODULE_{currentStepIndex + 1}/{steps.length}</span>
+              <span>{Math.round(progress)}%_STABLE</span>
             </div>
-            <Progress value={progress} className="h-2" />
-            <div className="flex justify-between mt-2">
+            <div className="h-1 w-full bg-white/10 overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                className="h-full bg-[#3a86ff]"
+              />
+            </div>
+            <div className="flex justify-between mt-3">
               {steps.map((step, index) => (
-                <div 
+                <div
                   key={step.id}
-                  className={`text-xs ${index <= currentStepIndex ? 'text-blue-600 font-medium' : 'text-muted-foreground'}`}
+                  className={`text-[8px] font-mono tracking-tighter uppercase ${index <= currentStepIndex ? 'text-[#3a86ff]' : 'text-white/20'}`}
                 >
-                  {step.title}
+                  {step.title.replace(' ', '_')}
                 </div>
               ))}
             </div>
@@ -73,39 +80,45 @@ export default function OnboardingPage() {
         </div>
 
         {/* Step Content */}
-        <Card className="shadow-xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-          <CardHeader className="text-center pb-6">
-            <CardTitle className="text-2xl">
+        <div className="relative border border-white/10 bg-[#0c0c0e] p-8">
+          <div className="absolute top-0 right-0 p-2 font-mono text-[8px] opacity-20 select-none">
+            CODO_V1.1_SYSTEM_CORE
+          </div>
+          <div className="mb-10 text-left border-l-2 border-[#3a86ff] pl-6">
+            <h2 className="text-2xl font-mono uppercase tracking-widest text-white mb-2">
               {steps[currentStepIndex]?.title}
-            </CardTitle>
-            <CardDescription className="text-base">
-              {steps[currentStepIndex]?.description}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </h2>
+            <p className="text-sm opacity-50 font-mono italic">
+              // {steps[currentStepIndex]?.description}
+            </p>
+          </div>
+
+          <div className="relative z-10">
             {currentStep === 'assessment' && (
               <SkillAssessment onComplete={handleAssessmentComplete} />
             )}
-            
+
             {currentStep === 'peer-generation' && onboardingData && (
-              <PeerGeneration 
+              <PeerGeneration
                 onboardingData={onboardingData}
                 onComplete={handlePeerGenerationComplete}
               />
             )}
-            
+
             {currentStep === 'complete' && onboardingData && (
-              <OnboardingComplete 
+              <OnboardingComplete
                 onboardingData={onboardingData}
                 onComplete={handleOnboardingComplete}
               />
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Footer */}
-        <div className="text-center mt-8 text-sm text-muted-foreground">
-          <p>This will only take 2-3 minutes to set up your personalized learning experience</p>
+        <div className="text-center mt-12 mb-8">
+          <p className="font-mono text-[9px] opacity-30 uppercase tracking-[0.2em]">
+            est_config_duration: 00:03:00 // system_ready
+          </p>
         </div>
       </div>
     </div>

@@ -70,14 +70,13 @@ export function HeroWelcomeSection({
     const interval = setInterval(() => {
       setCurrentMessageIndex((prev) => (prev + 1) % peerMessages.length)
     }, 8000)
-
     return () => clearInterval(interval)
   }, [peerMessages.length])
 
   const currentPeerMessage = peerMessages[currentMessageIndex]
 
-  // Mock achievements count - in real app this would come from API
-  const achievementsCount = 5
+  // Achievements count - should be handled by profile ideally, defaulting to 0 for new users
+  const achievementsCount = profile.achievements_count || 0
 
   return (
     <div className="mb-8 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 border border-blue-100 dark:border-blue-800 card-hover-effect fade-in">
@@ -99,10 +98,10 @@ export function HeroWelcomeSection({
                 - {currentPeerMessage.peer}
               </span>
             </div>
-          </div>
+          </div >
 
           {/* Learning Progress Highlight */}
-          <div className="mb-6 fade-in-delay-2">
+          < div className="mb-6 fade-in-delay-2" >
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Current Learning Progress
@@ -120,10 +119,10 @@ export function HeroWelcomeSection({
             <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
               {learningProgress.lessonsCompleted} of {learningProgress.totalLessons} lessons completed
             </p>
-          </div>
+          </div >
 
           {/* Call-to-Action Buttons */}
-          <div className="flex flex-wrap gap-3 fade-in-delay-3">
+          < div className="flex flex-wrap gap-3 fade-in-delay-3" >
             <Button
               size="lg"
               className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl smooth-transition button-glow"
@@ -137,20 +136,20 @@ export function HeroWelcomeSection({
               variant="outline"
               className="border-purple-200 hover:bg-purple-50 dark:border-purple-700 dark:hover:bg-purple-900/20 smooth-transition"
               onClick={() => {
-                const el = document.getElementById('ai-peers-section')
+                const el = document.getElementById('ai-peers')
                 el?.scrollIntoView({ behavior: 'smooth' })
               }}
             >
               <MessageCircle className="w-4 h-4 mr-2" />
               Talk to AI Peers
             </Button>
-          </div>
-        </div>
+          </div >
+        </div >
 
         {/* Right side - Quick Stats Bar */}
-        <div className="flex lg:flex-col items-center gap-6 text-center lg:text-left fade-in-delay-4">
+        < div className="flex lg:flex-col items-center gap-6 text-center lg:text-left fade-in-delay-4" >
           {/* Streak */}
-          <div className="flex items-center gap-2 smooth-transition card-hover-effect p-2 rounded-lg">
+          < div className="flex items-center gap-2 smooth-transition card-hover-effect p-2 rounded-lg" >
             <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg icon-bounce">
               <Zap className="w-5 h-5 text-orange-500" />
             </div>
@@ -158,10 +157,10 @@ export function HeroWelcomeSection({
               <div className="text-2xl font-bold text-gray-900 dark:text-white stat-number">{currentStreak}</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Day Streak 🔥</div>
             </div>
-          </div>
+          </div >
 
           {/* XP Points */}
-          <div className="flex items-center gap-2 smooth-transition card-hover-effect p-2 rounded-lg">
+          < div className="flex items-center gap-2 smooth-transition card-hover-effect p-2 rounded-lg" >
             <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg icon-bounce">
               <Star className="w-5 h-5 text-yellow-500" />
             </div>
@@ -169,10 +168,10 @@ export function HeroWelcomeSection({
               <div className="text-2xl font-bold text-gray-900 dark:text-white stat-number">{profile.current_xp}</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">XP Points</div>
             </div>
-          </div>
+          </div >
 
           {/* Achievements */}
-          <div className="flex items-center gap-2 smooth-transition card-hover-effect p-2 rounded-lg">
+          < div className="flex items-center gap-2 smooth-transition card-hover-effect p-2 rounded-lg" >
             <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg icon-bounce">
               <Trophy className="w-5 h-5 text-purple-500" />
             </div>
@@ -180,9 +179,9 @@ export function HeroWelcomeSection({
               <div className="text-2xl font-bold text-gray-900 dark:text-white stat-number">{achievementsCount}</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Achievements</div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </div >
+        </div >
+      </div >
+    </div >
   )
 }
