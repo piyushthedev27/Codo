@@ -16,11 +16,11 @@ import {
   userAIPeersOperations,
   peerMessagesOperations,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _learningTracksOperations,
+  learningTracksOperations as _learningTracksOperations,
   userTrackProgressOperations,
   lessonRecommendationsOperations,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _enhancedActivitiesOperations
+  enhancedActivitiesOperations as _enhancedActivitiesOperations
 } from '@/lib/database/dashboard-operations'
 import { generateEnhancedStats } from '@/lib/utils/stats-calculations'
 import type { DashboardData } from '@/types/database'

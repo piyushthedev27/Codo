@@ -9,11 +9,11 @@ import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import {
      
-    _Target,
+    Target as _Target,
      
-    _Map,
+    Map as _Map,
      
-    _Flag,
+    Flag as _Flag,
     CheckCircle,
     Circle,
     Lock,

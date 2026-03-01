@@ -10,7 +10,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _Badge } from '@/components/ui/badge'
+import { Badge as _Badge } from '@/components/ui/badge'
 import { Avatar } from '@/components/shared/Avatar'
 import { MessageCircle, Settings, Star, Clock } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -21,7 +21,7 @@ import {
   getStatusText,
   formatTimeAgo,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  type _PeerStatusInfo
+  type PeerStatusInfo as _PeerStatusInfo
 } from '@/lib/peer-status'
 import { useMemo } from 'react'
 

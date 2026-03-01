@@ -8,7 +8,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Trophy, _Star, _Zap, _Crown, _Sparkles, _Heart } from 'lucide-react'
+import { Trophy, Star as _Star, Zap as _Zap, Crown as _Crown, Sparkles as _Sparkles, Heart as _Heart } from 'lucide-react'
 
 interface CelebrationEffectsProps {
   show: boolean

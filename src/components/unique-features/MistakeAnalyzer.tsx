@@ -14,14 +14,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
  
-import { _Progress } from '@/components/ui/progress'
+import { Progress as _Progress } from '@/components/ui/progress'
 import { 
   AlertTriangle, 
   CheckCircle, 
   Clock, 
   TrendingUp, 
    
-  _TrendingDown, 
+  TrendingDown as _TrendingDown, 
   BookOpen,
   Target,
   Lightbulb,
@@ -263,9 +263,9 @@ export default function MistakeAnalyzer() {
           {/* Demo Error Buttons */}
           <div className="flex flex-wrap gap-2 mb-4">
             <span className="text-sm font-medium text-gray-700">Try these examples:</span>
-            {demoErrors.map((demo, _index) => (
+            {demoErrors.map((demo, index) => (
               <Button
-                key={_index}
+                key={index}
                 variant="outline"
                 size="sm"
                 onClick={() => loadDemoError(demo)}
@@ -372,7 +372,7 @@ export default function MistakeAnalyzer() {
                   <span className="font-medium">Related Concepts:</span>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {analysisResult.parsedError.relatedConcepts.map((concept: string, _index: number) => (
-                      <Badge key={_index} variant="secondary" className="text-xs">
+                      <Badge key={index} variant="secondary" className="text-xs">
                         {concept}
                       </Badge>
                     ))}
@@ -404,7 +404,7 @@ export default function MistakeAnalyzer() {
                 <h4 className="font-medium mb-2">Current Focus Areas:</h4>
                 <div className="flex flex-wrap gap-1">
                   {analysisResult.learningPathUpdates.currentFocus.map((focus: string, _index: number) => (
-                    <Badge key={_index} variant="outline" className="text-xs">
+                    <Badge key={index} variant="outline" className="text-xs">
                       {focus}
                     </Badge>
                   ))}
@@ -416,7 +416,7 @@ export default function MistakeAnalyzer() {
                   <h4 className="font-medium mb-2">New Recommendations:</h4>
                   <div className="space-y-2">
                     {analysisResult.learningPathUpdates.newRecommendations.map((rec: LearningRecommendation, _index: number) => (
-                      <div key={_index} className="p-2 border rounded-lg">
+                      <div key={index} className="p-2 border rounded-lg">
                         <div className="flex items-center justify-between">
                           <span className="font-medium text-sm">{rec.title}</span>
                           <Badge variant="secondary" className="text-xs">
@@ -505,7 +505,7 @@ export default function MistakeAnalyzer() {
           </CardHeader>
           <CardContent>            <div className="space-y-3">
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              {mistakeHistory.map((mistake, _index) => (
+              {mistakeHistory.map((mistake, index) => (
                 <div key={mistake.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
                     {getSeverityIcon(mistake.severity)}

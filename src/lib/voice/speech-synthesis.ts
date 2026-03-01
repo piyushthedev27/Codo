@@ -1,5 +1,5 @@
 // Speech Synthesis API implementation for voice responses
-import { SPEECH_CONFIG, checkSpeechSupport, getAvailableVoices } from './speech-config'
+import { checkSpeechSupport, getAvailableVoices, SPEECH_CONFIG } from './speech-config'
 
 export interface SpeechSynthesisOptions {
   text: string
@@ -29,7 +29,7 @@ export class VoiceSynthesisManager {
     if (this.isSupported && typeof window !== 'undefined') {
       this.synthesis = window.speechSynthesis
       this.loadVoices()
-      
+
       // Listen for voices changed event (some browsers load voices asynchronously)
       if (this.synthesis) {
         this.synthesis.addEventListener('voiceschanged', () => {
@@ -62,7 +62,7 @@ export class VoiceSynthesisManager {
       this.stop()
 
       const utterance = new SpeechSynthesisUtterance(options.text)
-      
+
       // Configure utterance
       utterance.rate = options.rate ?? SPEECH_CONFIG.synthesis.rate
       utterance.pitch = options.pitch ?? SPEECH_CONFIG.synthesis.pitch
@@ -137,8 +137,8 @@ export const speakText = async (text: string, options?: Partial<SpeechSynthesisO
 }
 
 export const speakCoachingResponse = async (
-  response: string, 
-  onStart?: () => void, 
+  response: string,
+  onStart?: () => void,
   onEnd?: () => void
 ): Promise<void> => {
   return voiceSynthesis.speak({

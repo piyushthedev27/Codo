@@ -17,6 +17,11 @@ This document describes the implementation of enhanced dashboard functionality f
 
 ### Database Schema
 
+#### Migrations
+
+1. **dashboard-enhancements.sql** - Core dashboard tables and RLS
+2. **dashboard-analytics.sql** - Analytics tracking and performance metrics
+
 #### New Tables Created
 
 1. **user_learning_stats** - Enhanced learning analytics
@@ -67,6 +72,11 @@ This document describes the implementation of enhanced dashboard functionality f
 10. **user_achievements** - User achievement unlocks
     - Progress tracking
     - Celebration status
+
+11. **dashboard_analytics_events** - User interaction tracking
+12. **dashboard_analytics_sessions** - Engagement metrics
+13. **dashboard_performance_metrics** - Component performance data
+14. **dashboard_errors** - Error tracking and monitoring
 
 ### Database Operations
 

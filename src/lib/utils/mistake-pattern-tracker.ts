@@ -365,7 +365,7 @@ function generateLearningRecommendations(patterns: MistakePattern[]): LearningRe
     .filter(p => p.frequency >= 3)
     .slice(0, 3)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    .forEach((pattern, _index) => {
+    .forEach((pattern, index) => {
       recommendations.push({
         id: `rec_microlesson_${pattern.id}`,
         type: 'micro-lesson',

@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Trophy, Zap, Clock, Target, TrendingUp } from 'lucide-react'
 import { Avatar } from '@/components/shared/Avatar'
  
-import { _getPeerProfile } from '@/lib/avatars'
+import { getPeerProfile as _getPeerProfile } from '@/lib/avatars'
 import { supabase } from '@/lib/database/supabase-client'
 import { useUser } from '@clerk/nextjs'
 
@@ -152,7 +152,7 @@ export function LiveLeaderboard() {
   const sortedParticipants = [...participants]
     .sort((a, b) => b.score - a.score)
      
-    .map((participant, _index) => ({
+    .map((participant, index) => ({
       ...participant,
       rank: index + 1
     }))
@@ -208,7 +208,7 @@ export function LiveLeaderboard() {
       {/* Leaderboard */}
       <div className="p-4">        <AnimatePresence>
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          {sortedParticipants.map((participant, _index) => (
+          {sortedParticipants.map((participant, index) => (
             <motion.div
               key={participant.id}
               layout

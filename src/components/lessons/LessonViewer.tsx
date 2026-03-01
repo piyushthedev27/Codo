@@ -17,7 +17,7 @@ import {
   Play,
   Pause,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _RotateCcw,
+  RotateCcw as _RotateCcw,
   Lightbulb,
   TrendingUp
 } from 'lucide-react'

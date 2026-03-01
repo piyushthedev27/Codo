@@ -6,30 +6,30 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _Progress } from '@/components/ui/progress'
+import { Progress as _Progress } from '@/components/ui/progress'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _Badge } from '@/components/ui/badge'
+import { Badge as _Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import '@/styles/dashboard-animations.css'
 import {
   Target,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _Zap,
+  Zap,
   Users,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _TrendingUp,
+  TrendingUp,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _Calendar,
+  Calendar,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _Award,
+  Award,
   BookOpen,
   AlertCircle,
   Clock,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _Star,
+  Star,
   Trophy,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _ArrowRight,
+  ArrowRight,
   Sparkles
 } from 'lucide-react'
 import { DashboardLayout } from '@/components/navigation/DashboardLayout'
@@ -38,7 +38,7 @@ import { DashboardLoadingSkeleton, AIPeerLoadingSkeleton, SkeletonCard } from '@
 import { DashboardSyncManager } from '@/lib/realtime/dashboard-sync'
 import { createEnhancedActivity, type EnhancedActivity as UIActivity } from '@/lib/activities/activity-tracker'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { DashboardData, _RecommendedLesson } from '@/types/database'
+import type { DashboardData, RecommendedLesson as _RecommendedLesson } from '@/types/database'
 
 // Lazy load dashboard components for better performance
 const HeroWelcomeSection = dynamic(() => import('./components/HeroWelcomeSection').then(mod => ({ default: mod.HeroWelcomeSection })), {
@@ -190,7 +190,7 @@ export default function DashboardPage() {
     aiPeers,
     knowledgeGraph,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _weeklyProgress,
+    weeklyProgress,
     upcomingMilestones,
     currentStreak,
     recentActivities,
@@ -241,7 +241,7 @@ export default function DashboardPage() {
         <HeroWelcomeSection
           user={user}
           profile={profile}
-          aiPeers={aiPeers}
+          _aiPeers={aiPeers}
           learningProgress={learningProgress}
           currentStreak={currentStreak}
         />
@@ -308,7 +308,7 @@ export default function DashboardPage() {
               <CardContent>
                 <LearningPath
                   knowledgeGraph={knowledgeGraph}
-                  upcomingMilestones={upcomingMilestones}
+                  _upcomingMilestones={upcomingMilestones}
                   primaryDomain={profile.primary_domain}
                   currentXP={profile.current_xp}
                   currentLevel={profile.current_level}

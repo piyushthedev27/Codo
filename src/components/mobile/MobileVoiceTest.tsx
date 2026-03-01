@@ -8,15 +8,15 @@
 
 import { useState, useEffect } from 'react'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Card, _CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent as _CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _Button } from '@/components/ui/button'
+import { Button as _Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { 
   Mic, 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _MicOff, 
+  MicOff as _MicOff, 
   Volume2, 
   VolumeX, 
   CheckCircle, 

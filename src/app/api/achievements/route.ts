@@ -10,7 +10,7 @@ import { supabase } from '@/lib/database/supabase-client'
 import {
   getUserAchievements,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _checkAchievementUnlock,
+  checkAchievementUnlock as _checkAchievementUnlock,
   getRecentlyUnlockedAchievements
 } from '@/lib/activities/achievement-system'
 import { createEnhancedActivity } from '@/lib/activities/activity-tracker'

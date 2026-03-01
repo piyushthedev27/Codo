@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _Progress } from '@/components/ui/progress'
+import { Progress as _Progress } from '@/components/ui/progress'
 import { Avatar } from '@/components/shared/Avatar'
 import { ArrowRight, MessageCircle, Zap, Star, Trophy } from 'lucide-react'
 import type { UserProfile, AIPeerProfile } from '@/types/database'

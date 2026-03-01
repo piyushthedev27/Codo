@@ -17,7 +17,7 @@ import {
   Bug, 
   CheckCircle, 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _XCircle, 
+  XCircle as _XCircle, 
   Lightbulb, 
   Target, 
   Trophy,
@@ -26,7 +26,7 @@ import {
   AlertTriangle,
   Eye,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _HelpCircle
+  HelpCircle as _HelpCircle
 } from 'lucide-react'
 
 interface BugChallenge {

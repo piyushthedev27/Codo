@@ -5,7 +5,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _supabase, supabaseAdmin } from './supabase-client'
+import { supabase as _supabase, supabaseAdmin } from './supabase-client'
 
 // ============================================================================
 // User Learning Stats Operations (Requirement 23.1)

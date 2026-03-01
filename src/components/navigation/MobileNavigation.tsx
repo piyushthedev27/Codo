@@ -8,7 +8,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _useState, useEffect, useRef } from 'react'
+import { useState as _useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence, PanInfo, useAnimation } from 'framer-motion'

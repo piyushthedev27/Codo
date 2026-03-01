@@ -8,7 +8,7 @@
 import type { UserProfile, _KnowledgeGraphNode, LearningActivity, AIPeerProfile } from '@/types/database'
 import type { LessonMetadata, RecommendedLesson, RecommendationContext } from './lesson-recommender'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { generateRecommendations, _calculateRelevanceScore } from './lesson-recommender'
+import { generateRecommendations, calculateRelevanceScore as _calculateRelevanceScore } from './lesson-recommender'
 
 /**
  * User behavior patterns extracted from activity history

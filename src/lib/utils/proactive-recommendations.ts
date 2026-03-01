@@ -6,7 +6,7 @@
 
 import { supabase } from '@/lib/database/supabase-client'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { LearningActivity, _LearningInsight, UserProfile, KnowledgeGraphNode } from '@/types/database'
+import { LearningActivity, LearningInsight as _LearningInsight, UserProfile, KnowledgeGraphNode } from '@/types/database'
 import { analyzeUserLearningPatterns, LearningPattern } from './pattern-detection'
 
 export interface ProactiveRecommendation {

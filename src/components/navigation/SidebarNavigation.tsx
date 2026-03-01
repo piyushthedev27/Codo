@@ -16,7 +16,7 @@ import { navigationConfig, type NavigationIconName } from './navigation-config'
 import { NavigationItem } from './types'
 import { useUser } from '@clerk/nextjs'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _Avatar } from '@/components/shared/Avatar'
+import { Avatar as _Avatar } from '@/components/shared/Avatar'
 
 // Icon mapping for client-side rendering
 const ICON_MAP = {

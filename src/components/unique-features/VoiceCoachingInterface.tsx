@@ -3,17 +3,17 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _Card, _CardContent, _CardHeader, _CardTitle } from '@/components/ui/card'
+import { Card as _Card, CardContent as _CardContent, CardHeader as _CardHeader, CardTitle as _CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Mic, MicOff, _Volume2, _VolumeX, _Play, _Pause, Square } from 'lucide-react'
+import { Mic, MicOff, Volume2 as _Volume2, VolumeX as _VolumeX, Play as _Play, Pause as _Pause, Square } from 'lucide-react'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _voiceRecognition, startVoiceCoaching, stopVoiceRecognition } from '@/lib/voice/speech-recognition'
+import { voiceRecognition as _voiceRecognition, startVoiceCoaching, stopVoiceRecognition } from '@/lib/voice/speech-recognition'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _voiceSynthesis, speakCoachingResponse, stopSpeaking } from '@/lib/voice/speech-synthesis'
+import { voiceSynthesis as _voiceSynthesis, speakCoachingResponse, stopSpeaking } from '@/lib/voice/speech-synthesis'
 import { checkSpeechSupport } from '@/lib/voice/speech-config'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useVoiceFallback, _handleVoiceError } from '@/lib/voice/voice-fallback'
+import { useVoiceFallback, handleVoiceError as _handleVoiceError } from '@/lib/voice/voice-fallback'
 import { TextInputFallback, ConversationEntry } from './TextInputFallback'
 
 interface VoiceCoachingInterfaceProps {

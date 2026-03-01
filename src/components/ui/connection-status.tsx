@@ -7,7 +7,7 @@
 
 import React from 'react'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Wifi, WifiOff, Database, _AlertCircle } from 'lucide-react'
+import { Wifi, WifiOff, Database, AlertCircle as _AlertCircle } from 'lucide-react'
 import { useConnectionStatus } from '@/lib/hooks/useApiState'
 import { Badge } from './badge'
 

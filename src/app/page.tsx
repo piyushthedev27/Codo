@@ -2,7 +2,7 @@ import dynamic from 'next/dynamic'
 import { HeroSection } from '@/components/landing/HeroSection'
 import { FloatingSarahChat } from '@/components/landing/FloatingSarahChat'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _SkeletonCard, LoadingWithMessage } from '@/components/ui/loading'
+import { SkeletonCard as _SkeletonCard, LoadingWithMessage } from '@/components/ui/loading'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 

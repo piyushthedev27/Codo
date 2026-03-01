@@ -177,9 +177,9 @@ export function CodeChallenge({
             </div>
 
             <div className="space-y-2">
-              {testResults.map((result, _index) => (
+              {testResults.map((result, index) => (
                 <div
-                  key={_index}
+                  key={index}
                   className={`p-2 rounded border ${
                     result.passed
                       ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
@@ -259,7 +259,7 @@ async function simulateTestExecution(
   await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000))
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  return testCases.map((testCase, _index) => {
+  return testCases.map((testCase, index) => {
     // Simple simulation - in reality, this would execute the code safely
     try {
       // For demo purposes, randomly pass/fail some tests based on code content

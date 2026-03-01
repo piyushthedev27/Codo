@@ -10,11 +10,11 @@ import {
   Clock,
   Target,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _Award,
+  Award as _Award,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _BookOpen,
+  BookOpen as _BookOpen,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _Code
+  Code as _Code
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { animationClasses } from '@/lib/animations/animation-optimizer'

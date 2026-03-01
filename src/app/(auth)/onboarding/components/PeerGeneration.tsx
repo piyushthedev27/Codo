@@ -70,9 +70,9 @@ export function PeerGeneration({ onboardingData, onComplete }: PeerGenerationPro
         <Card className="mb-8">
           <CardContent className="pt-6">
             <div className="space-y-6">
-              {steps.map((step, _index) => (
+              {steps.map((step, index) => (
                 <div 
-                  key={_index}
+                  key={index}
                   className={`flex items-center gap-4 p-4 rounded-lg transition-all duration-500 ${
                     index <= currentStep 
                       ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-900 dark:text-blue-100' 
@@ -82,14 +82,14 @@ export function PeerGeneration({ onboardingData, onComplete }: PeerGenerationPro
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                     index < currentStep 
                       ? 'bg-green-500 text-white' 
-                      : _index === currentStep 
+                      : index === currentStep 
                       ? 'bg-blue-500 text-white animate-pulse' 
                       : 'bg-gray-300 text-gray-600'
                   }`}>
                     {index < currentStep ? '✓' : index + 1}
                   </div>
                   <span className="font-medium">{step}</span>
-                  {_index === currentStep && (
+                  {index === currentStep && (
                     <div className="ml-auto">
                       <div className="flex gap-1">
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -108,7 +108,7 @@ export function PeerGeneration({ onboardingData, onComplete }: PeerGenerationPro
                 Preparing your AI study buddies...
               </h4>              <div className="flex justify-center gap-4">
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                {allPeers.map((peer, _index) => (
+                {allPeers.map((peer, index) => (
                   <div 
                     key={peer.id}
                     className={`transition-all duration-1000 ${
@@ -154,7 +154,7 @@ export function PeerGeneration({ onboardingData, onComplete }: PeerGenerationPro
         </p>
       </div>      <div className="grid md:grid-cols-3 gap-6 mb-8">
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        {allPeers.map((peer, _index) => (
+        {allPeers.map((peer, index) => (
           <Card key={peer.id} className="text-left transform hover:scale-105 transition-transform duration-300 border-2 hover:border-opacity-50" style={{
             borderColor: peer.personality === 'curious' ? '#f472b6' : 
                         peer.personality === 'analytical' ? '#60a5fa' : 

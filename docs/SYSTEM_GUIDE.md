@@ -20,7 +20,7 @@ Codo is built on a modern, serverless-ready architecture leveraging Next.js and 
 - `src/components/`: Modular UI components categorized by feature (e.g., `landing`, `dashboard`, `navigation`).
 - `src/lib/`: Core services and utilities:
     - `ai/`: Tools for interacting with OpenAI.
-    - `database/`: Supabase client and database operations.
+    - `database/`: Supabase client, operations, and [migration guides](file:///d:/Piyush%20Dev/Development/Next%20js/Codo%20v1.1/src/lib/database/README.md).
     - `voice/`: Logic for speech recognition and synthesis.
 - `src/types/`: Centralized TypeScript definitions to ensure type safety across the project.
 
@@ -52,7 +52,7 @@ A unified interface that aggregates data from multiple sources to provide a comp
 ## 🛠️ Maintenance & Deployment
 
 - **Deployment**: Optimized for Vercel.
-- **Database Migrations**: SQL migrations are located in `src/lib/database/migrations/`.
+- **Database Migrations**: SQL migrations are located in `src/lib/database/migrations/`. See the [Database Guide](file:///d:/Piyush%20Dev/Development/Next%20js/Codo%20v1.1/src/lib/database/README.md) for more details.
 - **Type Checking**: Run `npm run type-check` to verify types across the codebase.
 
 ---

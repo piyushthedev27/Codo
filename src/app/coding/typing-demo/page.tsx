@@ -42,7 +42,7 @@ export default function TypingDemoPage() {
           AI Peer Typing Animation
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Watch AI peers type code with realistic patterns based on their personalities. 
+          Watch AI peers type code with realistic patterns based on their personalities.
           Each peer has unique typing speed, pause patterns, and mistake behaviors.
         </p>
         <div className="flex items-center justify-center gap-4">

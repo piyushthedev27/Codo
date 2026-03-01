@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _Users,
+    Users as _Users,
     MessageSquare,
     Settings,
     UserPlus,

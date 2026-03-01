@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _voiceRecognition, startVoiceCoaching, stopVoiceRecognition } from './speech-recognition'
+import { voiceRecognition as _voiceRecognition, startVoiceCoaching, stopVoiceRecognition } from './speech-recognition'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _voiceSynthesis, speakCoachingResponse, stopSpeaking } from './speech-synthesis'
+import { voiceSynthesis as _voiceSynthesis, speakCoachingResponse, stopSpeaking } from './speech-synthesis'
 import { checkSpeechSupport } from './speech-config'
 import { getSupabaseClient } from '../database/supabase-client'
 

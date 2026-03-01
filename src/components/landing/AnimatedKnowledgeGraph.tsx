@@ -1,7 +1,7 @@
 'use client'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _useEffect, _useRef, _useState } from 'react'
+import { useEffect as _useEffect, useRef as _useRef, useState as _useState } from 'react'
 import { motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { Avatar } from '@/components/shared/Avatar'

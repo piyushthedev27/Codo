@@ -10,7 +10,7 @@ import {
   forceCenter, 
   forceCollide,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _transition,
+  transition as _transition,
   easeElastic,
   easeQuadInOut,
   easeQuadOut,

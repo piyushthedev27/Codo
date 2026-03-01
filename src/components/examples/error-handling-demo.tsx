@@ -11,12 +11,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ErrorDisplay, NetworkErrorDisplay, OfflineDisplay, LoadingErrorDisplay } from '@/components/ui/error-display'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _ErrorBoundary, DashboardErrorBoundary } from '@/components/ui/error-boundary'
+import { ErrorBoundary as _ErrorBoundary, DashboardErrorBoundary } from '@/components/ui/error-boundary'
 import { ConnectionStatus, ConnectionIndicator, OfflineBanner, ConnectionStatusCard } from '@/components/ui/connection-status'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useDashboard, _useInsights, useApiCall } from '@/lib/hooks/useApiState'
+import { useDashboard, useInsights as _useInsights, useApiCall } from '@/lib/hooks/useApiState'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { _apiClient } from '@/lib/api/api-client'
+import { apiClient as _apiClient } from '@/lib/api/api-client'
 import { Badge } from '@/components/ui/badge'
 
 export function ErrorHandlingDemo() {

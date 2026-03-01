@@ -8,7 +8,7 @@
 'use client'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useState, useEffect, useRef, _useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback as _useCallback } from 'react'
 import { Editor, OnMount, OnChange } from '@monaco-editor/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Avatar } from '@/components/shared/Avatar'
@@ -87,8 +87,8 @@ export function CollaborativeCodeEditor({
   const collabManagerRef = useRef<CollaborationManager | null>(null)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_realtimeCursors, setRealtimeCursors] = useState<CollabCursor[]>([])
-     
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const activeCollaborators = ['sarah', 'alex']
 
   // Mobile optimization hooks
@@ -100,7 +100,7 @@ export function CollaborativeCodeEditor({
   })
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { _viewport, optimizeForMobile } = useLayoutOptimization()
+  const { viewport, optimizeForMobile } = useLayoutOptimization()
 
   // Detect mobile device
   useEffect(() => {

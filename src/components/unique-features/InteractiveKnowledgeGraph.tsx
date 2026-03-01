@@ -3,13 +3,13 @@
 import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Card, CardContent, _CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription as _CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _Brain,
+  Brain as _Brain,
   Clock,
   Target,
   BookOpen,
@@ -18,7 +18,7 @@ import {
   CheckCircle,
   Zap,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _ArrowRight,
+  ArrowRight as _ArrowRight,
   X,
   ChevronDown,
   ChevronUp,

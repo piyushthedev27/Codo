@@ -215,7 +215,7 @@ const MICRO_LESSON_TEMPLATES = {
  */
 export function generateMicroLesson(parsedError: ParsedError): MicroLesson {
   const template = MICRO_LESSON_TEMPLATES[parsedError.category as keyof typeof MICRO_LESSON_TEMPLATES]
-  
+
   if (!template) {
     return generateGenericMicroLesson(parsedError)
   }
@@ -246,7 +246,7 @@ export function generateMicroLesson(parsedError: ParsedError): MicroLesson {
     metadata: {
       generatedAt: new Date().toISOString(),
       errorId: parsedError.id,
-      language: parsedError.language,
+      language: parsedError._language,
       targetAudience: template.difficulty
     }
   }
@@ -257,7 +257,7 @@ export function generateMicroLesson(parsedError: ParsedError): MicroLesson {
  */
 function generateCodeExamples(parsedError: ParsedError): CodeExample[] {
   const examples: CodeExample[] = []
-  
+
   switch (parsedError.category) {
     case 'SYNTAX_ERROR':
       examples.push({
@@ -267,7 +267,7 @@ function generateCodeExamples(parsedError: ParsedError): CodeExample[] {
         incorrectCode: `let message = "Hello World"\nconsole.log(message)`,
         correctCode: `let message = "Hello World";\nconsole.log(message);`,
         explanation: 'While JavaScript has automatic semicolon insertion, it\'s best practice to include them explicitly.',
-        language: parsedError.language,
+        language: parsedError._language,
         highlights: { incorrect: [0], correct: [0, 1] }
       })
       break
@@ -280,7 +280,7 @@ function generateCodeExamples(parsedError: ParsedError): CodeExample[] {
         incorrectCode: `console.log(userName);\nlet userName = "John";`,
         correctCode: `let userName = "John";\nconsole.log(userName);`,
         explanation: 'Variables must be declared before they can be used. This is especially important with let and const.',
-        language: parsedError.language,
+        language: parsedError._language,
         highlights: { incorrect: [0], correct: [1] }
       })
       break
@@ -293,7 +293,7 @@ function generateCodeExamples(parsedError: ParsedError): CodeExample[] {
         incorrectCode: `let user;\nconsole.log(user.name);`,
         correctCode: `let user = { name: "John" };\nconsole.log(user?.name || "No name");`,
         explanation: 'Always check if an object exists before accessing its properties. Use optional chaining (?.) for safety.',
-        language: parsedError.language,
+        language: parsedError._language,
         highlights: { incorrect: [1], correct: [1] }
       })
       break
@@ -306,7 +306,7 @@ function generateCodeExamples(parsedError: ParsedError): CodeExample[] {
         incorrectCode: `function fetchData() {\n  const data = await fetch('/api/data');\n  return data;\n}`,
         correctCode: `async function fetchData() {\n  const data = await fetch('/api/data');\n  return data;\n}`,
         explanation: 'The await keyword can only be used inside functions marked with async.',
-        language: parsedError.language,
+        language: parsedError._language,
         highlights: { incorrect: [0], correct: [0] }
       })
       break
@@ -319,7 +319,7 @@ function generateCodeExamples(parsedError: ParsedError): CodeExample[] {
         incorrectCode: `let items;\nconst doubled = items.map(x => x * 2);`,
         correctCode: `let items = [1, 2, 3];\nconst doubled = items.map(x => x * 2);`,
         explanation: 'Make sure the variable is an array before calling array methods. You can check with Array.isArray().',
-        language: parsedError.language,
+        language: parsedError._language,
         highlights: { incorrect: [1], correct: [0, 1] }
       })
       break
@@ -409,7 +409,7 @@ function generatePracticeChallenge(parsedError: ParsedError): PracticeChallenge 
  */
 function generateGenericMicroLesson(parsedError: ParsedError): MicroLesson {
   const lessonId = generateLessonId(parsedError)
-  
+
   return {
     id: lessonId,
     title: `Understanding ${parsedError.errorType}`,
@@ -438,7 +438,7 @@ function generateGenericMicroLesson(parsedError: ParsedError): MicroLesson {
     metadata: {
       generatedAt: new Date().toISOString(),
       errorId: parsedError.id,
-      language: parsedError.language,
+      language: parsedError._language,
       targetAudience: 'beginner'
     }
   }
@@ -455,7 +455,7 @@ function generateGenericCodeExample(parsedError: ParsedError): CodeExample {
     incorrectCode: parsedError.codeContext || '// Error occurred here',
     correctCode: '// Fixed version would go here',
     explanation: parsedError.suggestion,
-    language: parsedError.language,
+    language: parsedError._language,
     highlights: { incorrect: [0], correct: [0] }
   }
 }
@@ -465,7 +465,7 @@ function generateGenericCodeExample(parsedError: ParsedError): CodeExample {
  */
 function generateSectionCodeSnippet(parsedError: ParsedError, sectionType: string): string | undefined {
   if (sectionType !== 'example') return undefined
-  
+
   return parsedError.codeContext || `// Example code for ${parsedError.category}`
 }
 
@@ -492,7 +492,7 @@ function calculateXPReward(duration: number, difficulty: string): number {
     intermediate: 1.2,
     advanced: 1.5
   }
-  
+
   return Math.round(baseXP * (difficultyMultiplier[difficulty as keyof typeof difficultyMultiplier] || 1.0))
 }
 
@@ -524,10 +524,10 @@ export function hasMicroLessonTemplate(category: string): boolean {
  */
 export function generateRelatedMicroLessons(parsedError: ParsedError): MicroLesson[] {
   const lessons: MicroLesson[] = []
-  
+
   // Generate main lesson
   lessons.push(generateMicroLesson(parsedError))
-  
+
   // Generate related lessons based on concepts
   for (const concept of parsedError.relatedConcepts) {
     const relatedCategory = findCategoryByConcept(concept)
@@ -540,7 +540,7 @@ export function generateRelatedMicroLessons(parsedError: ParsedError): MicroLess
       lessons.push(generateMicroLesson(relatedError))
     }
   }
-  
+
   return lessons
 }
 

@@ -7,7 +7,7 @@
 'use client'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useState, _useEffect } from 'react'
+import { useState, useEffect as _useEffect } from 'react'
 import { Editor } from '@monaco-editor/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Avatar } from '@/components/shared/Avatar'

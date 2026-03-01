@@ -9,8 +9,7 @@
 import { motion } from 'framer-motion'
 import { MessageCircle, Settings, Star, Clock } from 'lucide-react'
 import { Avatar } from '@/components/shared/Avatar'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { getAllPeers, _PERSONALITY_RINGS } from '@/lib/avatars'
+import { getAllPeers } from '@/lib/avatars'
 import {
   getAllPeerStatuses,
   getStatusColor,

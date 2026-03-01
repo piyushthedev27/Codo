@@ -78,6 +78,8 @@ Your dashboard will show:
 
 ## Files
 
-- `sample-data-simple.sql` - ⭐ Use this one! Works with current schema
-- `sample-data.sql` - Full version (requires all tables)
-- `SAMPLE_DATA_README.md` - This file
+- `sample-data-simple.sql` - ⭐ **Recommended**! Works with the current schema.
+- `quick-insert.sql` - **Easiest**! Simplified script that requires minimal editing.
+- `insert-sample-data.sql` - Comprehensive version including AI peers and knowledge graph.
+- `sample-data.sql` - Full legacy version (requires all tables).
+- `SAMPLE_DATA_README.md` - This file.

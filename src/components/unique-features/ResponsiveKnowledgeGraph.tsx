@@ -11,9 +11,9 @@ import {
   Minimize2, 
   RotateCcw,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _ZoomIn,
+  ZoomIn as _ZoomIn,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _ZoomOut,
+  ZoomOut as _ZoomOut,
   Smartphone,
   Monitor
 } from 'lucide-react'

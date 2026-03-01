@@ -10,18 +10,18 @@ import React, { useState, _useEffect } from 'react'
 import { 
   Avatar, 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _PeerAvatarSmall, 
+  PeerAvatarSmall as _PeerAvatarSmall, 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _PeerAvatarMedium, 
+  PeerAvatarMedium as _PeerAvatarMedium, 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _PeerAvatarLarge,
+  PeerAvatarLarge as _PeerAvatarLarge,
   TypingAvatar,
   InteractiveAvatar,
   AvatarGroup,
   CollaborativeAvatarStack
 } from './Avatar'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { getAllPeers, _getPersonalityEmoji, _getPersonalityDescription } from '@/lib/avatars'
+import { getAllPeers, getPersonalityEmoji as _getPersonalityEmoji, getPersonalityDescription as _getPersonalityDescription } from '@/lib/avatars'
 import { useAvatarInteraction } from '@/contexts/AvatarContext'
 
 export function AvatarShowcase() {

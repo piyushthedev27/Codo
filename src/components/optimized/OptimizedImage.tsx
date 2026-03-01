@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { getOptimalImageQuality, _getNetworkQuality } from '@/lib/performance/lazy-loading'
+import { getOptimalImageQuality, getNetworkQuality as _getNetworkQuality } from '@/lib/performance/lazy-loading'
 
 interface OptimizedImageProps {
   src: string

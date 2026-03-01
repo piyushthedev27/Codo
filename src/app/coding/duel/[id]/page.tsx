@@ -10,7 +10,7 @@ import { TimerProgressBar } from './components/TimerProgressBar'
 import { CelebrationEffects, useCelebration, playVictorySound, playAchievementSound } from './components/CelebrationEffects'
 import { Button } from '@/components/ui/button'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Card, CardContent, _CardHeader, _CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader as _CardHeader, CardTitle as _CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 
 interface CodeDuelPageProps {

@@ -19,7 +19,7 @@ import {
   Zap
 } from 'lucide-react'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Card, CardContent, _CardHeader, _CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader as _CardHeader, CardTitle as _CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useInsights, useInsightDismissal } from '@/lib/hooks/useInsights'
