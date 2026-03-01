@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { ChevronLeft, ChevronRight, Code, Target, Lightbulb, Zap, Users } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import type { OnboardingData, SkillLevel, LearningGoal } from '@/types/database'
 
 interface Question {
@@ -35,7 +36,7 @@ const questions: Question[] = [
       },
       {
         value: 'intermediate',
-        label: 'Intermediate', 
+        label: 'Intermediate',
         description: 'Comfortable with basics, ready for more complex concepts'
       },
       {
@@ -193,7 +194,7 @@ export function SkillAssessment({ onComplete }: SkillAssessmentProps) {
     if (!canProceed) return
 
     setIsSubmitting(true)
-    
+
     try {
       // Convert answers to proper types
       const onboardingData: OnboardingData = {
@@ -220,16 +221,16 @@ export function SkillAssessment({ onComplete }: SkillAssessmentProps) {
 
       const result = await response.json()
       console.log('Onboarding data saved:', result)
-      
+
       // Always continue with onboarding, even if database save failed
       onComplete(onboardingData)
     } catch (error) {
       console.warn('Error submitting assessment (continuing anyway):', error)
-      
+
       // Show a user-friendly message but continue with the flow
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
       console.log('Assessment submission failed:', errorMessage)
-      
+
       // Continue with the onboarding flow even if save fails
       const onboardingData: OnboardingData = {
         skillLevel: answers.skillLevel as SkillLevel,
@@ -247,82 +248,117 @@ export function SkillAssessment({ onComplete }: SkillAssessmentProps) {
   return (
     <div className="max-w-2xl mx-auto">
       {/* Progress */}
-      <div className="mb-8">
-        <div className="flex justify-between text-sm text-muted-foreground mb-2">
-          <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-          <span>{Math.round(progress)}% Complete</span>
+      <div className="mb-10 px-2">
+        <div className="flex justify-between items-end mb-3">
+          <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] leading-none">Assessment Progress</span>
+          <span className="text-sm font-bold text-blue-400 tabular-nums">{Math.round(progress)}%</span>
         </div>
-        <Progress value={progress} className="h-2" />
+        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
+          />
+        </div>
+        <div className="flex justify-between mt-4">
+          {questions.map((_, index) => (
+            <div
+              key={index}
+              className={`h-1 flex-1 mx-0.5 rounded-full transition-all duration-500 ${index <= currentQuestionIndex
+                ? 'bg-blue-500/40 shadow-[0_0_8px_rgba(58,134,255,0.3)]'
+                : 'bg-white/5'
+                }`}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Question Card */}
-      <Card className="mb-8">
-        <CardHeader className="text-center pb-6">
-          <div className="mx-auto mb-4 p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full w-fit">
-            {currentQuestion.icon}
+      <div className="mb-10">
+        <div className="text-center mb-10">
+          <div className="mx-auto mb-6 p-4 bg-gradient-to-b from-blue-500/10 to-indigo-500/5 border border-blue-500/20 rounded-2xl w-fit shadow-lg shadow-blue-500/5">
+            <div className="text-blue-400">
+              {currentQuestion.icon}
+            </div>
           </div>
-          <CardTitle className="text-xl mb-2">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white mb-3">
             {currentQuestion.title}
-          </CardTitle>
-          <CardDescription className="text-base">
+          </h2>
+          <p className="text-zinc-400 text-base max-w-md mx-auto leading-relaxed">
             {currentQuestion.description}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RadioGroup
-            value={answers[currentQuestion.id] || ''}
-            onValueChange={handleAnswerChange}
-            className="space-y-4"
-          >
-            {currentQuestion.options.map((option) => (
-              <div key={option.value} className="relative">
-                <div className="flex items-start space-x-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all cursor-pointer">
-                  <RadioGroupItem 
-                    value={option.value} 
-                    id={option.value}
-                    className="mt-1"
-                  />
-                  <div className="flex-1 cursor-pointer" onClick={() => handleAnswerChange(option.value)}>
-                    <Label 
+          </p>
+        </div>
+
+        <RadioGroup
+          value={answers[currentQuestion.id] || ''}
+          onValueChange={handleAnswerChange}
+          className="grid gap-4"
+        >
+          {currentQuestion.options.map((option) => {
+            const isSelected = answers[currentQuestion.id] === option.value
+            return (
+              <div
+                key={option.value}
+                onClick={() => handleAnswerChange(option.value)}
+                className={`group relative p-5 rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden ${isSelected
+                  ? 'bg-blue-500/10 border-blue-500/50 shadow-lg shadow-blue-500/10'
+                  : 'bg-white/[0.03] border-white/5 hover:border-white/10 hover:bg-white/[0.05]'
+                  }`}
+              >
+                {/* Selection indicator background pulse */}
+                {isSelected && (
+                  <div className="absolute inset-0 bg-blue-500/5 animate-pulse" />
+                )}
+
+                <div className="flex items-start gap-4 relative z-10">
+                  <div className={`mt-1 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${isSelected ? 'border-blue-400 bg-blue-400' : 'border-zinc-700 group-hover:border-zinc-500'
+                    }`}>
+                    {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                  </div>
+
+                  <div className="flex-1">
+                    <Label
                       htmlFor={option.value}
-                      className="text-base font-medium cursor-pointer"
+                      className={`text-lg font-bold tracking-tight cursor-pointer transition-colors duration-300 ${isSelected ? 'text-white' : 'text-zinc-300'
+                        }`}
                     >
                       {option.label}
                     </Label>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className={`text-sm mt-1 leading-relaxed transition-colors duration-300 ${isSelected ? 'text-blue-200/70' : 'text-zinc-500'
+                      }`}>
                       {option.description}
                     </p>
                   </div>
                 </div>
               </div>
-            ))}
-          </RadioGroup>
-        </CardContent>
-      </Card>
+            )
+          })}
+        </RadioGroup>
+      </div>
 
       {/* Navigation */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-6 mt-12 bg-white/[0.02] p-4 rounded-2xl border border-white/5 backdrop-blur-sm">
         <Button
-          variant="outline"
+          variant="ghost"
           onClick={handlePrevious}
           disabled={currentQuestionIndex === 0}
-          className="flex items-center gap-2"
+          className="w-full sm:w-auto text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl px-6 h-12 font-semibold transition-all"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-5 h-5 mr-1" />
           Previous
         </Button>
 
-        <div className="flex gap-2">
+        <div className="hidden sm:flex gap-1.5 px-3 py-1.5 bg-black/20 rounded-full border border-white/5">
           {questions.map((_, index) => (
             <div
               key={index}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                index < currentQuestionIndex
-                  ? 'bg-green-500'
-                  : index === currentQuestionIndex
-                  ? 'bg-blue-500'
-                  : 'bg-gray-300 dark:bg-gray-600'
-              }`}
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === currentQuestionIndex
+                ? 'bg-blue-500 w-4'
+                : index < currentQuestionIndex
+                  ? 'bg-blue-500/40'
+                  : 'bg-zinc-700'
+                }`}
             />
           ))}
         </div>
@@ -330,20 +366,20 @@ export function SkillAssessment({ onComplete }: SkillAssessmentProps) {
         <Button
           onClick={handleNext}
           disabled={!canProceed || isSubmitting}
-          className="flex items-center gap-2"
+          className="w-full sm:w-auto h-12 px-10 bg-white text-black hover:bg-zinc-200 rounded-xl font-bold tracking-tight shadow-xl shadow-white/5 transition-all active:scale-[0.98] disabled:opacity-50"
         >
           {isSubmitting ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Processing...
-            </>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              <span>Processing</span>
+            </div>
           ) : isLastQuestion ? (
-            'Complete Assessment'
+            'Complete Strategy'
           ) : (
-            <>
-              Next
-              <ChevronRight className="w-4 h-4" />
-            </>
+            <span className="flex items-center gap-1">
+              Next Step
+              <ChevronRight className="w-5 h-5" />
+            </span>
           )}
         </Button>
       </div>

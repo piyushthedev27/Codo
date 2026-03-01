@@ -5,32 +5,17 @@ import { useUser } from '@clerk/nextjs'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Progress as _Progress } from '@/components/ui/progress'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Badge as _Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import '@/styles/dashboard-animations.css'
 import { Avatar } from '@/components/shared/Avatar'
 import {
   Target,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Zap,
   Users,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  TrendingUp,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Calendar,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Award,
   BookOpen,
   AlertCircle,
   Clock,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Star,
   Trophy,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ArrowRight,
   ChevronRight,
   Sparkles
 } from 'lucide-react'
@@ -39,8 +24,7 @@ import { generateEnhancedStats } from '@/lib/utils/stats-calculations'
 import { DashboardLoadingSkeleton, SkeletonCard } from '@/components/ui/loading'
 import { DashboardSyncManager } from '@/lib/realtime/dashboard-sync'
 import { createEnhancedActivity, type EnhancedActivity as UIActivity } from '@/lib/activities/activity-tracker'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { DashboardData, RecommendedLesson as _RecommendedLesson } from '@/types/database'
+import type { DashboardData } from '@/types/database'
 
 // Lazy load dashboard components for better performance
 const HeroWelcomeSection = dynamic(() => import('./components/HeroWelcomeSection').then(mod => ({ default: mod.HeroWelcomeSection })), {
@@ -108,15 +92,7 @@ export default function DashboardPage() {
       onActivityUpdate: (activity) => {
         setDashboardData(prev => {
           if (!prev) return prev
-          // The database returns a generic activity, we transform it
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const _enhanced = createEnhancedActivity({
-            ...activity,
-            activity_type: activity.activity_type || 'lesson'
-          })
-
-          // We need to convert it back to the database format if we're storing it in recentActivities
-          // or just update how we use it. For simplicity, we'll just push it.
+          // Push the raw activity directly to recentActivities
           return {
             ...prev,
             recentActivities: [activity, ...(prev.recentActivities || [])].slice(0, 10)
@@ -188,8 +164,7 @@ export default function DashboardPage() {
     profile,
     aiPeers,
     knowledgeGraph,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    weeklyProgress,
+    weeklyProgress: _weeklyProgress, // tracked but not rendered directly
     upcomingMilestones,
     currentStreak,
     recentActivities,
@@ -199,8 +174,6 @@ export default function DashboardPage() {
   // Calculate knowledge graph stats
   const totalNodes = knowledgeGraph.length
   const completedNodes = knowledgeGraph.filter(node => node.status === 'mastered').length
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _inProgressNodes = knowledgeGraph.filter(node => node.status === 'in_progress').length
   const progressPercentage = totalNodes > 0 ? (completedNodes / totalNodes) * 100 : 0
 
   // Generate enhanced stats using the calculation utilities

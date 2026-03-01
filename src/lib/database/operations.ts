@@ -497,6 +497,7 @@ export async function initializeUserData(clerkUserId: string, userData: {
       current_xp: 0,
       current_level: 1,
       learning_streak: 0,
+      achievements_count: 0,
       voice_coaching_enabled: userData.voiceCoachingEnabled ?? true,
       preferred_learning_style: userData.preferredLearningStyle || 'mixed',
       timezone: 'UTC'

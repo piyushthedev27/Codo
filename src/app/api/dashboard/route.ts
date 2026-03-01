@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import {
   userProfileOperations,
   aiPeerOperations,
@@ -114,8 +114,7 @@ function getTimeTrendText(trend: string, current: number, previous: number): str
 // AI Peer Status and Messages Retrieval (Requirement 23.2)
 // ============================================================================
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function fetchAIPeerStatus(userId: string, aiPeers: any[]) {
+async function fetchAIPeerStatus(userId: string) {
   try {
     return await userAIPeersOperations.getByUserId(userId)
   } catch (error) {
@@ -133,25 +132,7 @@ async function fetchRecentMessages(userId: string, limit: number = 10) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getSpecialtyForPeer(peerName: string): string {
-  const specialties: Record<string, string> = {
-    'Sarah': 'React Hooks & State Management',
-    'Alex': 'Algorithms & Data Structures',
-    'Jordan': 'System Design & Architecture'
-  }
-  return specialties[peerName] || 'General Programming'
-}
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getStarsForSkillLevel(skillLevel: string): number {
-  const stars: Record<string, number> = {
-    'beginner': 2,
-    'intermediate': 3,
-    'advanced': 5
-  }
-  return stars[skillLevel] || 3
-}
 
 // ============================================================================
 // Learning Path and Milestone Data (Requirement 23.3)
@@ -166,13 +147,23 @@ async function fetchLearningPathData(userId: string) {
   }
 }
 
-async function fetchMilestoneData(userId: string, trackId?: string) {
+async function fetchMilestoneData(profileCurrentXp: number, profileCurrentLevel: number, trackId: string) {
   try {
-    if (!trackId) return null
-    // Fetch real milestone data if needed, or return null to signify no active milestone
-    return null
+    const xpPerLevel = 1000
+    const xpInCurrentLevel = profileCurrentXp % xpPerLevel
+    const xpNeeded = xpPerLevel - xpInCurrentLevel
+    // Return a milestone object shaped from the profile's XP/level progression
+    return {
+      type: 'level_up',
+      title: `Reach Level ${profileCurrentLevel + 1}`,
+      description: 'Keep completing lessons to level up your profile',
+      xpRequired: xpPerLevel,
+      xpCurrent: xpInCurrentLevel,
+      xpNeeded,
+      trackId
+    }
   } catch (error) {
-    console.error('Error fetching milestone data:', error)
+    console.error('Error computing milestone data:', error)
     return null
   }
 }
@@ -181,7 +172,7 @@ async function fetchMilestoneData(userId: string, trackId?: string) {
 // Lesson Recommendation Generation (Requirement 23.4)
 // ============================================================================
 
-async function fetchLessonRecommendations(userId: string, aiPeers: any[], limit: number = 3) {
+async function fetchLessonRecommendations(userId: string, limit: number = 3) {
   try {
     return await lessonRecommendationsOperations.getActiveByUserId(userId, limit)
   } catch (error) {
@@ -211,7 +202,6 @@ async function fetchEnhancedActivities(userId: string, limit: number = 10) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(_request: NextRequest) {
   try {
     // First test database connection
@@ -249,14 +239,28 @@ export async function GET(_request: NextRequest) {
     try {
       profile = await userProfileOperations.getByClerkId(userId)
 
-      // If profile doesn't exist, try to create it
+      // If profile doesn't exist, try to create it using real Clerk user data
       if (!profile) {
         console.log('Profile not found, attempting to create for user:', userId)
 
+        // Fetch real user data from Clerk instead of using hardcoded placeholders
+        let realEmail = ''
+        let realFirstName = ''
+        let realLastName = ''
+        try {
+          const client = await clerkClient()
+          const clerkUser = await client.users.getUser(userId)
+          realEmail = clerkUser.emailAddresses?.[0]?.emailAddress ?? ''
+          realFirstName = clerkUser.firstName ?? ''
+          realLastName = clerkUser.lastName ?? ''
+        } catch (clerkErr) {
+          console.error('Failed to fetch Clerk user data:', clerkErr)
+        }
+
         const initResult = await initializeUserData(userId, {
-          email: 'user@example.com',
-          firstName: 'User',
-          lastName: 'Name',
+          email: realEmail,
+          firstName: realFirstName,
+          lastName: realLastName,
           skillLevel: 'beginner',
           learningGoal: 'learning',
           primaryDomain: 'web-development',
@@ -306,15 +310,17 @@ export async function GET(_request: NextRequest) {
     const enhancedStatsData = await fetchEnhancedStats(profile.id, profile, knowledgeGraph)
 
     // Fetch AI peer status and messages (Requirement 23.2)
-    const peerStatuses = await fetchAIPeerStatus(profile.id, aiPeers)
+    const peerStatuses = await fetchAIPeerStatus(profile.id)
     const recentMessages = await fetchRecentMessages(profile.id, 10)
 
     // Fetch learning path and milestone data (Requirement 23.3)
     const currentTrack = await fetchLearningPathData(profile.id)
-    const nextMilestone = currentTrack ? await fetchMilestoneData(profile.id, currentTrack.track_id) : null
+    const nextMilestone = currentTrack
+      ? fetchMilestoneData(profile.current_xp, profile.current_level, currentTrack.track_id)
+      : null
 
     // Fetch lesson recommendations (Requirement 23.4)
-    const recommendations = await fetchLessonRecommendations(profile.id, aiPeers, 3)
+    const recommendations = await fetchLessonRecommendations(profile.id, 3)
 
     // Fetch enhanced activities (Requirement 23.5)
     const enhancedActivitiesData = await fetchEnhancedActivities(profile.id, 10)
@@ -340,17 +346,29 @@ export async function GET(_request: NextRequest) {
     }))
 
     // Transform recommendations to dashboard format
-    const recommendedLessons = recommendations.map(rec => ({
-      id: rec.id,
-      title: rec.title,
-      duration: `${Math.floor(rec.duration_minutes / 60)} hours`,
-      difficulty: rec.difficulty_level,
-      description: rec.description || '',
-      recommendedBy: rec.recommended_by_peer_id ?
-        aiPeers.find(p => p.id === rec.recommended_by_peer_id)?.name.toLowerCase() || 'sarah' :
-        'sarah',
-      thumbnail: rec.thumbnail_url || '/lessons/default.png'
-    }))
+    const recommendedLessons = recommendations.map(rec => {
+      // Format duration correctly: show minutes for < 60, hours+minutes for >= 60
+      const mins = rec.duration_minutes
+      let durationLabel: string
+      if (mins < 60) {
+        durationLabel = `${mins} min`
+      } else {
+        const h = Math.floor(mins / 60)
+        const m = mins % 60
+        durationLabel = m > 0 ? `${h}h ${m}m` : `${h}h`
+      }
+      return {
+        id: rec.id,
+        title: rec.title,
+        duration: durationLabel,
+        difficulty: rec.difficulty_level,
+        description: rec.description || '',
+        recommendedBy: rec.recommended_by_peer_id
+          ? aiPeers.find(p => p.id === rec.recommended_by_peer_id)?.name.toLowerCase() || 'sarah'
+          : 'sarah',
+        thumbnail: rec.thumbnail_url || '/lessons/default.png'
+      }
+    })
 
     // Enhanced stats for new dashboard
     const enhancedStats = enhancedStatsData || generateEnhancedStats(

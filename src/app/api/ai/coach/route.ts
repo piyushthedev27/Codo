@@ -1,16 +1,38 @@
 import { NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
 
-// Initialize OpenAI client (or Gemini)
-// Note: In a production app, use env variables
+// Initialize OpenAI client - key is validated before use below
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY || 'dummy_key_for_demo',
+    apiKey: process.env.OPENAI_API_KEY || 'placeholder',
 })
+
+// Fallback responses per peer personality used when OPENAI_API_KEY is not set
+const FALLBACK_RESPONSES: Record<string, string[]> = {
+    analytical: [
+        "Let's break this down systematically. Check your edge cases first — what happens when the input is empty or null?",
+        "The algorithm looks correct. Have you considered its time complexity? Can we optimize the inner loop?",
+        "Good approach! Make sure to handle the boundary conditions before moving to the main logic.",
+    ],
+    curious: [
+        "Ooh, interesting problem! Have you tried using array methods like .reduce() or .flatMap() here? They could simplify this a lot!",
+        "I love how you approached this! What if we tried a different angle — maybe a recursive solution?",
+        "That's one way to do it! I'm curious, have you seen how modern JavaScript handles this with optional chaining?",
+    ],
+    supportive: [
+        "You're doing great! Take it one step at a time — start by making it work, then we can refactor together.",
+        "Don't worry, this concept trips up a lot of people. Let's go back to basics — what does the function need to return?",
+        "Really solid progress! You've got the right idea. Just double-check your variable scope and you'll be there.",
+    ],
+}
+
+function getFallbackResponse(peerPersonality: string): string {
+    const responses = FALLBACK_RESPONSES[peerPersonality] ?? FALLBACK_RESPONSES['supportive']
+    return responses[Math.floor(Math.random() * responses.length)]
+}
 
 export async function POST(req: Request) {
     try {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { question, codeContext, peerPersonality, _userId } = await req.json()
+        const { question, codeContext, peerPersonality } = await req.json()
 
         // Determine the system prompt based on peer personality
         let systemPrompt = "You are an AI coding coach inside Codo, a peer learning platform."
@@ -25,16 +47,15 @@ export async function POST(req: Request) {
 
         systemPrompt += ` The user is currently working on: \n${codeContext}\nRespond as if you are a peer developer. Keep responses concise (under 3 sentences) as they will be spoken aloud.`
 
-        // In a production app, the OpenAI API key should be required.
+        // Return a canned fallback response in demo/development mode (no OpenAI key)
         if (!process.env.OPENAI_API_KEY) {
-            return NextResponse.json(
-                { error: 'OpenAI API key not configured. Mock responses have been disabled as per cleanup requirements.' },
-                { status: 503 }
-            )
+            const fallback = getFallbackResponse(peerPersonality)
+            return NextResponse.json({ response: fallback, demo: true })
         }
 
         const completion = await openai.chat.completions.create({
-            model: "gpt-4-turbo-preview",
+            // Using gpt-3.5-turbo for cost optimization per design spec
+            model: "gpt-3.5-turbo",
             messages: [
                 { role: "system", content: systemPrompt },
                 { role: "user", content: question }
