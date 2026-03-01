@@ -17,9 +17,17 @@ export const SPEECH_CONFIG = {
 
 // Check browser support for Speech APIs
 export function checkSpeechSupport() {
+  if (typeof window === 'undefined') {
+    return {
+      recognition: false,
+      synthesis: false,
+      supported: false,
+    }
+  }
+
   const hasRecognition = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window
   const hasSynthesis = 'speechSynthesis' in window
-  
+
   return {
     recognition: hasRecognition,
     synthesis: hasSynthesis,
@@ -35,9 +43,9 @@ export function checkNetworkConnectivity(): boolean {
 
 // Get available voices
 export function getAvailableVoices(): SpeechSynthesisVoice[] {
-  if (!('speechSynthesis' in window)) return []
-  
-  return speechSynthesis.getVoices().filter(voice => 
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return []
+
+  return speechSynthesis.getVoices().filter(voice =>
     voice.lang.startsWith('en')
   )
 }

@@ -145,7 +145,7 @@ export class TouchOptimizer {
       // Detect tap or double tap
       if (duration < this.config.tapDelay) {
         const timeSinceLastTap = endTime - this.lastTapTime
-        
+
         if (timeSinceLastTap < this.config.doubleTapDelay && this.tapCount === 1) {
           // Double tap
           this.tapCount = 0
@@ -161,7 +161,7 @@ export class TouchOptimizer {
           // Single tap (with delay to check for double tap)
           this.tapCount = 1
           this.lastTapTime = endTime
-          
+
           setTimeout(() => {
             if (this.tapCount === 1) {
               callbacks.onTap?.({
@@ -215,12 +215,12 @@ export class TouchOptimizer {
 
     // Get current dimensions
     const rect = element.getBoundingClientRect()
-    
+
     // Add padding if touch target is too small
     if (rect.width < minTouchTarget || rect.height < minTouchTarget) {
       const paddingX = Math.max(0, (minTouchTarget - rect.width) / 2)
       const paddingY = Math.max(0, (minTouchTarget - rect.height) / 2)
-      
+
       element.style.padding = `${paddingY}px ${paddingX}px`
       element.style.minWidth = `${minTouchTarget}px`
       element.style.minHeight = `${minTouchTarget}px`
@@ -228,11 +228,11 @@ export class TouchOptimizer {
 
     // Ensure proper cursor for touch devices
     element.style.cursor = 'pointer'
-    
+
     // Add touch-friendly styling
     element.style.userSelect = 'none'
-    ;(element.style as any).webkitUserSelect = 'none'
-    ;(element.style as any).webkitTouchCallout = 'none'
+      ; (element.style as any).webkitUserSelect = 'none'
+      ; (element.style as any).webkitTouchCallout = 'none'
   }
 
   /**
@@ -241,12 +241,12 @@ export class TouchOptimizer {
   private addTouchFeedback(element: HTMLElement, x: number, y: number): void {
     element.style.transform = 'scale(0.95)'
     element.style.transition = 'transform 0.1s ease-out'
-    
+
     // Add ripple effect
     const ripple = document.createElement('div')
     const rect = element.getBoundingClientRect()
     const size = Math.max(rect.width, rect.height)
-    
+
     ripple.style.position = 'absolute'
     ripple.style.borderRadius = '50%'
     ripple.style.background = 'rgba(255, 255, 255, 0.3)'
@@ -258,11 +258,11 @@ export class TouchOptimizer {
     ripple.style.height = `${size}px`
     ripple.style.pointerEvents = 'none'
     ripple.style.zIndex = '1000'
-    
+
     element.style.position = 'relative'
     element.style.overflow = 'hidden'
     element.appendChild(ripple)
-    
+
     // Remove ripple after animation
     setTimeout(() => {
       if (ripple.parentNode) {
@@ -391,7 +391,7 @@ export const TOUCH_OPTIMIZATION_CSS = `
  */
 export function isMobileDevice(): boolean {
   if (typeof window === 'undefined') return false
-  
+
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
     navigator.userAgent
   ) || window.innerWidth < 768
@@ -402,7 +402,7 @@ export function isMobileDevice(): boolean {
  */
 export function hasTouchSupport(): boolean {
   if (typeof window === 'undefined') return false
-  
+
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0
 }
 
@@ -422,7 +422,7 @@ export function preventZoom(element: HTMLElement): void {
  * Add haptic feedback (if supported)
  */
 export function addHapticFeedback(type: 'light' | 'medium' | 'heavy' = 'light'): void {
-  if ('vibrate' in navigator) {
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
     const patterns = {
       light: [10],
       medium: [20],

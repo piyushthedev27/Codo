@@ -47,9 +47,11 @@ export class MobileVoiceOptimizer {
       ...config
     }
 
-    this.initializeCapabilities()
-    this.setupNetworkMonitoring()
-    this.setupBatteryMonitoring()
+    if (typeof window !== 'undefined') {
+      this.initializeCapabilities()
+      this.setupNetworkMonitoring()
+      this.setupBatteryMonitoring()
+    }
   }
 
   /**
@@ -517,15 +519,17 @@ export class MobileVoiceOptimizer {
  * React hook for mobile voice optimization
  */
 export function useMobileVoice(config?: MobileVoiceConfig) {
-  const optimizer = new MobileVoiceOptimizer(config)
+  const optimizer = typeof window !== 'undefined' ? new MobileVoiceOptimizer(config) : null
+
+  const noop = async () => ({}) as any
 
   return {
-    getCapabilities: optimizer.getCapabilities.bind(optimizer),
-    startVoiceRecognition: optimizer.startVoiceRecognition.bind(optimizer),
-    stopVoiceRecognition: optimizer.stopVoiceRecognition.bind(optimizer),
-    speakText: optimizer.speakText.bind(optimizer),
-    testVoiceFeatures: optimizer.testVoiceFeatures.bind(optimizer),
-    getMobileVoiceRecommendations: optimizer.getMobileVoiceRecommendations.bind(optimizer)
+    getCapabilities: optimizer ? optimizer.getCapabilities.bind(optimizer) : noop,
+    startVoiceRecognition: optimizer ? optimizer.startVoiceRecognition.bind(optimizer) : noop,
+    stopVoiceRecognition: optimizer ? optimizer.stopVoiceRecognition.bind(optimizer) : () => { },
+    speakText: optimizer ? optimizer.speakText.bind(optimizer) : noop,
+    testVoiceFeatures: optimizer ? optimizer.testVoiceFeatures.bind(optimizer) : noop,
+    getMobileVoiceRecommendations: optimizer ? optimizer.getMobileVoiceRecommendations.bind(optimizer) : () => ({ recognition: [], synthesis: [], general: [] })
   }
 }
 
@@ -538,6 +542,15 @@ export function getMobileVoiceSupport(): {
   continuous: boolean
   offline: boolean
 } {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return {
+      recognition: false,
+      synthesis: false,
+      continuous: false,
+      offline: false
+    }
+  }
+
   const isWebKit = /webkit/i.test(navigator.userAgent)
   const isChrome = /chrome/i.test(navigator.userAgent)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -546,7 +559,7 @@ export function getMobileVoiceSupport(): {
   const _isFirefox = /firefox/i.test(navigator.userAgent)
 
   return {
-    recognition: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
+    recognition: !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition),
     synthesis: !!window.speechSynthesis,
     continuous: isChrome || isWebKit, // Chrome and WebKit support continuous recognition
     offline: false // Most mobile browsers require network for speech recognition

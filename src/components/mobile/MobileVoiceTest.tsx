@@ -13,14 +13,14 @@ import { Card, CardContent as _CardContent, CardDescription, CardHeader, CardTit
 import { Button as _Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { 
-  Mic, 
+import {
+  Mic,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  MicOff as _MicOff, 
-  Volume2, 
-  VolumeX, 
-  CheckCircle, 
-  XCircle, 
+  MicOff as _MicOff,
+  Volume2,
+  VolumeX,
+  CheckCircle,
+  XCircle,
   AlertTriangle,
   Smartphone,
   Wifi,
@@ -192,11 +192,11 @@ export function MobileVoiceTest() {
     const support = getMobileVoiceSupport()
     const hasRecognition = support.recognition
     const hasSynthesis = support.synthesis
-    
+
     if (hasRecognition && hasSynthesis) {
       updateTestResult('Browser Support Detection', 'passed', 'Full voice support detected')
     } else if (hasRecognition || hasSynthesis) {
-      updateTestResult('Browser Support Detection', 'passed', 'Partial voice support detected', 
+      updateTestResult('Browser Support Detection', 'passed', 'Partial voice support detected',
         `Recognition: ${hasRecognition}, Synthesis: ${hasSynthesis}`)
     } else {
       updateTestResult('Browser Support Detection', 'failed', 'No voice support detected')
@@ -220,7 +220,7 @@ export function MobileVoiceTest() {
     try {
       const testResults = await testVoiceFeatures()
       if (testResults.synthesis) {
-        updateTestResult('Speech Synthesis API', 'passed', 
+        updateTestResult('Speech Synthesis API', 'passed',
           `Speech synthesis available with ${testResults.voiceCount} voices`)
       } else {
         updateTestResult('Speech Synthesis API', 'failed', 'Speech synthesis not available')
@@ -247,11 +247,11 @@ export function MobileVoiceTest() {
     try {
       const capabilities = await getCapabilities()
       const voiceCount = capabilities.voiceList.length
-      
+
       if (voiceCount > 0) {
-        updateTestResult('Voice List Availability', 'passed', 
-          `${voiceCount} voices available`, 
-          capabilities.voiceList.map(v => `${v.name} (${v.lang})`).join(', '))
+        updateTestResult('Voice List Availability', 'passed',
+          `${voiceCount} voices available`,
+          capabilities.voiceList.map((v: SpeechSynthesisVoice) => `${v.name} (${v.lang})`).join(', '))
       } else {
         updateTestResult('Voice List Availability', 'failed', 'No voices available')
       }
@@ -264,7 +264,7 @@ export function MobileVoiceTest() {
     try {
       if ('permissions' in navigator) {
         const permission = await navigator.permissions.query({ name: 'microphone' as PermissionName })
-        updateTestResult('Microphone Permissions', 'passed', 
+        updateTestResult('Microphone Permissions', 'passed',
           `Permission status: ${permission.state}`)
       } else {
         updateTestResult('Microphone Permissions', 'passed', 'Permissions API not available')
@@ -277,9 +277,9 @@ export function MobileVoiceTest() {
   const testNetworkConnectivity = async () => {
     const isOnline = navigator.onLine
     const connectionInfo = deviceInfo?.connection
-    
+
     if (isOnline) {
-      const message = connectionInfo 
+      const message = connectionInfo
         ? `Online (${connectionInfo.effectiveType}, ${connectionInfo.downlink}Mbps)`
         : 'Online'
       updateTestResult('Network Connectivity', 'passed', message)
@@ -290,13 +290,13 @@ export function MobileVoiceTest() {
 
   const testBatteryOptimization = async () => {
     const batteryInfo = deviceInfo?.battery
-    
+
     if (batteryInfo) {
       const level = batteryInfo.level
       const charging = batteryInfo.charging
       const status = level > 20 ? 'passed' : 'failed'
       const message = `Battery: ${level}% ${charging ? '(charging)' : ''}`
-      
+
       updateTestResult('Battery Optimization', status, message)
     } else {
       updateTestResult('Battery Optimization', 'passed', 'Battery API not available')
@@ -306,9 +306,9 @@ export function MobileVoiceTest() {
   const testTouchIntegration = async () => {
     const maxTouchPoints = navigator.maxTouchPoints
     const hasTouchSupport = 'ontouchstart' in window
-    
+
     if (hasTouchSupport && maxTouchPoints > 0) {
-      updateTestResult('Touch Integration', 'passed', 
+      updateTestResult('Touch Integration', 'passed',
         `Touch supported (${maxTouchPoints} points)`)
     } else {
       updateTestResult('Touch Integration', 'failed', 'Touch not supported')
@@ -321,7 +321,7 @@ export function MobileVoiceTest() {
       // This should handle gracefully if voice is not supported
       await speakText('Test', { rate: 1.0 })
       updateTestResult('Error Handling', 'passed', 'Error handling working correctly')
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       // This is actually expected behavior - graceful error handling
       updateTestResult('Error Handling', 'passed', 'Graceful error handling confirmed')
@@ -636,9 +636,9 @@ export function MobileVoiceTest() {
                 ...recommendations.synthesis,
                 ...recommendations.general
               ]
-              
+
               return allRecommendations.length > 0 ? (
-                allRecommendations.map((rec, index) => (
+                allRecommendations.map((rec: string, index: number) => (
                   <div key={index} className="flex items-start gap-2 text-sm">
                     <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
                     <span>{rec}</span>
