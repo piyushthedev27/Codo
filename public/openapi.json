@@ -1,0 +1,332 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "CODO API Reference",
+        "description": "API documentation for CODO backend services.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000/api",
+            "description": "Local Development Server"
+        },
+        {
+            "url": "https://codo.vercel.app/api",
+            "description": "Production Server"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "jwt": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Firebase ID Token"
+            }
+        }
+    },
+    "security": [
+        {
+            "jwt": []
+        }
+    ],
+    "paths": {
+        "/auth/register": {
+            "post": {
+                "summary": "Register a new user",
+                "security": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "StroNgP@ssw0rd!"
+                                    },
+                                    "username": {
+                                        "type": "string",
+                                        "example": "codeninja"
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "username"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or username taken"
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "summary": "Clear session cookie",
+                "responses": {
+                    "200": {
+                        "description": "Logged out"
+                    }
+                }
+            }
+        },
+        "/users/{userId}": {
+            "get": {
+                "summary": "Get public user profile",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User profile data"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update user profile",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "displayName": {
+                                        "type": "string"
+                                    },
+                                    "bio": {
+                                        "type": "string"
+                                    },
+                                    "avatarUrl": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/challenges": {
+            "get": {
+                "summary": "List coding challenges",
+                "parameters": [
+                    {
+                        "name": "difficulty",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of challenges"
+                    }
+                }
+            }
+        },
+        "/challenges/{id}": {
+            "get": {
+                "summary": "Get challenge details",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Challenge data"
+                    }
+                }
+            }
+        },
+        "/submissions": {
+            "post": {
+                "summary": "Submit code for a challenge",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "challengeId": {
+                                        "type": "string"
+                                    },
+                                    "language": {
+                                        "type": "string",
+                                        "enum": [
+                                            "javascript",
+                                            "python",
+                                            "java",
+                                            "cpp"
+                                        ]
+                                    },
+                                    "code": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "challengeId",
+                                    "language",
+                                    "code"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Execution result"
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "429": {
+                        "description": "Rate limited"
+                    }
+                }
+            }
+        },
+        "/leaderboards/global": {
+            "get": {
+                "summary": "Get global leaderboard",
+                "responses": {
+                    "200": {
+                        "description": "Top 100 users"
+                    }
+                }
+            }
+        },
+        "/guilds": {
+            "post": {
+                "summary": "Create a new guild",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Code Ninjas"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "isPublic": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "description"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Guild created"
+                    }
+                }
+            }
+        },
+        "/notifications": {
+            "get": {
+                "summary": "Get all notifications for current user",
+                "responses": {
+                    "200": {
+                        "description": "List of notifications"
+                    }
+                }
+            }
+        },
+        "/notifications/unread": {
+            "get": {
+                "summary": "Get unread notifications count/list",
+                "responses": {
+                    "200": {
+                        "description": "Unread notifications"
+                    }
+                }
+            }
+        }
+    }
+}

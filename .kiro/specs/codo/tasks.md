@@ -1,594 +1,707 @@
-# Task List: Codo AI-Powered Learning Platform
+# Implementation Plan: CODO Backend
 
 ## Overview
-Build an AI-powered learning platform with 8 unique features including a professional landing page that differentiates it from existing platforms.
-
-**Key Features:**
-1. 🌟 **Professional Landing Page** - First impression for judges and users
-2. 🤖 **Synthetic Peer Learning** - AI study buddies with distinct personalities
-3. 🎤 **AI Voice Coaching** - Real-time voice pair programming coach
-4. 🧠 **Interactive Knowledge Graph** - Visual skill progression with D3.js
-5. 🎯 **Mistake-Driven Learning** - Adaptive paths based on actual errors
-6. 🤝 **Collaborative Code Canvas** - Real-time coding with AI peers
-7. 📊 **Live Learning Insights** - Real-time pattern recognition
-8. 🎮 **Code Duel Mode** - Competitive coding challenges
-
-**Target Demo Flow**: Landing Page → Sign Up → Skill Assessment → Knowledge Graph → AI Voice Lesson → Synthetic Peer Interaction → Collaborative Coding → Live Insights
-
-## Phase 1: Project Setup & Landing Page
-
-### 1. Landing Page Development (CRITICAL FOR HACKATHONS)
-- [x] 1. Create professional landing page at root route (app/page.tsx)
-- [x] 1.2 Build hero section with compelling headline and animated knowledge graph preview
-- [x] 1.3 Add problem statement section highlighting why traditional learning fails
-- [x] 1.4 Create features showcase grid displaying all 8 unique features with icons
-- [x] 1.5 Build "How It Works" section with 3-step process
-- [x] 1.6 Add social proof section with demo metrics and testimonials
-- [x] 1.7 Create final CTA section with prominent sign-up button
-- [x] 1.8 Implement responsive design and dark mode toggle
-- [x] 1.9 Optimize for sub-2-second load time with lazy loading
-- [x] 1.10 Test landing page on mobile, tablet, and desktop
-
-### 2. Initialize Next.js Project
-- [x] 2. Create Next.js 14 project with TypeScript
-- [x] 2.2 Install required dependencies (ShadCN/UI, Tailwind, Framer Motion, D3.js)
-- [x] 2.3 Set up basic folder structure and routing
-- [x] 2.4 Configure environment variables for APIs
-
-### 3. Authentication Setup
-- [x] 3. Set up Clerk authentication
-- [x] 3.2 Create user registration and login pages
-- [x] 3.3 Add protected routes and middleware
-- [x] 3.4 Test authentication flow
-
-### 4. Database Setup
-- [x] 4. Set up Supabase database connection
-- [x] 4.2 Create user profiles table
-- [x] 4.3 Create lessons and challenges tables
-- [x] 4.4 Test database connection and basic operations
-
-## Phase 2: Core Features
-
-### 5. User Onboarding
-- [x] 5. Create skill assessment questionnaire (5 questions)
-- [x] 5.2 Build onboarding flow UI
-- [x] 5.3 Save user preferences to database
-- [x] 5.4 Create user dashboard with basic stats
-
-### 6. Knowledge Graph
-- [x] 6. Create D3.js knowledge graph component
-- [x] 6.2 Add node status indicators (completed, in-progress, locked)
-- [x] 6.3 Implement click handlers for nodes
-- [x] 6.4 Add smooth animations for state changes
-- [x] 6.5 Make graph responsive for mobile
-
-### 7. AI Peer System & 3D Avatar Integration
-- [x] 7. Create centralized avatar management system (src/lib/avatars.ts)
-- [x] 7.2 Move 3D avatars from src/image/ to public/images/avatars/ for proper Next.js serving
-- [x] 7.3 Create AI peer profile generation with 3D avatar URLs
-- [x] 7.4 Build peer interaction UI components with 3D avatars
-- [x] 7.5 Update all landing page components to use 3D avatars instead of letter fallbacks
-- [x] 7.6 Implement peer questions during lessons with avatar display
-- [x] 7.7 Add bonus XP for teaching peers with avatar animations
-- [x] 7.8 Create AIPeerShowcase component for landing page feature demonstration
-- [x] 7.9 Update onboarding PeerGeneration component with 3D avatars
-- [x] 7.10 Remove all letter fallbacks ("S", "A", "J") from AI peer components
-
-### 8. Voice Coaching
-- [x] 8. Integrate Web Speech API for voice recognition
-- [x] 8.2 Set up Speech Synthesis API for responses
-- [x] 8.3 Create voice coaching interface
-- [x] 8.4 Add voice hints for coding challenges
-- [x] 8.5 Implement fallback to text when voice fails
-
-### 9. Lesson System
-- [x] 9. Create lesson viewer component
-- [x] 9.2 Add OpenAI integration for lesson generation
-- [x] 9.3 Implement lesson progress tracking
-- [x] 9.4 Add code examples and interactive elements
-- [x] 9.5 Cache lessons for offline demo mode
-
-### 10. Collaborative Coding
-- [x] 10. Build code editor with Monaco Editor
-- [x] 10.2 Add cursor presence simulation
-- [x] 10.3 Create AI peer typing animations
-- [x] 10.4 Implement code comparison features
-- [x] 10.5 Add "spot the bug" interactions
-
-### 11. Mistake Analysis
-- [x] 11. Build error parsing system
-- [x] 11.2 Create mistake categorization
-- [x] 11.3 Generate micro-lessons for common errors
-- [x] 11.4 Track mistake patterns over time
-- [x] 11.5 Update learning path based on mistakes
-
-### 12. Live Insights
-- [x] 12. Create insights dashboard
-- [x] 12.2 Add pattern detection for learning behavior
-- [x] 12.3 Implement proactive recommendations
-- [x] 12.4 Create floating notification system
-- [x] 12.5 Add insight dismissal functionality
-
-### 13. Code Duel Mode
-- [x] 13. Build competitive coding interface
-- [x] 13.2 Create live leaderboard with AI competitors
-- [x] 13.3 Add timer and progress indicators
-- [x] 13.4 Implement victory celebrations
-- [x] 13.5 Test duel flow and scoring
-
-## Phase 3: Polish and Demo
-
-### 14. Performance Optimization
-- [x] 14. Add loading states for all components
-- [x] 14.2 Optimize bundle size and code splitting
-- [x] 14.3 Implement caching strategies
-- [x] 14.4 Test page load times under 2 seconds
-- [x] 14.5 Optimize animations for 60fps
-
-### 15. Mobile Responsiveness
-- [-] 15. Test all features on mobile devices
-- [x] 15.2 Optimize touch interactions
-- [x] 15.3 Adjust layouts for small screens
-- [ ] 15.4 Test voice features on mobile browsers
-
-### 16. Error Handling
-- [x] 16. Add graceful API failure handling
-- [x] 16.2 Create offline mode with cached content
-- [x] 16.3 Implement retry logic for failed requests
-- [x] 16.4 Add user-friendly error messages
-
-### 17. Demo Preparation
-- [ ] 17. Create demo user profiles
-- [ ] 17.2 Pre-generate demo lessons and content
-- [ ] 17.3 Build demo mode toggle
-- [ ] 17.4 Test complete demo flow
-- [ ] 17.5 Prepare backup content for API failures
-
-### 19. 3D Avatar Integration Across Platform
-- [ ] 19. Update dashboard PeerInteractions component with 3D avatars
-- [ ] 19.2 Update lesson SyntheticPeerChat component with 3D avatars
-- [ ] 19.3 Update collaborative coding CursorPresence component with 3D avatars
-- [ ] 19.4 Update code duel LiveLeaderboard component with 3D avatars
-- [ ] 19.5 Update HeroSection floating avatars to use 3D images
-- [ ] 19.6 Update HowItWorks component large and small avatars to use 3D images
-- [ ] 19.7 Update SocialProof component first 3 testimonial avatars to use Sarah, Alex, Jordan
-- [ ] 19.8 Update FinalCTA component trust signals to use 3D avatars for first 3 positions
-- [ ] 19.9 Create comprehensive avatar requirements documentation
-- [ ] 19.10 Verify no letter fallbacks remain for AI peers throughout platform
-
-### 20. Avatar System Architecture
-- [ ] 20. Create TypeScript interfaces for AI peer profiles with avatar URLs
-- [ ] 20.2 Implement avatar utility functions for consistent sizing and styling
-- [ ] 20.3 Add fallback system for avatar loading failures (show 3D image or error state)
-- [ ] 20.4 Create avatar component with proper accessibility (alt text, ARIA labels)
-- [ ] 20.5 Implement consistent circular cropping and ring styling across all avatar displays
-- [ ] 20.6 Add avatar preloading for better performance
-- [ ] 20.7 Create avatar animation system for peer interactions
-- [ ] 20.8 Test avatar display across all device sizes and browsers
-- [ ] 20.9 Optimize avatar file sizes for web performance
-- [ ] 20.10 Document avatar usage patterns and best practices
-
-### 21. Final Testing & Avatar Verification
-- [ ] 21. Test all 8 unique features work together
-- [ ] 21.2 Verify demo runs smoothly offline
-- [ ] 21.3 Test on multiple browsers and devices
-- [ ] 21.4 Fix any remaining bugs
-- [ ] 21.5 Prepare demo presentation
-- [ ] 21.6 Verify all 3D avatars display correctly across platform
-- [ ] 21.7 Test avatar loading performance and fallback systems
-- [ ] 21.8 Confirm no letter fallbacks remain for Sarah, Alex, Jordan
-- [ ] 21.9 Validate avatar accessibility compliance
-- [ ] 21.10 Test avatar animations and interactions
-
-## Phase 4: Dashboard Modernization Implementation
-
-### 22. Professional Navigation System Implementation
-- [x] 22. Create comprehensive navigation architecture (src/components/navigation/)
-  - Build SidebarNavigation component with vertical icon-based menu
-  - Implement TopNavigationBar with branding, notifications, and user profile
-  - Add navigation state management and active page highlighting
-  - Create responsive navigation with hamburger menu for mobile
-  - _Requirements: 22.1, 22.2_
-
-- [x] 22.2 Implement sidebar navigation component
-  - Create NavigationItem interface and navigation configuration
-  - Build sidebar with Dashboard, Knowledge Graph, Lessons, Code Challenges, AI Peers, Progress Analytics, and Settings
-  - Add hover effects, active states, and smooth transitions
-  - Implement collapsible sidebar for tablet and mobile devices
-  - _Requirements: 22.1_
-
-- [ ]* 22.3 Write property test for navigation completeness
-  - **Property 1: Navigation Component Completeness**
-  - **Validates: Requirements 22.1**
-
-- [x] 22.4 Build top navigation bar with notifications
-  - Create notification system with badge counts and dropdown
-  - Implement search functionality for global content discovery
-  - Add quick action buttons and user profile dropdown
-  - Build theme toggle and responsive top bar layout
-  - _Requirements: 22.2_
-
-- [ ]* 22.5 Write property test for notification system
-  - **Property 2: Notification System Functionality**
-  - **Validates: Requirements 22.2**
-
-### 23. Dashboard Layout and Hero Section Enhancement
-- [x] 23. Update dashboard page layout structure (src/app/(auth)/dashboard/page.tsx)
-  - Implement new grid layout with navigation, hero section, stats cards, and two-column content
-  - Add animated background gradient from blue to purple
-  - Ensure responsive design works on all device sizes
-  - Integrate with existing authentication and data fetching
-  - _Requirements: 21.1, 21.4, 22.6, 22.7_
-
-- [x] 23.2 Create HeroWelcomeSection component
-  - Build personalized greeting with user's name and wave emoji
-  - Integrate rotating AI peer motivational messages with 3D avatars
-  - Add current learning progress highlight with gradient progress bar
-  - Implement "Continue Learning" and "Talk to AI Peers" CTAs
-  - Create quick stats bar with streak (fire emoji), XP points, and achievements
-  - _Requirements: 21.1, 21.2, 21.3_
-
-- [ ]* 23.3 Write property test for hero section completeness
-  - **Property 1: Dashboard Component Completeness (Hero Section)**
-  - **Validates: Requirements 21.1, 21.2**
-
-- [x] 23.4 Implement animated background and visual effects
-  - Create CSS animations for gradient background transitions
-  - Add smooth progress bar animations with gradient fills
-  - Implement hover effects and micro-interactions
-  - Ensure animations maintain 60fps performance across devices
-  - _Requirements: 21.4, 22.4_
-
-- [ ]* 23.5 Write property test for layout structure consistency
-  - **Property 6: Layout Structure Consistency**
-  - **Validates: Requirements 22.6**
-
-### 24. Enhanced Stats Cards System Implementation
-- [x] 24. Create EnhancedStatsGrid component
-  - Replace basic 4 cards with enhanced metrics: Learning Progress, Current Streak, Skills Mastered, Coding Time
-  - Add colorful icons (BookOpen, Flame, Target, Clock), large focal numbers, supporting text for each card
-  - Implement trend indicators (up/down/stable arrows) with appropriate colors
-  - Include hover effects and smooth transitions for interactive feedback
-  - _Requirements: 21.5, 21.6_
-
-- [x] 24.2 Implement stats data calculation logic
-  - Create functions for learning progress percentage and trend calculation
-  - Add streak tracking with best streak comparison and motivational messages
-  - Implement skills mastered counting with recent skills display
-  - Calculate coding time metrics with daily averages and weekly comparisons
-  - _Requirements: 21.5, 21.6, 23.1_
-
-- [ ]* 24.3 Write property test for stats card completeness
-  - **Property 2: Dashboard Component Completeness (Stats Cards)**
-  - **Validates: Requirements 21.5, 21.6**
-
-- [ ]* 24.4 Write property test for API data consistency
-  - **Property 8: API Data Consistency**
-  - **Validates: Requirements 23.1**
-
-- [x] 24.5 Create responsive stats grid layout
-  - Implement 4-column grid for desktop, 2-column for tablet, 1-column for mobile
-  - Add proper spacing, alignment, and visual hierarchy
-  - Ensure cards maintain readability and functionality across all screen sizes
-  - Test touch interactions and hover states on mobile devices
-  - _Requirements: 22.3, 24.6_
-
-- [ ]* 24.6 Write property test for responsive design compatibility
-  - **Property 11: Responsive Design Compatibility**
-  - **Validates: Requirements 24.6**
-
-### 25. Enhanced AI Peers Section Implementation
-- [x] 25. Update PeerInteractions component for enhanced display
-  - Add "Your AI Learning Companions" title with "Manage Peers" link
-  - Implement 3 peer cards side-by-side layout with 3D avatars
-  - Add status indicators (online/coding/away/studying) with colored dots
-  - Display peer specialties and level with star ratings (1-5 stars)
-  - _Requirements: 21.7, 21.8_
-
-- [x] 25.2 Create enhanced peer interaction features
-  - Add "Chat Now" buttons with different colors per peer personality (pink/blue/green)
-  - Implement recent message previews at bottom of peer section
-  - Create hover animations with peer-colored glow effects
-  - Integrate with existing 3D avatar system for consistent display
-  - _Requirements: 21.9, 21.10, 24.4_
-
-- [ ]* 25.3 Write property test for peer card completeness
-  - **Property 3: Dashboard Component Completeness (Peer Cards)**
-  - **Validates: Requirements 21.8**
-
-- [ ]* 25.4 Write property test for avatar system integration
-  - **Property 9: Avatar System Integration**
-  - **Validates: Requirements 24.4**
-
-- [x] 25.5 Implement peer status management system
-  - Create realistic AI peer status simulation (online/coding/away/studying)
-  - Add peer specialty assignment based on user's learning focus
-  - Implement peer level calculation and star rating display
-  - Create peer activity messages and status updates
-  - _Requirements: 23.2_
-
-- [ ]* 25.6 Write property test for peer status functionality
-  - **Property 12: Peer Status Management**
-  - **Validates: Requirements 23.2**
-
-### 26. Learning Path Visualization Implementation
-- [x] 26. Create LearningPathSection component
-  - Build "Your Learning Journey" section with "View Full Path" link
-  - Display current track name with gradient progress bar
-  - List 5-6 lessons with status icons (✅ completed, 🔵 in progress, ⚪ locked)
-  - Show next milestone preview with reward and "Continue Current Lesson" CTA
-  - _Requirements: 21.11, 21.12, 21.13_
-
-- [x] 26.2 Implement learning path data integration
-  - Connect with existing lesson and progress tracking systems
-  - Add milestone calculation and reward system
-  - Create lesson status tracking and icon display logic
-  - Implement progress percentage calculations for tracks
-  - _Requirements: 21.12, 21.13, 23.3_
-
-- [ ]* 26.3 Write property test for learning path completeness
-  - **Property 4: Dashboard Component Completeness (Learning Path)**
-  - **Validates: Requirements 21.12**
-
-- [x] 26.4 Build milestone tracking and celebration system
-  - Create milestone definition and progress tracking
-  - Implement reward system (XP, badges, unlocked content)
-  - Add milestone completion celebrations and animations
-  - Build milestone preview with progress indicators
-  - _Requirements: 23.3_
-
-- [ ]* 26.5 Write unit tests for milestone system
-  - Test milestone progress calculations
-  - Test reward assignment and celebration triggers
-  - Test milestone preview display logic
-  - _Requirements: 21.13, 23.3_
-
-### 27. Recommended Lessons Section Implementation
-- [x] 27. Create RecommendedLessonsSection component
-  - Build "Recommended for You" section with "Explore More" link
-  - Display 3 AI-recommended lessons with thumbnails and metadata
-  - Show lesson titles, duration, difficulty, and descriptions
-  - Include which AI peer recommends each lesson with small avatar
-  - Add "Start Lesson" buttons with hover effects
-  - _Requirements: 21.16, 21.17, 21.18_
-
-- [x] 27.2 Implement lesson recommendation logic
-  - Create AI-powered lesson recommendation algorithm
-  - Connect recommendations to specific AI peer personalities
-  - Add lesson metadata and difficulty classification
-  - Implement recommendation scoring and ranking
-  - _Requirements: 21.17, 23.4_
-
-- [ ]* 27.3 Write property test for recommended lessons completeness
-  - **Property 5: Dashboard Component Completeness (Recommendations)**
-  - **Validates: Requirements 21.17**
-
-- [x] 27.4 Build recommendation engine backend
-  - Implement user behavior analysis for personalized recommendations
-  - Create collaborative filtering and content-based filtering
-  - Add peer recommendation assignment logic
-  - Build recommendation refresh and update mechanisms
-  - _Requirements: 23.4_
-
-- [ ]* 27.5 Write property test for recommendation engine
-  - **Property 13: Recommendation Engine Accuracy**
-  - **Validates: Requirements 23.4**
-
-### 28. Enhanced Recent Activity Feed Implementation
-- [x] 28. Update existing activity feed with enhancements
-  - Show completed lessons with AI peer involvement indicators
-  - Display achievements with celebration animations
-  - Add collaborative coding sessions to activity types
-  - Include XP earned per activity with visual emphasis
-  - _Requirements: 21.14_
-
-- [x] 28.2 Implement activity categorization and styling
-  - Use different background colors for different activity types
-  - Add activity type icons and visual differentiation
-  - Create activity grouping and sorting logic
-  - Implement XP tracking and display per activity
-  - _Requirements: 21.15, 23.5_
-
-- [ ]* 28.3 Write property test for activity feed enhancement
-  - **Property 14: Activity Feed Enhancement**
-  - **Validates: Requirements 21.14, 21.15**
-
-- [x] 28.4 Build activity tracking and achievement system
-  - Implement comprehensive activity event tracking
-  - Create achievement definition and unlock system
-  - Add XP calculation with bonus multipliers
-  - Build activity history and analytics
-  - _Requirements: 23.5_
-
-- [ ]* 28.5 Write property test for achievement system
-  - **Property 15: Achievement System Functionality**
-  - **Validates: Requirements 23.5**
-
-### 29. Dashboard API Enhancements and Data Management
-- [x] 29. Update dashboard API route (src/app/api/dashboard/route.ts)
-  - Add enhanced stats data fetching functions
-  - Implement AI peer status and recent messages retrieval
-  - Create learning path and milestone data endpoints
-  - Add lesson recommendation generation
-  - Enhance activity feed with XP and peer involvement data
-  - _Requirements: 23.1, 23.2, 23.3, 23.4, 23.5_
-
-- [x] 29.2 Create database schema updates
-  - Add user_learning_stats table for enhanced metrics
-  - Create user_ai_peers relationship table
-  - Implement peer_messages table for recent messages
-  - Add learning_tracks and user_track_progress tables
-  - Create lesson_recommendations and enhanced_activities tables
-  - _Requirements: 23.1, 23.2, 23.3, 23.4, 23.5_
-
-- [ ]* 29.3 Write property test for API data consistency
-  - **Property 8: API Data Consistency**
-  - **Validates: Requirements 23.1, 23.2, 23.3, 23.4, 23.5**
-
-- [x] 29.4 Implement real-time data synchronization
-  - Add efficient data refresh mechanisms for live updates
-  - Implement WebSocket or polling for real-time peer status
-  - Create optimistic UI updates for immediate feedback
-  - Add data caching and background synchronization
-  - _Requirements: 23.8_
-
-- [ ]* 29.5 Write property test for real-time updates
-  - **Property 16: Real-time Data Synchronization**
-  - **Validates: Requirements 23.8**
-
-### 30. Design System Integration and Theme Support
-- [x] 30. Ensure design system consistency
-  - Use existing Tailwind classes and color variables throughout
-  - Maintain existing component APIs and responsive patterns
-  - Preserve current dark mode support for all new elements
-  - Use existing Card component with consistent styling
-  - _Requirements: 22.1, 22.2, 22.3, 22.4, 22.5, 22.8_
-
-- [x] 30.2 Implement comprehensive dark mode support
-  - Add dark mode variants for all new dashboard components
-  - Ensure proper color contrast ratios (minimum 4.5:1)
-  - Test theme switching with smooth transitions
-  - Validate accessibility compliance in both themes
-  - _Requirements: 22.5_
-
-- [ ]* 30.3 Write property test for dark mode theme support
-  - **Property 10: Dark Mode Theme Support**
-  - **Validates: Requirements 22.5**
-
-- [ ]* 30.4 Write property test for card component consistency
-  - **Property 7: Card Component Consistency**
-  - **Validates: Requirements 22.8**
-
-- [x] 30.5 Create comprehensive color system
-  - Define dashboard-specific color palette with peer personality colors
-  - Implement status indicator colors and trend indicator colors
-  - Add activity type colors and visual hierarchy colors
-  - Create CSS custom properties for consistent color usage
-  - _Requirements: 22.4_
-
-- [ ]* 30.6 Write property test for color system consistency
-  - **Property 17: Color System Consistency**
-  - **Validates: Requirements 22.4**
-
-### 31. Performance Optimization and Mobile Implementation
-- [x] 31. Implement responsive design optimizations
-  - Test dashboard layout on mobile, tablet, and desktop
-  - Optimize touch interactions for mobile devices
-  - Ensure proper column stacking on smaller screens
-  - Add mobile-specific layout adjustments and navigation
-  - _Requirements: 24.6_
-
-- [x] 31.2 Build mobile-first responsive components
-  - Create mobile-optimized navigation with hamburger menu
-  - Implement touch-friendly peer cards and interactions
-  - Add swipe gestures for stats cards on mobile
-  - Optimize loading and performance for mobile devices
-  - _Requirements: 24.3_
-
-- [ ]* 31.3 Write property test for responsive design compatibility
-  - **Property 11: Responsive Design Compatibility**
-  - **Validates: Requirements 24.6**
-
-- [x] 31.4 Implement performance optimization strategies
-  - Add lazy loading for non-critical dashboard components
-  - Implement efficient data caching and background updates
-  - Optimize image loading and responsive images
-  - Ensure smooth animations and 60fps performance
-  - _Requirements: 25_
-
-- [ ]* 31.5 Write property test for performance requirements
-  - **Property 18: Performance Optimization**
-  - **Validates: Requirements 25**
-
-### 32. Testing, Integration, and Quality Assurance
-- [x] 32. Create comprehensive component test suite
-  - Build unit tests for all new dashboard components
-  - Test component rendering with various props and states
-  - Validate user interactions and event handling
-  - Test error boundaries and loading states
-  - _Requirements: 24.4_
-
-- [x] 32.2 Implement integration testing
-  - Test complete dashboard loading and data population
-  - Validate API integration and data flow
-  - Test navigation between dashboard sections
-  - Verify real-time updates and state synchronization
-  - _Requirements: 24.4_
-
-- [ ]* 32.3 Write property test for component integration
-  - **Property 19: Component Integration Reliability**
-  - **Validates: Requirements 24.4**
-
-- [x] 32.4 Conduct accessibility and cross-browser testing
-  - Ensure WCAG 2.1 AA compliance for all dashboard elements
-  - Test keyboard navigation and screen reader compatibility
-  - Validate cross-browser functionality (Chrome, Firefox, Safari, Edge)
-  - Test with various assistive technologies
-  - _Requirements: 24.4_
-
-- [ ]* 32.5 Write property test for accessibility compliance
-  - **Property 20: Accessibility Compliance**
-  - **Validates: Requirements 24.4**
-
-### 33. Documentation and Deployment Preparation
-- [x] 33. Create comprehensive dashboard documentation
-  - Document new component APIs and usage patterns
-  - Update existing component documentation
-  - Create dashboard modernization implementation guide
-  - Document data flow and state management patterns
-  - _Requirements: 24.10_
-
-- [x] 33.2 Build dashboard analytics and monitoring
-  - Implement user interaction tracking for dashboard usage
-  - Add performance monitoring and error tracking
-  - Create dashboard usage analytics and insights
-  - Build admin dashboard for monitoring system health
-  - _Requirements: 26_
-
-- [x] 33.3 Prepare deployment and rollout strategy
-  - Create feature flags for gradual dashboard rollout
-  - Build A/B testing framework for dashboard variants
-  - Implement user feedback collection system
-  - Create rollback procedures and monitoring alerts
-  - _Requirements: 24.10_
-
-- [x] 33.4 Final dashboard integration testing
-  - Test all dashboard features work together seamlessly
-  - Verify data consistency across all components
-  - Test user workflows and navigation patterns
-  - Validate performance under various load conditions
-  - _Requirements: 24.8_
-
-- [ ]* 33.5 Write property test for complete dashboard functionality
-  - **Property 21: Complete Dashboard Integration**
-  - **Validates: Requirements 24.8**
-
-## Success Criteria
-- [ ] Professional landing page that hooks judges in 10 seconds
-- [ ] All 8 unique features implemented and working
-- [ ] Demo runs reliably with or without internet
-- [ ] Page loads under 2 seconds
-- [ ] Voice coaching responds under 2 seconds
-- [ ] Mobile-responsive design works on all devices
-- [ ] Clear differentiation from existing learning platforms
-- [x] Sarah, Alex, and Jordan 3D avatars display consistently throughout platform
-- [ ] No letter fallbacks ("S", "A", "J") remain for AI peers
-- [x] Avatar system provides engaging visual identity for synthetic peer learning
-- [ ] All avatar interactions are accessible and performant
-
-### Dashboard Modernization Success Criteria
-- [ ] **Professional Navigation System**: Left sidebar with vertical icons and top bar with notifications working seamlessly
-- [ ] **Hero Welcome Section**: Personalized greeting with AI peer messages, progress highlights, and prominent CTAs
-- [ ] **Enhanced Stats Cards**: Four learning-focused metrics (Progress, Streak, Skills, Coding Time) with trends and visual appeal
-- [ ] **AI Peers Integration**: 3D avatars with status indicators, specialties, levels, and personality-colored chat buttons
-- [ ] **Learning Path Visualization**: Current track progress, lesson status icons, and milestone previews with rewards
-- [ ] **Recommended Content**: AI-curated lessons with peer recommendations and engaging metadata display
-- [ ] **Enhanced Activity Feed**: Categorized activities with XP tracking, peer involvement, and celebration elements
-- [ ] **Responsive Excellence**: Flawless adaptation from mobile (320px) to desktop (1536px+) with touch optimization
-- [ ] **Performance Standards**: Dashboard loads under 2 seconds, animations maintain 60fps, real-time updates work smoothly
-- [ ] **Design System Consistency**: All components use existing Tailwind classes, Card components, and 3D avatar system
-- [ ] **Dark Mode Support**: Complete theme compatibility with proper contrast ratios and smooth transitions
-- [ ] **Accessibility Compliance**: WCAG 2.1 AA standards met with keyboard navigation and screen reader support
-- [ ] **API Integration**: Enhanced dashboard API provides all required data with efficient caching and error handling
-- [ ] **Real-time Features**: Live peer status updates, progress synchronization, and notification system working
-- [ ] **Cross-browser Compatibility**: Consistent functionality across Chrome, Firefox, Safari, and Edge browsers
+
+This implementation plan breaks down the CODO backend into discrete, manageable coding tasks organized by phases. Each task builds incrementally on previous work, with property-based tests validating correctness properties throughout development.
+
+## Phase 1: Project Setup & Infrastructure
+
+- [x] 1.1 Initialize Next.js App Router project and core dependencies
+  - Create package.json with Next.js API Routes, TypeScript, Jest, fast-check, Firebase Admin SDK, Redis client
+  - Set up TypeScript configuration (tsconfig.json)
+  - Create basic Next.js API Routes app structure with app/ layout and page structure
+  - _Requirements: 20.1, 20.2_
+
+- [x] 1.2 Set up Firebase project and Admin SDK
+  - Create Firebase project in Firebase Console
+  - Initialize Firebase Admin SDK in application
+  - Configure Firebase service account credentials
+  - Set up Firebase Emulator Suite for local development
+  - _Requirements: 14.1, 20.1_
+
+- [x] 1.4 Configure environment variables and secrets management
+  - Create .env.example with all required variables (Firebase config, Redis, etc.)
+  - Implement environment configuration loader (src/config/environment.js)
+  - Add validation for required configuration on startup
+  - _Requirements: 20.1, 20.2, 20.3, 20.4_
+
+- [x] 1.5 Set up logging with Winston
+  - Create logger configuration (src/utils/logger.js)
+  - Implement structured JSON logging
+  - Configure log levels and transports
+  - Integrate with Firebase Cloud Logging
+  - _Requirements: 16.1, 16.2, 16.4_
+
+- [x] 1.6 Set up monitoring with Prometheus
+  - Create Prometheus metrics configuration
+  - Implement metrics collection middleware
+  - Set up key metrics: request latency, error rates, resource utilization
+  - _Requirements: 16.3_
+
+- [x] 1.8 Configure Firestore security rules and indexes
+  - Create firestore.rules file with security rules from firebase-data-model.md
+  - Create firestore.indexes.json with composite indexes
+  - Deploy rules and indexes to Firebase project
+  - _Requirements: 13.4, 18.2_
+
+- [x] 1.9 Checkpoint - Verify project setup
+  - Ensure all dependencies installed and app starts successfully
+  - Verify Firebase connection works (both emulator and project)
+  - Verify logging and monitoring configured
+
+
+## Phase 2: Core Authentication & User Management [COMPLETE]
+
+- [x] 2.1 Create User model and Firestore schema
+  - Create User model (src/models/User.js) with all fields from design
+  - Implement user document structure for Firestore users collection
+  - Implement user validation functions
+  - _Requirements: 1.1, 2.1, 18.1, 18.2_
+
+- [x] 2.2 Implement Authentication Service - registration
+  - Create authService.js with Firebase Auth registration
+  - Implement email validation and uniqueness checks
+  - Create Firestore user profile document on registration
+  - Firebase Auth handles password hashing automatically
+  - _Requirements: 1.1, 1.6_
+
+- [x] 2.4 Implement Authentication Service - login
+  - Implement login logic using Firebase Auth signInWithEmailAndPassword
+  - Implement Firebase ID token generation and verification
+  - Handle token refresh with Firebase SDK
+  - _Requirements: 1.2, 1.4_
+
+- [x] 2.7 Implement Authentication Service - password reset
+  - Implement password reset request using Firebase Auth sendPasswordResetEmail
+  - Configure Firebase email templates
+  - Firebase handles reset token generation and expiration
+  - _Requirements: 1.7_
+
+- [x] 2.9 Create authentication routes and middleware
+  - Create auth routes (src/routes/auth.js) for register, login, logout
+  - Create auth middleware for Firebase ID token verification
+  - Implement token validation using Firebase Admin SDK
+  - _Requirements: 1.4, 1.5_
+
+- [x] 2.13 Create User Profile routes and service
+  - Create user routes (src/routes/users.js) for profile CRUD
+  - Implement profile retrieval from Firestore with public/private field filtering
+  - Implement profile update with validation and Firestore update
+  - _Requirements: 2.1, 2.2, 2.3, 2.4_
+
+- [ ] 2.18 Checkpoint - Verify authentication and user management
+  - Ensure user profile tests pass
+  - Test registration, login, logout flows manually
+  - Verify Firebase Emulator integration works
+
+## Phase 3: Code Execution Engine [COMPLETE]
+
+- [x] 3.1 Create Execution Engine service structure
+  - Create executionEngine.js service
+  - Implement language detection and compiler selection
+  - _Requirements: 3.1, 3.7_
+
+- [x] 3.2 Implement code compilation for JavaScript
+  - Implement JavaScript compilation and validation
+  - Handle compilation errors with line numbers
+  - _Requirements: 3.3, 3.7_
+
+- [x] 3.3 Implement code compilation for Python
+  - Implement Python compilation and validation
+  - Handle Python-specific compilation errors
+  - _Requirements: 3.3, 3.7_
+
+- [x] 3.4 Implement code compilation for Java
+  - Implement Java compilation with javac
+  - Handle Java-specific compilation errors
+  - _Requirements: 3.3, 3.7_
+
+- [x] 3.5 Implement code compilation for C++
+  - Implement C++ compilation with g++
+  - Handle C++-specific compilation errors
+  - _Requirements: 3.3, 3.7_
+
+- [x] 3.6 Implement code execution with timeout enforcement
+  - Implement execution with 5-second timeout
+  - Implement graceful timeout handling
+  - Capture execution time metrics
+  - _Requirements: 3.1, 3.4, 3.12_
+
+- [x] 3.8 Implement memory limit enforcement
+  - Implement 256MB memory limit enforcement
+  - Implement memory usage tracking
+  - Handle memory limit exceeded errors
+  - _Requirements: 3.5, 3.16_
+
+- [x] 3.10 Implement test case execution and result collection
+  - Implement test case runner
+  - Collect pass/fail status for each test case
+  - Capture output and expected output
+  - _Requirements: 3.2, 3.13_
+
+- [x] 3.14 Implement execution result persistence
+  - Store execution results in database
+  - Persist submission with all metrics
+  - _Requirements: 3.6, 3.17_
+
+- [x] 3.16 Checkpoint - Verify execution engine
+  - Test code execution for all supported languages
+  - Verify timeout enforcement works
+  - Verify memory limit enforcement works
+  - Verify results are persisted correctly
+
+## Phase 4: Challenge Management & Submissions [COMPLETE]
+
+- [x] 4.1 Create Challenge model and Firestore schema
+  - Create Challenge model (src/models/Challenge.js)
+  - Implement challenge document structure for Firestore challenges collection
+  - Implement challenge validation functions
+  - _Requirements: 4.1, 4.2, 18.1, 18.2_
+
+- [x] 4.2 Create Submission model and Firestore schema
+  - Create Submission model (src/models/Submission.js)
+  - Implement submission document structure for Firestore submissions collection
+  - Implement submission validation functions
+  - _Requirements: 5.1, 18.1, 18.2_
+
+- [x] 4.3 Implement Challenge Service - CRUD operations
+  - Create challengeService.js with Firestore create, read, update, delete logic
+  - Implement admin authorization checks
+  - Implement challenge validation
+  - _Requirements: 4.1, 4.2_
+
+- [x] 4.6 Create Challenge routes
+  - Create challenge routes (src/routes/challenges.js)
+  - Implement GET /challenges with Firestore filtering
+  - Implement GET /challenges/:id for details
+  - Implement POST/PUT/DELETE for admin operations
+  - _Requirements: 4.1, 4.3, 4.4, 4.5_
+
+- [x] 4.10 Implement Submission Service
+  - Create submissionService.js with Firestore submission logic
+  - Implement submission creation and storage
+  - Implement submission history retrieval with Firestore queries
+  - _Requirements: 5.1, 5.2, 5.3, 5.4_
+
+- [x] 4.11 Create Submission routes
+  - Create submission routes (src/routes/submissions.js)
+  - Implement POST /submissions for code submission
+  - Implement GET /submissions/:id for details
+  - Implement GET /users/:userId/submissions for history
+  - _Requirements: 5.1, 5.2, 5.3, 5.4_
+
+- [x] 4.16 Checkpoint - Verify challenges and submissions
+  - Test submission workflow end-to-end with Firestore
+
+## Phase 5: Leaderboard System [COMPLETE]
+
+- [x] 5.1 Create Leaderboard Service
+  - Create leaderboardService.js with ranking logic
+  - Implement global leaderboard calculation
+  - Implement challenge-specific leaderboard calculation
+  - _Requirements: 6.1, 6.2, 6.3_
+
+- [x] 5.2 Implement global leaderboard ranking
+  - Implement ranking by total challenges solved
+  - Implement tie-breaking by average solve time
+  - Return top 100 users
+  - _Requirements: 6.1, 6.28_
+
+- [x] 5.4 Implement challenge-specific leaderboard ranking
+  - Implement ranking by fastest solve time
+  - Filter by specific challenge
+  - _Requirements: 6.2, 6.29_
+
+- [x] 5.6 Implement user rank position retrieval
+  - Implement user rank calculation
+  - Implement nearby competitors retrieval (top 5 above and below)
+  - _Requirements: 6.3, 6.30_
+
+- [x] 5.8 Implement leaderboard caching
+  - Implement 30-second local cache TTL for leaderboards
+  - Implement cache invalidation on submission
+  - _Requirements: 6.4, 6.5, 6.32_
+
+- [x] 5.11 Create Leaderboard routes
+  - Create leaderboard routes (src/routes/leaderboards.js)
+  - Implement GET /leaderboards/global
+  - Implement GET /leaderboards/challenge/:id
+  - Implement GET /leaderboards/user/:userId/rank
+  - Implement GET /leaderboards/user/:userId/nearby
+  - _Requirements: 6.1, 6.2, 6.3_
+
+- [x] 5.12 Checkpoint - Verify leaderboard system
+  - Verify caching works correctly
+  - Test leaderboard updates after submissions
+
+## Phase 6: Guild System [COMPLETE]
+
+- [x] 6.1 Create Guild and GuildMember models
+  - Create Guild model (src/models/Guild.js)
+  - Create GuildMember model (src/models/GuildMember.js)
+  - Implement Firestore document structures for guilds collection and members subcollection
+  - _Requirements: 7.1, 7.4, 18.1_
+
+- [x] 6.2 Create GuildInvitation model
+  - Create GuildInvitation model (src/models/GuildInvitation.js)
+  - Implement Firestore document structure for guildInvitations collection
+  - _Requirements: 7.3, 18.1_
+
+- [x] 6.3 Implement Guild Service - creation and management
+  - Create guildService.js with Firestore guild CRUD logic
+  - Implement guild name validation (unique, 3-50 chars)
+  - Implement owner assignment
+  - _Requirements: 7.1, 7.33_
+
+- [x] 6.5 Implement guild membership management
+  - Implement member addition with authorization checks using Firestore subcollections
+  - Implement public/private guild access control
+  - _Requirements: 7.2, 7.34_
+
+- [x] 6.7 Implement guild invitation system
+  - Implement invitation creation with 7-day expiration in Firestore
+  - Implement invitation acceptance and decline
+  - _Requirements: 7.3, 7.35_
+
+- [x] 6.9 Implement guild member removal
+  - Implement member removal by owner using Firestore subcollection delete
+  - Update guild statistics on removal
+  - _Requirements: 7.5, 7.37_
+
+- [x] 6.11 Implement guild settings update
+  - Implement settings update with owner authorization
+  - Validate settings changes in Firestore
+  - _Requirements: 7.6, 7.38, 7.39_
+
+- [x] 6.14 Create Guild routes
+  - Create guild routes (src/routes/guilds.js)
+  - Implement POST /guilds for creation
+  - Implement GET /guilds/:id for details
+  - Implement PUT /guilds/:id for updates
+  - Implement DELETE /guilds/:id for deletion
+  - Implement member management endpoints
+  - Implement invitation endpoints
+  - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6_
+
+- [x] 6.16 Checkpoint - Verify guild system
+  - Test guild creation, membership, and invitations with Firestore
+  - Verify authorization checks work
+
+
+## Phase 7: Guild Leaderboard & Lessons [COMPLETE]
+
+- [x] 7.1 Implement Guild Leaderboard Service
+  - Create guild leaderboard calculation logic using Firestore queries
+  - Implement ranking by total challenges solved
+  - Implement guild statistics aggregation
+  - _Requirements: 8.1, 8.2, 8.40, 8.41_
+
+- [x] 7.4 Implement guild leaderboard caching
+  - Implement 1-minute cache TTL for guild leaderboards
+  - Implement cache invalidation on member submission
+  - _Requirements: 8.3, 8.42_
+
+- [x] 7.6 Create Guild Leaderboard routes
+  - Create routes for GET /leaderboards/guilds
+  - Create routes for GET /guilds/:id/leaderboard
+  - Create routes for GET /guilds/:id/statistics
+  - _Requirements: 8.1, 8.2_
+
+- [x] 7.7 Create Lesson model and Firestore schema
+  - Create Lesson model (src/models/Lesson.js)
+  - Create LessonChallenge model (src/models/LessonChallenge.js)
+  - Implement Firestore document structures for lessons collection
+  - _Requirements: 9.1, 9.2, 18.1_
+
+- [x] 7.8 Implement Lesson Service
+  - Create lessonService.js with Firestore lesson CRUD logic
+  - Implement lesson organization by category and difficulty
+  - Implement lesson details retrieval with challenges
+  - _Requirements: 9.1, 9.2, 9.43, 9.44_
+
+- [x] 7.11 Implement lesson prerequisite enforcement
+  - Implement prerequisite checking logic
+  - Prevent access to lessons above current level
+  - _Requirements: 9.5, 9.47_
+
+- [x] 7.13 Create Lesson routes
+  - Create lesson routes (src/routes/lessons.js)
+  - Implement GET /lessons with filtering
+  - Implement GET /lessons/:id for details
+  - Implement GET /lessons/:id/challenges
+  - Implement GET /users/:userId/lessons/progress
+  - Implement POST /lessons/:id/complete
+  - _Requirements: 9.1, 9.2, 9.3, 9.4_
+
+- [x] 7.16 Checkpoint - Verify lessons and guild leaderboards
+  - Test lesson progression and completion with Firestore
+
+## Phase 8: Progress Tracking & Mistake Analysis [COMPLETE]
+
+- [x] 8.1 Create Progress model and Firestore schema
+  - Create Progress model (src/models/Progress.js)
+  - Implement Firestore document structure for progress collection
+  - _Requirements: 10.1, 18.1_
+
+- [x] 8.2 Implement Progress Tracker Service
+  - Create progressTracker.js with statistics calculation using Firestore
+  - Implement challenge completion tracking
+  - Implement user statistics updates
+  - _Requirements: 10.1, 10.2, 10.48, 10.49_
+
+- [x] 8.4 Implement level and experience management
+  - Implement experience point calculation
+  - Implement level progression logic
+  - Implement level-up notifications
+  - _Requirements: 10.2, 10.3, 10.49, 10.50_
+
+- [x] 8.7 Implement progress dashboard
+  - Implement dashboard data aggregation from Firestore
+  - Implement recent activity tracking
+  - _Requirements: 10.4, 10.51_
+
+- [x] 8.9 Implement statistics caching
+  - Implement 5-minute local cache TTL for user statistics
+  - Implement cache invalidation on updates
+  - _Requirements: 10.5, 10.52_
+
+- [x] 8.11 Create Progress routes
+  - Create progress routes (src/routes/progress.js)
+  - Implement GET /users/:userId/progress
+  - Implement GET /users/:userId/statistics
+  - Implement GET /users/:userId/dashboard
+  - Implement GET /users/:userId/achievements
+  - _Requirements: 10.1, 10.4_
+
+- [x] 8.12 Create MistakeAnalysis model
+  - Create MistakeAnalysis model (src/models/MistakeAnalysis.js)
+  - Implement Firestore document structure for mistakeAnalysis collection
+  - _Requirements: 11.1, 18.1_
+
+- [x] 8.13 Implement Mistake Analyzer Service
+  - Create mistakeAnalyzer.js with error categorization
+  - Implement error category detection
+  - Implement feedback generation
+  - _Requirements: 11.1, 11.2, 11.53, 11.54_
+
+- [x] 8.16 Implement common mistake detection
+  - Implement common mistake pattern matching
+  - Implement specific feedback for common mistakes
+  - _Requirements: 11.4, 11.56_
+
+- [x] 8.18 Implement mistake statistics
+  - Implement mistake frequency tracking using Firestore queries
+  - Implement related lessons suggestion
+  - _Requirements: 11.3, 11.55_
+
+- [x] 8.20 Create Mistake Analysis routes
+  - Create routes for GET /submissions/:id/analysis
+  - Create routes for GET /users/:userId/mistakes
+  - Create routes for GET /users/:userId/mistake-statistics
+  - _Requirements: 11.1, 11.2, 11.3_
+
+- [x] 8.21 Checkpoint - Verify progress and mistake analysis
+  - Test progress updates and statistics caching with Firestore
+
+## Phase 9: Notifications & API Gateway
+
+- [x] 9.1 Create Notification model and Firestore schema
+  - Create Notification model (src/models/Notification.js)
+  - Implement Firestore document structure for notifications collection
+  - _Requirements: 12.1, 18.1_
+
+- [x] 9.2 Implement Notification Service
+  - Create notificationService.js with Firestore notification logic
+  - Implement notification creation and storage
+  - Implement notification retrieval and filtering
+  - _Requirements: 12.1, 12.4, 12.57, 12.60_
+
+- [x] 9.4 Implement friend activity notifications
+  - Implement friend activity tracking
+  - Implement conditional notification sending
+  - _Requirements: 12.2, 12.58_
+
+- [x] 9.6 Implement milestone notifications
+  - Implement level-up notifications
+  - Implement achievement notifications
+  - _Requirements: 12.3, 12.59_
+
+- [x] 9.8 Implement notification status management
+  - Implement read/unread status tracking in Firestore
+  - Implement notification deletion
+  - _Requirements: 12.5, 12.61_
+
+- [x] 9.10 Create Notification routes
+  - Create notification routes (src/routes/notifications.js)
+  - Implement GET /notifications
+  - Implement GET /notifications/unread
+  - Implement PUT /notifications/:id/read
+  - Implement DELETE /notifications/:id
+  - _Requirements: 12.1, 12.4, 12.5_
+
+- [x] 9.12 Implement API Gateway middleware - error handling
+  - Create error handler middleware (src/middleware/errorHandler.js)
+  - Implement error categorization and response formatting
+  - Implement error logging
+  - _Requirements: 13.4, 19.2, 19.3_
+
+- [x] 9.13 Implement API Gateway middleware - rate limiting
+  - Create rate limiter middleware (src/middleware/rateLimiter.js)
+  - Implement 100 req/min for standard endpoints
+  - Implement 10 req/min for resource-intensive endpoints
+  - _Requirements: 13.1, 13.2, 13.3, 13.62, 13.63, 13.64_
+
+- [x] 9.17 Implement API Gateway middleware - input validation
+  - Create validation middleware (src/middleware/validation.js)
+  - Implement injection attack prevention
+  - Implement XSS prevention
+  - _Requirements: 13.4, 13.65_
+
+- [x] 9.19 Implement API Gateway middleware - CORS
+  - Create CORS middleware (src/middleware/cors.js)
+  - Configure authorized frontend domains
+  - _Requirements: 13.6, 13.67_
+
+- [x] 9.21 Implement API Gateway middleware - HTTPS enforcement
+  - Implement HTTPS requirement
+  - Implement redirect from HTTP to HTTPS
+  - _Requirements: 13.5, 13.66_
+
+- [x] 9.23 Create main API Gateway router
+  - Create main router (src/routes/index.js)
+  - Wire all service routes together
+  - Implement request/response logging
+  - _Requirements: 16.1, 19.1_
+
+- [x] 9.24 Implement response formatting
+  - Implement consistent JSON response format
+  - Implement pagination support
+  - _Requirements: 19.1, 19.4, 19.5_
+
+- [x] 9.29 Checkpoint - Verify API Gateway and notifications
+  - Test API Gateway routing and error handling with Firestore
+
+## Phase 10: Firestore Operations & Performance
+
+- [x] 10.1 Implement Firestore batch operations
+  - Implement batch write wrapper functions for atomic operations
+  - Implement transaction wrapper for complex multi-document updates
+  - Ensure data consistency during concurrent operations
+  - _Requirements: 14.2, 14.69_
+
+- [x] 10.3 Implement application-level referential integrity
+  - Implement validation for document references (user-submission, challenge-submission)
+  - Implement cleanup logic for orphaned documents
+  - Implement cascade delete logic where appropriate
+  - _Requirements: 14.5, 14.70_
+
+- [x] 10.5 Verify Firestore schema completeness
+  - Verify all required collections exist
+  - Verify all composite indexes are created
+  - Verify security rules are deployed
+  - _Requirements: 18.1, 18.2, 18.77, 18.78_
+
+- [x] 10.9 Implement data persistence verification
+  - Verify all data is persisted correctly to Firestore
+  - Test data retrieval after persistence
+  - _Requirements: 14.1, 14.68_
+
+- [x] 10.11 Implement request latency monitoring
+  - Add latency tracking to all endpoints
+  - Implement p95 latency calculation
+  - _Requirements: 15.1, 15.71_
+
+- [x] 10.13 Implement code execution performance monitoring
+  - Track execution time for all submissions
+  - Verify 5-second limit enforcement
+  - _Requirements: 15.2, 15.72_
+
+- [x] 10.15 Implement cache effectiveness monitoring
+  - Track cache hit rates
+  - Monitor cache performance
+  - _Requirements: 15.3, 15.73_
+
+- [x] 10.17 Implement request logging
+  - Log all requests with required metadata
+  - Implement structured logging format
+  - Integrate with Firebase Cloud Logging
+  - _Requirements: 16.1, 16.74_
+
+- [x] 10.19 Implement submission logging
+  - Log all code submissions with metrics
+  - Implement structured logging format
+  - _Requirements: 16.2, 16.75_
+
+- [x] 10.21 Implement error logging
+  - Log all errors with stack traces
+  - Implement error context capture
+  - _Requirements: 16.4, 16.76_
+
+- [x] 10.23 Checkpoint - Verify Firestore operations and performance
+  - Verify logging is working correctly
+  - Test with Firebase Emulator Suite
+
+## Phase 11: Configuration & Documentation
+
+- [x] 11.1 Implement environment configuration loading
+  - Create environment loader with validation
+  - Support development, staging, production configs
+  - Include Firebase project configuration
+  - _Requirements: 20.1, 20.2, 20.85, 20.86_
+
+- [x] 11.4 Implement configuration validation
+  - Validate all required configuration on startup
+  - Fail fast if configuration is missing
+  - Validate Firebase credentials and project settings
+  - _Requirements: 20.3, 20.87_
+
+- [x] 11.6 Implement secrets management
+  - Integrate with secrets management system
+  - Load Firebase service account keys securely
+  - Load sensitive data securely
+  - _Requirements: 20.4, 20.88_
+
+- [x] 11.8 Generate OpenAPI/Swagger documentation
+  - Create OpenAPI specification for all endpoints
+  - Include request/response examples
+  - Include error codes and authentication requirements
+  - _Requirements: 17.1, 17.2_
+
+- [x] 11.9 Implement automatic documentation generation
+  - Set up automatic documentation updates from code
+  - Ensure documentation stays in sync
+  - _Requirements: 17.3, 17.4_
+
+- [x] 11.10 Create deployment guides
+  - Document deployment process for each environment
+  - Include Firebase project setup steps
+  - Include Firestore security rules deployment
+  - Include configuration steps
+  - _Requirements: 20.1, 20.2_
+
+- [x] 11.11 Create monitoring dashboards
+  - Set up Grafana dashboards
+  - Configure Firebase Performance Monitoring
+  - Configure key metrics visualization
+  - Set up alert thresholds
+  - _Requirements: 16.3_
+
+- [x] 11.12 Create operational runbooks
+  - Document common operational tasks
+  - Document troubleshooting procedures
+  - Document Firebase backup and recovery procedures
+  - _Requirements: 16.3_
+
+- [x] 11.13 Checkpoint - Verify configuration and documentation
+  - Verify documentation is complete and accurate
+  - Test deployment process with Firebase
+
+## Phase 12: Integration Testing & Final Verification
+
+- [x] 12.1 Write integration tests for authentication flow
+  - Test complete registration and login flow with Firebase Auth
+  - Test token refresh and expiration
+  - Test password reset flow
+  - Use Firebase Emulator Suite for testing
+  - _Requirements: 1.1, 1.2, 1.4, 1.5, 1.7_
+
+- [x] 12.2 Write integration tests for code submission flow
+  - Test complete submission workflow
+  - Test execution engine integration
+  - Test result persistence to Firestore
+  - _Requirements: 3.1, 3.2, 3.6_
+
+- [x] 12.3 Write integration tests for leaderboard updates
+  - Test leaderboard updates after submissions
+  - Test caching behavior
+  - Test ranking accuracy with Firestore queries
+  - _Requirements: 6.1, 6.4, 6.5_
+
+- [x] 12.4 Write integration tests for guild operations
+  - Test guild creation and membership with Firestore
+  - Test invitation flow
+  - Test guild leaderboard updates
+  - _Requirements: 7.1, 7.2, 7.3, 8.1_
+
+- [x] 12.5 Write integration tests for lesson progression
+  - Test lesson access and completion
+  - Test progress tracking in Firestore
+  - Test prerequisite enforcement
+  - _Requirements: 9.1, 9.3, 9.4, 9.5_
+
+- [x] 12.6 Write integration tests for notifications
+  - Test notification creation and delivery to Firestore
+  - Test notification status updates
+  - Test notification filtering
+  - _Requirements: 12.1, 12.4, 12.5_
+
+- [x] 12.7 Write integration tests for API Gateway
+  - Test rate limiting enforcement
+  - Test error handling
+  - Test CORS and HTTPS
+  - _Requirements: 13.1, 13.2, 13.5, 13.6_
+
+- [x] 12.8 Run full test suite
+  - Execute all unit tests
+  - Execute all property-based tests
+  - Execute all integration tests with Firebase Emulator
+  - Verify test coverage >80%
+  - _Requirements: All_
+
+- [x] 12.9 Verify all properties pass
+  - Ensure all 88 correctness properties pass
+  - Document any property failures
+  - Fix any failing properties
+  - _Requirements: All_
+
+- [x] 12.10 Performance testing
+  - Test API response times (target <200ms p95)
+  - Test code execution performance (target <5s)
+  - Test leaderboard update latency (target <30s)
+  - Test guild leaderboard latency (target <1m)
+  - _Requirements: 15.1, 15.2, 6.4, 8.3_
+
+- [x] 12.11 Load testing
+  - Test system under concurrent load
+  - Verify horizontal scaling works
+  - Verify Firestore performance under load
+  - _Requirements: 15.4, 15.5_
+
+- [x] 12.12 Security testing
+  - Test injection attack prevention
+  - Test XSS prevention
+  - Test Firebase Authentication and authorization
+  - Test Firestore security rules
+  - Test rate limiting
+  - _Requirements: 13.4, 13.5, 13.6_
+
+- [x] 12.13 Final checkpoint - All tests pass
+  - Ensure all tests pass
+  - Ensure all properties validated
+  - Ensure performance targets met
+  - Verify Firebase integration complete
+  - Ask the user if questions arise
+
+
+## Notes
+
+- Tasks marked with `*` are optional property-based tests and can be skipped for faster MVP development
+- Each task references specific requirements for traceability
+- Property-based tests validate universal correctness properties across all inputs
+- Unit tests validate specific examples and edge cases
+- Integration tests validate end-to-end workflows
+- Checkpoints ensure incremental validation and early error detection
+- All code should follow the project structure defined in the design document
+- Use TypeScript/JavaScript with Next.js API Routes for all implementation
+- Use Jest for unit testing and fast-check for property-based testing
+- Use Firebase Authentication for user management (no password storage in application)
+- Use Firestore for data persistence with security rules and composite indexes
+- Use Firebase Emulator Suite for local development and testing
+- Use Redis for caching leaderboards and statistics
+- Use Docker for code execution isolation
+- All API responses should follow the consistent JSON format defined in the design
+- All errors should be logged with appropriate context and stack traces
+- All sensitive data (Firebase service account keys) should be managed through secrets management
+- All configuration should be loaded from environment variables
+- Firestore security rules enforce database-level access control
+- Application logic maintains referential integrity (no foreign key constraints in Firestore)
