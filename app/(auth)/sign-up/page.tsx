@@ -52,7 +52,7 @@ export default function SignUpPage() {
         try {
             const { user } = await signInWithPopup(auth, new GoogleAuthProvider());
             await createUserProfile(user.uid, user.email ?? '', user.displayName ?? 'Player');
-            router.push('/dashboard');
+            router.push('/onboarding/assessment');
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : 'Google signup failed');
         }
@@ -63,7 +63,7 @@ export default function SignUpPage() {
         try {
             const { user } = await signInWithPopup(auth, new GithubAuthProvider());
             await createUserProfile(user.uid, user.email ?? '', user.displayName ?? 'Player');
-            router.push('/dashboard');
+            router.push('/onboarding/assessment');
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : 'GitHub signup failed');
         }

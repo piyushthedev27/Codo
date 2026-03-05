@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Play, Loader2 } from 'lucide-react';
+import { Play, Loader2, Film } from 'lucide-react';
 import { auth } from '@/lib/firebase/client';
 import InteractiveVideoPlayer, { CinemaState } from '@/components/cinema/InteractiveVideoPlayer';
 
@@ -41,9 +41,14 @@ export default function CinemaPage() {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Generation failed');
 
+            // The API returns { script: { states: [...] } }
+            if (!data.script || !data.script.states) {
+                throw new Error('Invalid cinema script format received');
+            }
+
             setSessionData({
-                states: data.states,
-                sessionId: data.sessionId,
+                states: data.script.states,
+                sessionId: data.script.title || 'cinema-session',
                 token
             });
         } catch (error: unknown) {
@@ -58,7 +63,9 @@ export default function CinemaPage() {
     return (
         <div className="p-6 h-[calc(100vh-3.5rem)] overflow-y-auto">
             <div className="mb-6">
-                <h1 className="text-pixel text-2xl text-[#6c63ff] mb-2">🎬 AI CODE CINEMA</h1>
+                <h1 className="text-pixel text-2xl text-[#e8e8f0] mb-2 flex items-center gap-2">
+                    <Film className="text-[#6c63ff]" size={28} /> AI CODE CINEMA
+                </h1>
                 <p className="text-mono text-[#8888aa]">Type any coding topic — AI animates and narrates the code for you.</p>
             </div>
 

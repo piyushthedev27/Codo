@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { Check, X } from 'lucide-react';
+import { Check, X, Diamond, Star, Swords, Zap } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
 
 type Tier = 'free' | 'pro' | 'guild';
@@ -11,7 +11,7 @@ type Cycle = 'monthly' | 'yearly';
 
 const TIERS: Record<Tier, {
     name: string;
-    emoji: string;
+    icon: React.ReactNode;
     color: string;
     monthlyPrice: number;
     yearlyPrice: number;
@@ -20,7 +20,7 @@ const TIERS: Record<Tier, {
 }> = {
     free: {
         name: 'FREE HERO',
-        emoji: '⚔️',
+        icon: <Swords size={20} />,
         color: '#8888aa',
         monthlyPrice: 0,
         yearlyPrice: 0,
@@ -28,7 +28,7 @@ const TIERS: Record<Tier, {
     },
     pro: {
         name: 'PRO WARRIOR',
-        emoji: '🌟',
+        icon: <Star size={20} className="text-[#6c63ff]" />,
         color: '#6c63ff',
         monthlyPrice: 9.99,
         yearlyPrice: 6.99,
@@ -37,7 +37,7 @@ const TIERS: Record<Tier, {
     },
     guild: {
         name: 'GUILD MASTER',
-        emoji: '👑',
+        icon: <Zap size={20} className="text-[#ffd700]" />,
         color: '#ffd700',
         monthlyPrice: 19.99,
         yearlyPrice: 14.99,
@@ -79,7 +79,9 @@ export default function PricingPage() {
             <div className="max-w-5xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-10">
-                    <h1 className="text-pixel text-3xl text-[#e8e8f0] mb-3">💎 CHOOSE YOUR PLAN</h1>
+                    <h1 className="text-pixel text-3xl text-[#e8e8f0] mb-3 flex items-center justify-center gap-2">
+                        <Diamond className="text-[#6c63ff]" /> CHOOSE YOUR PLAN
+                    </h1>
                     <p className="text-mono text-[#8888aa] mb-6">Level up your coding journey with the right tier.</p>
 
                     {/* Billing Toggle */}
@@ -115,11 +117,11 @@ export default function PricingPage() {
                             >
                                 {tier.popular && (
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#6c63ff] rounded text-mono text-[#e8e8f0] text-xs font-bold">
-                                        ⭐ MOST POPULAR
+                                        <Star size={12} fill="currentColor" /> MOST POPULAR
                                     </div>
                                 )}
                                 <div className="text-center mb-6">
-                                    <div className="text-4xl mb-2">{tier.emoji}</div>
+                                    <div className="text-4xl mb-2 flex justify-center text-[#8888aa] h-10 items-center">{tier.icon}</div>
                                     <div className="text-pixel text-lg mb-3" style={{ color: tier.color }}>{tier.name}</div>
                                     {price === 0 ? (
                                         <div className="text-pixel text-4xl" style={{ color: tier.color }}>FREE</div>
@@ -137,8 +139,8 @@ export default function PricingPage() {
                                     onClick={() => !isCurrent && showInfo('Coming Soon! 🚀', 'Payment integration is being set up. Check back soon!')}
                                     disabled={isCurrent}
                                     className={`w-full py-3 rounded text-retro text-lg mb-6 transition ${isCurrent
-                                            ? 'bg-[#2a2a3e] text-[#8888aa] cursor-default'
-                                            : 'hover:-translate-y-0.5 hover:opacity-90'
+                                        ? 'bg-[#2a2a3e] text-[#8888aa] cursor-default'
+                                        : 'hover:-translate-y-0.5 hover:opacity-90'
                                         }`}
                                     style={!isCurrent ? { background: tier.color, color: '#0a0a0f' } : {}}
                                 >
@@ -169,7 +171,7 @@ export default function PricingPage() {
                         <div className="p-4 text-pixel text-xs text-[#8888aa]">FEATURE</div>
                         {(Object.values(TIERS)).map((tier) => (
                             <div key={tier.name} className="p-4 text-center text-pixel text-xs" style={{ color: tier.color }}>
-                                {tier.emoji} {tier.name.split(' ')[0]}
+                                <span className="inline-block scale-75 align-middle">{tier.icon}</span> {tier.name.split(' ')[0]}
                             </div>
                         ))}
                     </div>

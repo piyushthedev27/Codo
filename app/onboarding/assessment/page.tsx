@@ -1,14 +1,16 @@
-'use client';
-import Link from 'next/link';
+"use client";
+
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Sprout, Leaf, Trees, Mountain } from 'lucide-react';
 
 export default function OnboardingAssessmentPage() {
     const router = useRouter();
     const levels = [
-        { id: 'beginner', label: 'COMPLETE BEGINNER', desc: 'Never written a line of code', emoji: '🌱' },
-        { id: 'basics', label: 'KNOW THE BASICS', desc: 'Variables, loops, functions', emoji: '🌿' },
-        { id: 'intermediate', label: 'INTERMEDIATE', desc: 'OOP, async, frameworks', emoji: '🌳' },
-        { id: 'advanced', label: 'ADVANCED', desc: 'Algorithms, system design', emoji: '🏔️' },
+        { id: 'beginner', label: 'COMPLETE BEGINNER', desc: 'Never written a line of code', icon: <Sprout size={40} className="text-[#00ff88]" /> },
+        { id: 'basics', label: 'KNOW THE BASICS', desc: 'Variables, loops, functions', icon: <Leaf size={40} className="text-[#6c63ff]" /> },
+        { id: 'intermediate', label: 'INTERMEDIATE', desc: 'OOP, async, frameworks', icon: <Trees size={40} className="text-[#ffd700]" /> },
+        { id: 'advanced', label: 'ADVANCED', desc: 'Algorithms, system design', icon: <Mountain size={40} className="text-[#ff4d6d]" /> },
     ];
 
     return (
@@ -27,7 +29,7 @@ export default function OnboardingAssessmentPage() {
                             onClick={() => router.push('/onboarding/path')}
                             className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-6 text-left hover:border-[#6c63ff] hover:glow-purple transition group"
                         >
-                            <div className="text-4xl mb-3">{level.emoji}</div>
+                            <div className="mb-3">{level.icon}</div>
                             <div className="text-pixel text-xs text-[#6c63ff] mb-2">{level.label}</div>
                             <div className="text-mono text-[#8888aa] text-sm">{level.desc}</div>
                         </button>

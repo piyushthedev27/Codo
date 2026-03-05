@@ -111,16 +111,19 @@ For **production deployment**, you need to:
 
 ## 🛠️ Tech Stack
 
-### Frontend & API (Next.js App Router)
-- **Framework**: Next.js 14+ (App Router)
+### Frontend & Backend (Next.js 14 App Router)
+- **Framework**: Next.js 14 (App Router) - Unified frontend + API routes
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS 4 with custom pixel-retro theme
+- **Styling**: Tailwind CSS with custom pixel-retro theme
 - **Animations**: Anime.js for smooth, clear animations
+- **UI Components**: Radix UI
 - **Icons**: Lucide React
 - **Authentication**: Firebase Authentication
-- **Database**: Firebase Firestore
+- **Database**: Firebase Firestore (NoSQL)
+- **Code Execution**: Node.js child processes with multi-language support
+- **Testing**: Jest, fast-check (property-based testing)
 
-See `package.json` for all dependencies. In this unified architecture, Next.js handles both the React frontend and the API routes (replacing the former separate Node.js/Express backend).
+See `package.json` for all dependencies. This unified architecture uses Next.js to handle both the React frontend and API routes in a single codebase.
 
 ## 🚀 Getting Started
 

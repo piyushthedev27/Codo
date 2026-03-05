@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { Home, Map, Swords, Trophy } from 'lucide-react';
+import { Home, Map, MapIcon, Swords, Trophy } from 'lucide-react';
 
 export default function NotFound() {
     return (
@@ -28,8 +28,8 @@ export default function NotFound() {
                     <p className="text-mono text-[#8888aa] mb-2">
                         Looks like you wandered off the map, hero.
                     </p>
-                    <p className="text-mono text-[#8888aa] mb-8 text-sm">
-                        This zone doesn&apos;t exist — or maybe it&apos;s locked at a higher level. 🗺️
+                    <p className="text-mono text-[#8888aa] mb-8 text-sm flex items-center justify-center gap-1">
+                        This zone doesn&apos;t exist — or maybe it&apos;s locked at a higher level. <MapIcon size={14} />
                     </p>
 
                     {/* Quick Links */}

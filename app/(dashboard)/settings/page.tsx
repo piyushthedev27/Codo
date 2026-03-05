@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/ToastProvider';
-import { User, Shield, Bell, Globe, Key, Github, Download, Trash2 } from 'lucide-react';
+import { User, Shield, Bell, Globe, Key, Github, Download, Trash2, Settings } from 'lucide-react';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -55,7 +55,9 @@ export default function SettingsPage() {
 
     return (
         <div className="p-6 max-w-5xl mx-auto">
-            <h1 className="text-pixel text-2xl text-[#e8e8f0] mb-6">⚙️ SETTINGS</h1>
+            <h1 className="text-pixel text-2xl text-[#e8e8f0] mb-6 flex items-center gap-2">
+                <Settings /> SETTINGS
+            </h1>
 
             <div className="flex flex-col md:flex-row gap-6">
                 {/* Sidebar Navigation */}

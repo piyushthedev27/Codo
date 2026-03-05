@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Flame, Zap, BookOpen, Coins, X, Send } from 'lucide-react';
+import { Flame, Zap, BookOpen, Coins, X, Send, Map, Film, Swords, TrendingUp, Scroll, Cat } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
 import { motion, AnimatePresence } from 'motion/react';
 import CreateGuildModal from '@/components/CreateGuildModal';
@@ -136,10 +136,10 @@ export default function DashboardPage() {
                 {/* Stat Cards Row */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                     {[
-                        { icon: <Flame className="text-[#ffd700]" size={28} />, number: '0', label: 'DAY STREAK', sub: 'Start today!', color: '#ffd700' },
-                        { icon: <Zap className="text-[#6c63ff]" size={28} />, number: '0', label: 'XP THIS WEEK', sub: 'Complete lessons', color: '#6c63ff' },
-                        { icon: <BookOpen className="text-[#00d4ff]" size={28} />, number: '0', label: 'LESSONS DONE', sub: 'Start learning!', color: '#00d4ff' },
-                        { icon: <Coins className="text-[#ffd700]" size={28} />, number: '0', label: 'GOLD COINS', sub: 'Spend in Shop', color: '#ffd700' },
+                        { icon: <Flame className="text-[#8888aa]" size={28} />, number: '0', label: 'DAY STREAK', sub: 'Start today!', color: '#e8e8f0' },
+                        { icon: <Zap className="text-[#8888aa]" size={28} />, number: '0', label: 'XP THIS WEEK', sub: 'Complete lessons', color: '#e8e8f0' },
+                        { icon: <BookOpen className="text-[#8888aa]" size={28} />, number: '0', label: 'LESSONS DONE', sub: 'Start learning!', color: '#e8e8f0' },
+                        { icon: <Coins className="text-[#8888aa]" size={28} />, number: '0', label: 'GOLD COINS', sub: 'Spend in Shop', color: '#e8e8f0' },
                     ].map((card, i) => (
                         <div key={i} className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4 hover:border-[#6c63ff] transition">
                             <div className="mb-3">{card.icon}</div>
@@ -171,7 +171,7 @@ export default function DashboardPage() {
                         {/* Active Quests */}
                         <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4 hover:border-[#6c63ff] transition-all">
                             <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-pixel text-sm">ACTIVE QUESTS 📜</h3>
+                                <h3 className="text-pixel text-sm">ACTIVE QUESTS</h3>
                                 <Link href="/quests" className="text-mono text-[#6c63ff] text-xs hover:underline">VIEW ALL →</Link>
                             </div>
                             <div className="space-y-3">
@@ -181,7 +181,7 @@ export default function DashboardPage() {
                                 ].map((quest, i) => (
                                     <div key={i}>
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="text-mono text-[#e8e8f0] text-sm">📜 {quest.title}</span>
+                                            <span className="text-mono text-[#e8e8f0] text-sm flex items-center gap-2"><Scroll size={14} className="text-[#8888aa]" /> {quest.title}</span>
                                             <span className="text-retro text-[#8888aa] text-sm">{quest.current}/{quest.total}</span>
                                         </div>
                                         <div className="bg-[#2a2a3e] h-2 rounded overflow-hidden mb-1">
@@ -195,16 +195,16 @@ export default function DashboardPage() {
 
                         {/* Features Quick-access */}
                         <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4 hover:border-[#6c63ff] transition-all">
-                            <h3 className="text-pixel text-sm mb-3">QUICK ACCESS ✨</h3>
+                            <h3 className="text-pixel text-sm mb-3">QUICK ACCESS</h3>
                             <div className="grid grid-cols-2 gap-3">
                                 {[
-                                    { href: '/cinema', icon: '🎬', title: 'AI Cinema', desc: 'Watch code explained' },
-                                    { href: '/duel', icon: '⚔️', title: 'Code Duel', desc: 'Vs AI peers' },
-                                    { href: '/map', icon: '🗺️', title: 'World Map', desc: 'Explore topics' },
-                                    { href: '/progress', icon: '📊', title: 'Progress', desc: 'View your stats' },
+                                    { href: '/cinema', icon: <Film size={24} className="text-[#8888aa]" />, title: 'AI Cinema', desc: 'Watch code explained' },
+                                    { href: '/duel', icon: <Swords size={24} className="text-[#8888aa]" />, title: 'Code Duel', desc: 'Vs AI peers' },
+                                    { href: '/map', icon: <Map size={24} className="text-[#8888aa]" />, title: 'World Map', desc: 'Explore topics' },
+                                    { href: '/progress', icon: <TrendingUp size={24} className="text-[#8888aa]" />, title: 'Progress', desc: 'View your stats' },
                                 ].map((item, i) => (
                                     <Link key={i} href={item.href} className="bg-[#12121a] border border-[#2a2a3e] rounded p-3 hover:border-[#6c63ff] transition cursor-pointer block">
-                                        <div className="text-2xl mb-1">{item.icon}</div>
+                                        <div className="mb-2">{item.icon}</div>
                                         <div className="text-retro text-[#6c63ff] text-sm">{item.title}</div>
                                         <div className="text-mono text-[#8888aa] text-xs">{item.desc}</div>
                                     </Link>
@@ -252,13 +252,13 @@ export default function DashboardPage() {
 
                         {/* Pet */}
                         <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4 text-center hover:border-[#6c63ff] transition-all">
-                            <h3 className="text-pixel text-sm mb-4">YOUR COMPANION 🐾</h3>
-                            <Link href="/pet">
-                                <div className="w-20 h-20 bg-[#00ff88] rounded mx-auto mb-3 animate-float hover:scale-105 transition-transform" />
+                            <h3 className="text-pixel text-sm mb-4">YOUR COMPANION</h3>
+                            <Link href="/pet" className="block w-fit mx-auto">
+                                <Cat size={64} className="mb-3 text-[#8888aa] animate-float hover:scale-105 transition-transform" />
                             </Link>
                             <div className="text-retro text-[#e8e8f0] text-xl mb-1">BYTEBEAR</div>
                             <div className="text-retro text-[#8888aa] text-sm mb-2">LVL 1</div>
-                            <div className="text-retro text-[#00ff88] mb-3">😊 HAPPY</div>
+                            <div className="text-retro text-[#8888aa] mb-3">HAPPY</div>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => {
@@ -280,7 +280,7 @@ export default function DashboardPage() {
 
                         {/* Guild */}
                         <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4 hover:border-[#6c63ff] transition-all">
-                            <h3 className="text-pixel text-sm mb-4">GUILDS 🏰</h3>
+                            <h3 className="text-pixel text-sm mb-4">GUILDS</h3>
                             <p className="text-mono text-[#8888aa] text-sm mb-4">Join or create a guild to compete as a team!</p>
                             <div className="flex gap-2">
                                 <button

@@ -1,16 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'motion/react';
 import { useToast } from '@/components/ui/ToastProvider';
+import { PawPrint, Apple, Gamepad2, Pencil, BarChart3, Zap, Egg, Bird, CheckCircle2, Lock, Smile, Calendar, Cat } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useState } from 'react';
 
 type EvolutionStage = 'Baby' | 'Teen' | 'Adult' | 'Mega';
 
-const EVOLUTION_STAGES: { stage: EvolutionStage; xpRequired: number; emoji: string; color: string }[] = [
-    { stage: 'Baby', xpRequired: 0, emoji: '🐣', color: '#00ff88' },
-    { stage: 'Teen', xpRequired: 500, emoji: '🐤', color: '#00d4ff' },
-    { stage: 'Adult', xpRequired: 2000, emoji: '🦅', color: '#6c63ff' },
-    { stage: 'Mega', xpRequired: 5000, emoji: '🐉', color: '#ffd700' },
+const EVOLUTION_STAGES: { stage: EvolutionStage; xpRequired: number; icon: React.ReactNode; color: string }[] = [
+    { stage: 'Baby', xpRequired: 0, icon: <Egg size={24} />, color: '#8888aa' },
+    { stage: 'Teen', xpRequired: 500, icon: <Bird size={24} />, color: '#8888aa' },
+    { stage: 'Adult', xpRequired: 2000, icon: <Bird size={28} />, color: '#8888aa' },
+    { stage: 'Mega', xpRequired: 5000, icon: <Zap size={32} />, color: '#8888aa' },
 ];
 
 interface PetStats {
@@ -35,16 +36,6 @@ export default function PetPage() {
     const [nameInput, setNameInput] = useState(petName);
     const [isPlaying, setIsPlaying] = useState(false);
     const [clickScore, setClickScore] = useState(0);
-    const [petMood, setPetMood] = useState('😊');
-
-    const getMood = (h: number, hap: number) => {
-        const avg = (h + hap) / 2;
-        if (avg > 80) return '😄';
-        if (avg > 60) return '😊';
-        if (avg > 40) return '😐';
-        if (avg > 20) return '😟';
-        return '😢';
-    };
 
     const feed = () => {
         if (stats.hunger >= 100) {
@@ -54,7 +45,6 @@ export default function PetPage() {
         setStats((p) => {
             const newHunger = Math.min(100, p.hunger + 20);
             const newHappiness = Math.min(100, p.happiness + 5);
-            setPetMood(getMood(newHunger, newHappiness));
             return { ...p, hunger: newHunger, happiness: newHappiness };
         });
         showSuccess(`${petName} was fed! 🍎`, '+20 Hunger · +5 Happiness');
@@ -92,7 +82,9 @@ export default function PetPage() {
 
     return (
         <div className="p-6 max-w-4xl mx-auto">
-            <h1 className="text-pixel text-2xl text-[#e8e8f0] mb-6">🐾 YOUR COMPANION</h1>
+            <h1 className="text-pixel text-2xl text-[#e8e8f0] mb-6 flex items-center gap-2">
+                <PawPrint className="text-[#6c63ff]" /> YOUR COMPANION
+            </h1>
 
             <div className="grid md:grid-cols-[1fr_300px] gap-6">
                 {/* Main Pet Display */}
@@ -101,10 +93,12 @@ export default function PetPage() {
                     <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-6 text-center">
                         <motion.div
                             onClick={handlePetClick}
-                            whileTap={{ scale: 0.92 }}
-                            className={`w-32 h-32 bg-[#00ff88] rounded-2xl mx-auto mb-4 flex items-center justify-center text-6xl ${isPlaying ? 'cursor-pointer' : 'animate-float'} ${isPlaying ? 'shadow-[0_0_20px_#00ff8880]' : ''} transition-shadow`}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className={`w-40 h-40 bg-gradient-to-b from-[#1a1a2e] to-[#12121a] border-2 border-[#6c63ff40] rounded-full mx-auto mb-6 flex items-center justify-center text-[#e8e8f0] ${isPlaying ? 'cursor-pointer' : ''} ${isPlaying ? 'shadow-[0_0_30px_#6c63ff60]' : 'shadow-xl'} transition-all duration-300 relative group`}
                         >
-                            🐻
+                            <div className="absolute inset-0 bg-[#6c63ff10] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <Cat size={80} className="relative z-10" />
                         </motion.div>
 
                         {/* Name */}
@@ -121,13 +115,12 @@ export default function PetPage() {
                                 <button onClick={saveName} className="px-3 py-1 bg-[#6c63ff] text-white rounded text-mono text-sm">OK</button>
                             </div>
                         ) : (
-                            <button onClick={() => { setIsEditingName(true); setNameInput(petName); }} className="text-pixel text-[#e8e8f0] text-2xl mb-1 hover:text-[#6c63ff] transition">
-                                {petName} ✏️
+                            <button onClick={() => { setIsEditingName(true); setNameInput(petName); }} className="text-pixel text-[#e8e8f0] text-2xl mb-1 hover:text-[#6c63ff] transition flex items-center justify-center gap-2 mx-auto">
+                                {petName} <Pencil size={18} className="text-[#8888aa]" />
                             </button>
                         )}
 
                         <div className="text-retro text-[#8888aa] mb-1">Level {stats.level} · {stats.stage}</div>
-                        <div className="text-pixel text-3xl mb-4">{petMood}</div>
 
                         {isPlaying && (
                             <motion.div
@@ -135,27 +128,27 @@ export default function PetPage() {
                                 animate={{ scale: 1 }}
                                 className="text-pixel text-[#00ff88] text-xl mb-4"
                             >
-                                CLICKS: {clickScore} 🎮
+                                CLICKS: {clickScore} <Gamepad2 size={24} className="inline ml-1" />
                             </motion.div>
                         )}
 
-                        <div className="flex gap-3 justify-center">
+                        <div className="flex gap-4 justify-center mt-6">
                             <button
                                 onClick={feed}
-                                className="px-5 py-2 bg-[#00ff88] text-[#0a0a0f] rounded text-retro text-lg hover:bg-[#00ff99] transition hover:-translate-y-0.5"
+                                className="px-6 py-2.5 bg-[#1a1a2e] border-2 border-[#00ff88] text-[#00ff88] rounded flex items-center gap-2 text-retro text-lg hover:bg-[#00ff88] hover:text-[#0a0a0f] hover:shadow-[0_0_15px_#00ff8860] transition-all"
                             >
-                                🍎 FEED
+                                <Apple size={20} /> FEED
                             </button>
                             {!isPlaying ? (
                                 <button
                                     onClick={startGame}
-                                    className="px-5 py-2 border-2 border-[#6c63ff] text-[#6c63ff] rounded text-retro text-lg hover:bg-[#6c63ff22] transition hover:-translate-y-0.5"
+                                    className="px-6 py-2.5 bg-[#1a1a2e] border-2 border-[#6c63ff] text-[#6c63ff] rounded flex items-center gap-2 text-retro text-lg hover:bg-[#6c63ff] hover:text-[#ffffff] hover:shadow-[0_0_15px_#6c63ff60] transition-all"
                                 >
-                                    🎮 PLAY
+                                    <Gamepad2 size={20} /> PLAY
                                 </button>
                             ) : (
-                                <div className="px-5 py-2 bg-[#ffd700] text-[#0a0a0f] rounded text-retro text-lg animate-pulse">
-                                    CLICK ME!
+                                <div className="px-6 py-2.5 bg-[#ffd700] text-[#0a0a0f] rounded flex items-center gap-2 text-retro text-lg animate-pulse cursor-pointer shadow-[0_0_20px_#ffd700] transition-all hover:scale-105" onClick={handlePetClick}>
+                                    <Zap size={20} /> CLICK ME!
                                 </div>
                             )}
                         </div>
@@ -163,12 +156,14 @@ export default function PetPage() {
 
                     {/* Stats */}
                     <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4">
-                        <h3 className="text-pixel text-sm text-[#e8e8f0] mb-4">📊 PET STATS</h3>
+                        <h3 className="text-pixel text-sm text-[#e8e8f0] mb-4 flex items-center gap-2">
+                            <BarChart3 size={18} className="text-[#6c63ff]" /> PET STATS
+                        </h3>
                         <div className="space-y-3">
                             {[
-                                { label: 'XP', value: stats.xp, max: nextStage?.xpRequired ?? stats.xp, color: '#6c63ff', icon: '⚡' },
-                                { label: 'Hunger', value: stats.hunger, max: 100, color: '#00ff88', icon: '🍎' },
-                                { label: 'Happiness', value: stats.happiness, max: 100, color: '#ffd700', icon: '😊' },
+                                { label: 'XP', value: stats.xp, max: nextStage?.xpRequired ?? stats.xp, color: '#6c63ff', icon: <Zap size={14} /> },
+                                { label: 'Hunger', value: stats.hunger, max: 100, color: '#00ff88', icon: <Apple size={14} /> },
+                                { label: 'Happiness', value: stats.happiness, max: 100, color: '#ffd700', icon: <Smile size={14} /> },
                             ].map((stat) => (
                                 <div key={stat.label}>
                                     <div className="flex justify-between mb-1">
@@ -189,7 +184,7 @@ export default function PetPage() {
                         </div>
                         {xpToNext && (
                             <div className="mt-3 text-mono text-[#8888aa] text-xs text-center">
-                                {xpToNext} XP until evolution to {nextStage.stage} {nextStage.emoji}
+                                {xpToNext} XP until evolution to {nextStage.stage}
                             </div>
                         )}
                     </div>
@@ -206,13 +201,13 @@ export default function PetPage() {
                                 <div key={stage.stage}>
                                     <div
                                         className={`flex items-center gap-3 p-3 rounded border-2 transition ${isCurrent
-                                                ? 'border-[#00ff88] bg-[#00ff8815]'
-                                                : isUnlocked
-                                                    ? 'border-[#6c63ff] bg-[#6c63ff10]'
-                                                    : 'border-[#2a2a3e] opacity-50'
+                                            ? 'border-[#00ff88] bg-[#00ff8815]'
+                                            : isUnlocked
+                                                ? 'border-[#6c63ff] bg-[#6c63ff10]'
+                                                : 'border-[#2a2a3e] opacity-50'
                                             }`}
                                     >
-                                        <span className="text-2xl">{stage.emoji}</span>
+                                        <span className="text-[#8888aa]">{stage.icon}</span>
                                         <div className="flex-1">
                                             <div className={`text-retro ${isCurrent ? 'text-[#00ff88]' : isUnlocked ? 'text-[#e8e8f0]' : 'text-[#8888aa]'}`}>
                                                 {stage.stage}
@@ -220,8 +215,8 @@ export default function PetPage() {
                                             <div className="text-mono text-[#8888aa] text-xs">{stage.xpRequired} XP</div>
                                         </div>
                                         {isCurrent && <span className="text-mono text-[#00ff88] text-xs">NOW</span>}
-                                        {isUnlocked && !isCurrent && <span className="text-mono text-[#6c63ff] text-xs">✅</span>}
-                                        {!isUnlocked && <span className="text-mono text-[#8888aa] text-xs">🔒</span>}
+                                        {isUnlocked && !isCurrent && <CheckCircle2 size={16} className="text-[#6c63ff]" />}
+                                        {!isUnlocked && <Lock size={16} className="text-[#8888aa]" />}
                                     </div>
                                     {i < EVOLUTION_STAGES.length - 1 && (
                                         <div className="w-0.5 h-3 bg-[#2a2a3e] mx-auto" />
@@ -235,10 +230,10 @@ export default function PetPage() {
                     <div className="mt-6 border-t border-[#2a2a3e] pt-4">
                         <h4 className="text-pixel text-xs text-[#8888aa] mb-3">HISTORY</h4>
                         <div className="space-y-2 text-mono text-xs text-[#8888aa]">
-                            <div>📅 Adopted: Day 1</div>
-                            <div>⚡ Total XP earned: {stats.xp}</div>
-                            <div>🍎 Times fed: 3</div>
-                            <div>🎮 Games played: 1</div>
+                            <div><Calendar size={12} className="inline mr-1" /> Adopted: Day 1</div>
+                            <div><Zap size={12} className="inline mr-1" /> Total XP earned: {stats.xp}</div>
+                            <div><Apple size={12} className="inline mr-1" /> Times fed: 3</div>
+                            <div><Gamepad2 size={12} className="inline mr-1" /> Games played: 1</div>
                         </div>
                     </div>
                 </div>

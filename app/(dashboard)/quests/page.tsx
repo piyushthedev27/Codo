@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Zap, Clock, CheckCircle, Lock, Star } from 'lucide-react';
+import { Zap, Clock, CheckCircle, Lock, Star, Sun, Calendar, Scroll, ClipboardList, CheckCircle2, Coins } from 'lucide-react';
 
 type Tab = 'active' | 'available' | 'completed';
 
@@ -38,10 +38,10 @@ const QUESTS: Record<Tab, Quest[]> = {
     ],
 };
 
-const CATEGORY_LABELS: Record<string, { label: string; color: string; emoji: string }> = {
-    daily: { label: 'DAILY', color: '#00d4ff', emoji: '☀️' },
-    weekly: { label: 'WEEKLY', color: '#6c63ff', emoji: '📅' },
-    special: { label: 'SPECIAL', color: '#ffd700', emoji: '⭐' },
+const CATEGORY_LABELS: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+    daily: { label: 'DAILY', color: '#00d4ff', icon: <Sun size={14} /> },
+    weekly: { label: 'WEEKLY', color: '#6c63ff', icon: <Calendar size={14} /> },
+    special: { label: 'SPECIAL', color: '#ffd700', icon: <Star size={14} /> },
 };
 
 function QuestCard({ quest, tab }: { quest: Quest; tab: Tab }) {
@@ -54,18 +54,18 @@ function QuestCard({ quest, tab }: { quest: Quest; tab: Tab }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className={`bg-[#1a1a2e] rounded p-4 border-2 transition-all hover:-translate-y-0.5 ${quest.special
-                    ? 'border-[#ffd700] shadow-[0_0_16px_#ffd70040]'
-                    : 'border-[#2a2a3e] hover:border-[#6c63ff]'
+                ? 'border-[#ffd700] shadow-[0_0_16px_#ffd70040]'
+                : 'border-[#2a2a3e] hover:border-[#6c63ff]'
                 }`}
         >
             <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                         <span
-                            className="text-mono text-xs px-2 py-0.5 rounded border"
+                            className="text-mono text-xs px-2 py-0.5 rounded border flex items-center gap-1"
                             style={{ color: cat.color, borderColor: cat.color + '60', background: cat.color + '15' }}
                         >
-                            {cat.emoji} {cat.label}
+                            {cat.icon} {cat.label}
                         </span>
                         {quest.special && <Star size={14} className="text-[#ffd700]" />}
                         {tab === 'completed' && <CheckCircle size={14} className="text-[#00ff88]" />}
@@ -104,7 +104,7 @@ function QuestCard({ quest, tab }: { quest: Quest; tab: Tab }) {
                         +{quest.xpReward} XP
                     </div>
                     <div className="flex items-center gap-1 text-mono text-xs text-[#ffd700]">
-                        🪙 +{quest.coinReward}
+                        <Coins size={12} /> +{quest.coinReward}
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -120,7 +120,7 @@ function QuestCard({ quest, tab }: { quest: Quest; tab: Tab }) {
                         </button>
                     )}
                     {tab === 'completed' && (
-                        <span className="text-mono text-[#00ff88] text-xs">CLAIMED ✅</span>
+                        <span className="text-mono text-[#00ff88] text-xs flex items-center gap-1">CLAIMED <CheckCircle2 size={12} /></span>
                     )}
                     {tab === 'active' && (
                         <span className="text-mono text-[#6c63ff] text-xs">IN PROGRESS...</span>
@@ -139,19 +139,23 @@ export default function QuestsPage() {
         <div className="p-6">
             {/* Header */}
             <div className="mb-6">
-                <h1 className="text-pixel text-2xl text-[#e8e8f0] mb-2">📜 QUESTS</h1>
+                <h1 className="text-pixel text-2xl text-[#e8e8f0] mb-2 flex items-center gap-2">
+                    <Scroll className="text-[#6c63ff]" /> QUESTS
+                </h1>
                 <p className="text-mono text-[#8888aa]">Complete quests to earn bonus XP, coins, and glory.</p>
             </div>
 
             {/* Stats Strip */}
             <div className="grid grid-cols-3 gap-3 mb-6">
                 {[
-                    { label: 'ACTIVE', value: QUESTS.active.length, color: '#6c63ff', emoji: '⚡' },
-                    { label: 'AVAILABLE', value: QUESTS.available.length, color: '#00d4ff', emoji: '📋' },
-                    { label: 'COMPLETED', value: QUESTS.completed.length, color: '#00ff88', emoji: '✅' },
+                    { label: 'ACTIVE', value: QUESTS.active.length, color: '#6c63ff', icon: <Zap size={20} /> },
+                    { label: 'AVAILABLE', value: QUESTS.available.length, color: '#00d4ff', icon: <ClipboardList size={20} /> },
+                    { label: 'COMPLETED', value: QUESTS.completed.length, color: '#00ff88', icon: <CheckCircle2 size={20} /> },
                 ].map((s) => (
                     <div key={s.label} className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-3 text-center">
-                        <div className="text-pixel text-2xl mb-1" style={{ color: s.color }}>{s.emoji} {s.value}</div>
+                        <div className="text-pixel text-2xl mb-1 flex items-center justify-center gap-2" style={{ color: s.color }}>
+                            {s.icon} {s.value}
+                        </div>
                         <div className="text-mono text-[#8888aa] text-xs">{s.label}</div>
                     </div>
                 ))}
@@ -170,8 +174,8 @@ export default function QuestsPage() {
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         className={`px-4 py-2 text-retro text-sm transition border-b-2 -mb-[2px] ${activeTab === tab
-                                ? 'text-[#6c63ff] border-[#6c63ff]'
-                                : 'text-[#8888aa] border-transparent hover:text-[#e8e8f0]'
+                            ? 'text-[#6c63ff] border-[#6c63ff]'
+                            : 'text-[#8888aa] border-transparent hover:text-[#e8e8f0]'
                             }`}
                     >
                         {tab.toUpperCase()}
@@ -184,7 +188,9 @@ export default function QuestsPage() {
             <div className="space-y-3">
                 {quests.length === 0 ? (
                     <div className="text-center py-16 text-mono text-[#8888aa]">
-                        <div className="text-4xl mb-3">🌟</div>
+                        <div className="flex justify-center mb-3">
+                            <Star size={48} className="text-[#2a2a3e]" />
+                        </div>
                         <div>No quests here — check other tabs!</div>
                     </div>
                 ) : (

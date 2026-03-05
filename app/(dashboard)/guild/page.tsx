@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { Castle, Shield } from 'lucide-react';
 
 export default function GuildPage() {
     const [activeTab, setActiveTab] = useState<'browse' | 'mine'>('browse');
@@ -13,7 +14,9 @@ export default function GuildPage() {
         <div className="p-6">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-pixel text-2xl text-[#6c63ff] mb-1">🏰 GUILDS</h1>
+                    <h1 className="text-pixel text-2xl text-[#6c63ff] mb-1 flex items-center gap-2">
+                        <Castle /> GUILDS
+                    </h1>
                     <p className="text-mono text-[#8888aa]">Team up. Compete together.</p>
                 </div>
                 <button className="px-4 py-2 bg-[#6c63ff] text-white rounded text-retro hover:bg-[#7c73ff] glow-purple transition">
@@ -36,8 +39,8 @@ export default function GuildPage() {
             <div className="grid md:grid-cols-3 gap-4">
                 {guilds.map((guild, i) => (
                     <div key={i} className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4 hover:border-[#6c63ff] transition">
-                        <div className="w-16 h-16 rounded mx-auto mb-3 flex items-center justify-center text-3xl" style={{ background: `${guild.color}22`, border: `2px solid ${guild.color}` }}>
-                            🛡️
+                        <div className="w-16 h-16 rounded mx-auto mb-3 flex items-center justify-center" style={{ background: `${guild.color}22`, border: `2px solid ${guild.color}`, color: guild.color }}>
+                            <Shield size={32} />
                         </div>
                         <h3 className="text-pixel text-sm text-center mb-1" style={{ color: guild.color }}>{guild.name}</h3>
                         <div className="text-mono text-[#8888aa] text-xs text-center mb-3">

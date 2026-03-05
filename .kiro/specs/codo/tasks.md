@@ -596,78 +596,130 @@ This implementation plan breaks down the CODO backend into discrete, manageable 
   - Verify documentation is complete and accurate
   - Test deployment process with Firebase
 
-## Phase 12: Integration Testing & Final Verification
+## Phase 12: AI Features & Additional Routes
 
-- [x] 12.1 Write integration tests for authentication flow
+- [x] 12.1 Implement AI Hint Service
+  - Create aiHintService.js for generating hints based on user mistakes
+  - Integrate with AI model (Claude/Nova) for hint generation
+  - Implement hint caching to reduce API costs
+  - _Requirements: Design Section - AI/Helper Routes_
+
+- [x] 12.2 Create AI Hint route
+  - Create route POST /api/ai/hint
+  - Implement request validation for challenge context
+  - Return personalized hints based on user's mistake history
+  - _Requirements: Design Section - AI/Helper Routes_
+
+- [x] 12.3 Implement Cinema Generation Service
+  - Create cinemaService.js for generating animated code explanations
+  - Integrate with AI model for script generation
+  - Implement cinema script caching (7-day TTL)
+  - Cap max_tokens at 2000 for cost control
+  - _Requirements: Design Section - AI/Helper Routes_
+
+- [x] 12.4 Implement Text-to-Speech Service
+  - Create ttsService.js for converting cinema scripts to audio
+  - Integrate with TTS provider (AWS Polly or similar)
+  - Implement audio caching
+  - _Requirements: Design Section - AI/Helper Routes_
+
+- [x] 12.5 Create Cinema routes
+  - Create route POST /api/cinema/generate for script generation
+  - Create route POST /api/cinema/tts for audio generation
+  - Implement request validation and rate limiting
+  - _Requirements: Design Section - AI/Helper Routes_
+
+- [x] 12.6 Implement XP awards for Cinema
+  - Award 75 XP when user watches AI Cinema
+  - Track cinema viewing completion
+  - Update user statistics
+  - _Requirements: Guidelines - XP Awards_
+
+- [x] 12.7 Checkpoint - Verify AI features
+  - Test AI hint generation
+  - Test cinema script generation
+  - Test TTS audio generation
+  - Verify XP awards work correctly
+
+## Phase 13: Integration Testing & Final Verification
+
+- [x] 13.1 Write integration tests for authentication flow
   - Test complete registration and login flow with Firebase Auth
   - Test token refresh and expiration
   - Test password reset flow
   - Use Firebase Emulator Suite for testing
   - _Requirements: 1.1, 1.2, 1.4, 1.5, 1.7_
 
-- [x] 12.2 Write integration tests for code submission flow
+- [x] 13.2 Write integration tests for code submission flow
   - Test complete submission workflow
   - Test execution engine integration
   - Test result persistence to Firestore
   - _Requirements: 3.1, 3.2, 3.6_
 
-- [x] 12.3 Write integration tests for leaderboard updates
+- [x] 13.3 Write integration tests for leaderboard updates
   - Test leaderboard updates after submissions
   - Test caching behavior
   - Test ranking accuracy with Firestore queries
   - _Requirements: 6.1, 6.4, 6.5_
 
-- [x] 12.4 Write integration tests for guild operations
+- [x] 13.4 Write integration tests for guild operations
   - Test guild creation and membership with Firestore
   - Test invitation flow
   - Test guild leaderboard updates
   - _Requirements: 7.1, 7.2, 7.3, 8.1_
 
-- [x] 12.5 Write integration tests for lesson progression
+- [x] 13.5 Write integration tests for lesson progression
   - Test lesson access and completion
   - Test progress tracking in Firestore
   - Test prerequisite enforcement
   - _Requirements: 9.1, 9.3, 9.4, 9.5_
 
-- [x] 12.6 Write integration tests for notifications
+- [x] 13.6 Write integration tests for notifications
   - Test notification creation and delivery to Firestore
   - Test notification status updates
   - Test notification filtering
   - _Requirements: 12.1, 12.4, 12.5_
 
-- [x] 12.7 Write integration tests for API Gateway
+- [x] 13.7 Write integration tests for API Gateway
   - Test rate limiting enforcement
   - Test error handling
   - Test CORS and HTTPS
   - _Requirements: 13.1, 13.2, 13.5, 13.6_
 
-- [x] 12.8 Run full test suite
+- [ ] 13.8 Write integration tests for AI features
+  - Test AI hint generation
+  - Test cinema script generation
+  - Test TTS audio generation
+  - Verify caching works correctly
+  - _Requirements: Phase 12 AI Features_
+
+- [x] 13.9 Run full test suite
   - Execute all unit tests
   - Execute all property-based tests
   - Execute all integration tests with Firebase Emulator
   - Verify test coverage >80%
   - _Requirements: All_
 
-- [x] 12.9 Verify all properties pass
+- [x] 13.10 Verify all properties pass
   - Ensure all 88 correctness properties pass
   - Document any property failures
   - Fix any failing properties
   - _Requirements: All_
 
-- [x] 12.10 Performance testing
+- [x] 13.11 Performance testing
   - Test API response times (target <200ms p95)
   - Test code execution performance (target <5s)
   - Test leaderboard update latency (target <30s)
   - Test guild leaderboard latency (target <1m)
   - _Requirements: 15.1, 15.2, 6.4, 8.3_
 
-- [x] 12.11 Load testing
+- [x] 13.12 Load testing
   - Test system under concurrent load
   - Verify horizontal scaling works
   - Verify Firestore performance under load
   - _Requirements: 15.4, 15.5_
 
-- [x] 12.12 Security testing
+- [x] 13.13 Security testing
   - Test injection attack prevention
   - Test XSS prevention
   - Test Firebase Authentication and authorization
@@ -675,7 +727,7 @@ This implementation plan breaks down the CODO backend into discrete, manageable 
   - Test rate limiting
   - _Requirements: 13.4, 13.5, 13.6_
 
-- [x] 12.13 Final checkpoint - All tests pass
+- [x] 13.14 Final checkpoint - All tests pass
   - Ensure all tests pass
   - Ensure all properties validated
   - Ensure performance targets met

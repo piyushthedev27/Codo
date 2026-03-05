@@ -1,3 +1,5 @@
+import { Search } from 'lucide-react';
+
 export default function MistakeAnalyzerPage() {
     const mistakes = [
         { category: 'Off-by-one errors', count: 3, severity: 'HIGH', lesson: 'Array Indexing' },
@@ -9,7 +11,9 @@ export default function MistakeAnalyzerPage() {
 
     return (
         <div className="p-6">
-            <h1 className="text-pixel text-2xl text-[#6c63ff] mb-2">🔍 MISTAKE ANALYZER</h1>
+            <h1 className="text-pixel text-2xl text-[#6c63ff] mb-2 flex items-center gap-2">
+                <Search /> MISTAKE ANALYZER
+            </h1>
             <p className="text-mono text-[#8888aa] mb-6">AI analyzes your errors to build targeted micro-lessons.</p>
 
             <div className="grid md:grid-cols-3 gap-4 mb-6">

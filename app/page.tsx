@@ -3,9 +3,11 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Film, Map as MapIcon, Swords, Brain, PawPrint, Search, Heart, ShieldCheck, Zap, Users, Code2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function LandingPage() {
+    const { user } = useAuth();
     const statsRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -42,7 +44,11 @@ export default function LandingPage() {
             {/* Navbar */}
             <nav className="fixed top-0 left-0 right-0 z-50 bg-[#12121a] border-b border-[#2a2a3e]">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                    <h1 className="text-pixel text-2xl text-[#6c63ff] glow-purple">CODO</h1>
+                    <Link href="/" className="flex items-center gap-2 group">
+                        <span className="text-pixel text-[#6c63ff] text-xl md:text-2xl transition-all duration-300 group-hover:-translate-x-1 group-hover:text-[#00d4ff] drop-shadow-[0_0_8px_rgba(108,99,255,0.4)]">{"{"}</span>
+                        <h1 className="text-pixel text-2xl md:text-3xl tracking-widest text-transparent bg-clip-text bg-gradient-to-br from-[#ffffff] to-[#8888aa]">CODO</h1>
+                        <span className="text-pixel text-[#6c63ff] text-xl md:text-2xl transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#00ff88] drop-shadow-[0_0_8px_rgba(108,99,255,0.4)]">{"}"}</span>
+                    </Link>
                     <div className="hidden md:flex items-center gap-8 text-retro text-lg">
                         <a href="#features" className="text-[#8888aa] hover:text-[#6c63ff] transition">Courses</a>
                         <a href="#features" className="text-[#8888aa] hover:text-[#6c63ff] transition">Features</a>
@@ -50,12 +56,20 @@ export default function LandingPage() {
                         <a href="#community" className="text-[#8888aa] hover:text-[#6c63ff] transition">Community</a>
                     </div>
                     <div className="flex items-center gap-4">
-                        <Link href="/login" className="px-6 py-2 border-2 border-[#6c63ff] text-[#6c63ff] rounded text-retro text-lg hover:bg-[#6c63ff22] transition">
-                            LOGIN
-                        </Link>
-                        <Link href="/sign-up" className="px-6 py-2 bg-[#6c63ff] text-white rounded text-retro text-lg hover:bg-[#7c73ff] glow-purple transition">
-                            START FREE ▶
-                        </Link>
+                        {user ? (
+                            <Link href="/dashboard" className="px-6 py-2 bg-[#6c63ff] text-white rounded text-retro text-lg hover:bg-[#7c73ff] glow-purple transition">
+                                DASHBOARD
+                            </Link>
+                        ) : (
+                            <>
+                                <Link href="/login" className="px-6 py-2 border-2 border-[#6c63ff] text-[#6c63ff] rounded text-retro text-lg hover:bg-[#6c63ff22] transition">
+                                    LOGIN
+                                </Link>
+                                <Link href="/sign-up" className="px-6 py-2 bg-[#6c63ff] text-white rounded text-retro text-lg hover:bg-[#7c73ff] glow-purple transition">
+                                    START FREE ▶
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </nav>
@@ -171,15 +185,15 @@ export default function LandingPage() {
                     <h2 className="text-pixel text-3xl text-center mb-16">YOUR ARSENAL</h2>
                     <div className="grid md:grid-cols-3 gap-6">
                         {[
-                            { icon: '🎬', title: 'AI CODE CINEMA', desc: 'Type any topic. Watch AI animate the code with voiceover. Pause, rewind, speed up.' },
-                            { icon: '🗺️', title: 'WORLD MAP', desc: 'Topics are zones on a pixel art adventure map. Unlock new regions as your level grows.' },
-                            { icon: '⚔️', title: 'CODE DUELS', desc: 'Race against AI peers in timed coding challenges. Live leaderboard. Real XP rewards.' },
-                            { icon: '🧠', title: 'KNOWLEDGE GRAPH', desc: 'Visual skill tree shows what you know, what\'s next, and where your gaps are.' },
-                            { icon: '🐾', title: 'PIXEL PET', desc: 'Your companion grows as you learn. Stay consistent and watch it evolve.' },
-                            { icon: '🔍', title: 'MISTAKE ANALYZER', desc: 'AI reads your errors and generates targeted micro-lessons. Stop repeating mistakes.' },
+                            { icon: <Film size={40} />, title: 'AI CODE CINEMA', desc: 'Type any topic. Watch AI animate the code with voiceover. Pause, rewind, speed up.' },
+                            { icon: <MapIcon size={40} />, title: 'WORLD MAP', desc: 'Topics are zones on a pixel art adventure map. Unlock new regions as your level grows.' },
+                            { icon: <Swords size={40} />, title: 'CODE DUELS', desc: 'Race against AI peers in timed coding challenges. Live leaderboard. Real XP rewards.' },
+                            { icon: <Brain size={40} />, title: 'KNOWLEDGE GRAPH', desc: 'Visual skill tree shows what you know, what\'s next, and where your gaps are.' },
+                            { icon: <PawPrint size={40} />, title: 'PIXEL PET', desc: 'Your companion grows as you learn. Stay consistent and watch it evolve.' },
+                            { icon: <Search size={40} />, title: 'MISTAKE ANALYZER', desc: 'AI reads your errors and generates targeted micro-lessons. Stop repeating mistakes.' },
                         ].map((feature, i) => (
                             <div key={i} className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-6 hover:border-[#6c63ff] hover:glow-purple hover:-translate-y-1 transition cursor-pointer">
-                                <div className="text-5xl mb-4">{feature.icon}</div>
+                                <div className="text-[#6c63ff] mb-4">{feature.icon}</div>
                                 <h3 className="text-retro text-[#6c63ff] text-xl mb-3">{feature.title}</h3>
                                 <p className="text-mono text-[#8888aa] text-sm">{feature.desc}</p>
                             </div>
@@ -188,7 +202,40 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* Final CTA */}
+            {/* Detailed Info Section */}
+            <section className="py-20 bg-[#12121a] border-y border-[#2a2a3e]">
+                <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h2 className="text-pixel text-2xl text-[#6c63ff] mb-6">WHY CODO?</h2>
+                        <div className="space-y-8">
+                            {[
+                                { icon: <ShieldCheck className="text-[#00ff88]" />, title: 'PROVEN METHODOLOGY', desc: 'Our learning paths are designed by senior engineers and educators to ensure you don\'t just copy code, but understand it.' },
+                                { icon: <Zap className="text-[#ffd700]" />, title: 'INSTANT FEEDBACK', desc: 'No more waiting for stack overflow. Get AI-powered debugging and explanations in real-time as you type.' },
+                                { icon: <Users className="text-[#6c63ff]" />, title: 'ACTIVE COMMUNITY', desc: 'Join guilds, participate in weekly duels, and learn alongside thousands of other developers on the same mission.' }
+                            ].map((item, i) => (
+                                <div key={i} className="flex gap-4">
+                                    <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a3e] h-fit">{item.icon}</div>
+                                    <div>
+                                        <h4 className="text-retro text-[#e8e8f0] text-lg mb-2">{item.title}</h4>
+                                        <p className="text-mono text-[#8888aa] text-sm leading-relaxed">{item.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded-xl p-8 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#6c63ff10] blur-3xl rounded-full" />
+                        <Code2 size={48} className="text-[#6c63ff] mb-6 animate-pulse" />
+                        <h3 className="text-pixel text-xl mb-4">OPTIMIZED FOR RETENTION</h3>
+                        <p className="text-mono text-[#8888aa] mb-6">
+                            Traditional tutorials go in one ear and out the other. CODO uses spaced repetition and active recall integrated into a gamified experience to make sure your skills stick for life.
+                        </p>
+                        <div className="p-4 bg-[#0a0a0f] rounded border border-[#2a2a3e] text-mono text-xs text-[#6c63ff]">
+                            {`// Spaced Repetition Engine v2.4 initialized\n// Analyzing student retention patterns...\n// Optimal review session: 48 hours`}
+                        </div>
+                    </div>
+                </div>
+            </section>
             <section className="py-20 bg-[#12121a] text-center">
                 <div className="max-w-3xl mx-auto px-6">
                     <h2 className="text-pixel text-4xl mb-4">READY TO LEVEL UP?</h2>
@@ -221,7 +268,7 @@ export default function LandingPage() {
                         ))}
                     </div>
                     <div className="border-t border-[#2a2a3e] pt-8 text-center text-mono text-[#8888aa] text-sm">
-                        © 2026 Codo. Built with ❤️ for learners worldwide.
+                        © 2026 Codo. Built with <Heart size={14} className="inline text-[#ff4d6d]" /> for learners worldwide.
                     </div>
                 </div>
             </footer>

@@ -54,9 +54,10 @@
 ## 5. Backend Blueprint (API & Services)
 
 ### 5.1 Technology Stack
-- **Framework**: Next.js 14 API Route Handlers.
+- **Framework**: Next.js 14 App Router (Frontend + API Routes).
 - **Database**: Firebase Firestore (NoSQL).
 - **Authentication**: Firebase Auth (JWT based).
+- **Code Execution**: Node.js child processes with multi-language support.
 - **Logic Layer**: `lib/services/` (Service-oriented architecture).
 
 ### 5.2 Key Service Modules

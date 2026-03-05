@@ -12,6 +12,12 @@ docs/
 ├── YOUR_TASKS.md               # 📋 What you need to do
 ├── DOCUMENTATION_INDEX.md      # This file - complete index
 ├── STRUCTURE.md                # Project folder structure guide
+├── deployment.md               # Vercel deployment guide
+├── PROJECT_SOP.md              # Standard operating procedures
+├── CHANGES_SUMMARY.md          # Architecture migration summary
+├── ATTRIBUTIONS.md             # Third-party attributions
+├── monitoring.md               # Monitoring and observability
+├── runbooks.md                 # Operational procedures
 └── firebase/                   # Firebase configuration
     └── FIREBASE_SETUP.md       # Firebase Console setup steps
 ```
@@ -108,6 +114,11 @@ You need to complete these steps in Firebase Console:
 - ✅ Firestore security rules
 - ✅ Firestore indexes
 - ✅ Troubleshooting
+- ✅ Deployment guide (Vercel)
+- ✅ Project structure
+- ✅ Standard operating procedures
+- ✅ Monitoring and observability
+- ✅ Operational runbooks
 
 ## 🔗 External Resources
 

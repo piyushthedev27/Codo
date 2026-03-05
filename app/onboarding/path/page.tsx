@@ -1,13 +1,14 @@
 'use client';
 import { useRouter } from 'next/navigation';
+import { Globe, Server, Brain, Zap } from 'lucide-react';
 
 export default function OnboardingPathPage() {
     const router = useRouter();
     const paths = [
-        { id: 'web', label: 'WEB DEVELOPER', desc: 'HTML, CSS, JS, React', emoji: '🌐', color: '#00d4ff' },
-        { id: 'backend', label: 'BACKEND ENGINEER', desc: 'Python, Node, SQL, APIs', emoji: '🖥️', color: '#6c63ff' },
-        { id: 'dsa', label: 'ALGORITHM MASTER', desc: 'DSA, LeetCode prep, competitive', emoji: '🧠', color: '#ffd700' },
-        { id: 'fullstack', label: 'FULL-STACK', desc: 'Everything — frontend + backend', emoji: '⚡', color: '#00ff88' },
+        { id: 'web', label: 'WEB DEVELOPER', desc: 'HTML, CSS, JS, React', icon: <Globe size={40} className="text-[#00d4ff]" />, color: '#00d4ff' },
+        { id: 'backend', label: 'BACKEND ENGINEER', desc: 'Python, Node, SQL, APIs', icon: <Server size={40} className="text-[#6c63ff]" />, color: '#6c63ff' },
+        { id: 'dsa', label: 'ALGORITHM MASTER', desc: 'DSA, LeetCode prep, competitive', icon: <Brain size={40} className="text-[#ffd700]" />, color: '#ffd700' },
+        { id: 'fullstack', label: 'FULL-STACK', desc: 'Everything — frontend + backend', icon: <Zap size={40} className="text-[#00ff88]" />, color: '#00ff88' },
     ];
 
     return (
@@ -26,7 +27,7 @@ export default function OnboardingPathPage() {
                             onClick={() => router.push('/onboarding/peer')}
                             className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-6 text-left hover:border-[#6c63ff] hover:glow-purple transition"
                         >
-                            <div className="text-4xl mb-3">{path.emoji}</div>
+                            <div className="mb-3">{path.icon}</div>
                             <div className="text-pixel text-xs mb-2" style={{ color: path.color }}>{path.label}</div>
                             <div className="text-mono text-[#8888aa] text-sm">{path.desc}</div>
                         </button>

@@ -1,3 +1,5 @@
+import { BarChart3 } from 'lucide-react';
+
 export default function ProgressPage() {
     const stats = [
         { label: 'Challenges Solved', value: '0', color: '#6c63ff' },
@@ -8,7 +10,9 @@ export default function ProgressPage() {
 
     return (
         <div className="p-6">
-            <h1 className="text-pixel text-2xl text-[#6c63ff] mb-6">📊 PROGRESS</h1>
+            <h1 className="text-pixel text-2xl text-[#6c63ff] mb-6 flex items-center gap-2">
+                <BarChart3 /> PROGRESS
+            </h1>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 {stats.map((stat, i) => (

@@ -1,58 +1,105 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/lib/firebase/admin';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateHint, HintRequest } from '@/lib/services/aiHintService';
+import { withRateLimit, INTENSIVE_RATE_LIMIT } from '@/lib/middleware/rateLimiter';
 
-// Initialize Gemini
-const genAI = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
-
-export async function POST(request: NextRequest) {
+async function handler(request: NextRequest) {
     try {
-        // Verify Auth
+        // 1. Authenticate user
         const authHeader = request.headers.get('Authorization');
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+        if (!authHeader?.startsWith('Bearer ')) {
+            return NextResponse.json({ 
+                error: 'Unauthorized: Missing or invalid token' 
+            }, { status: 401 });
         }
+        
         const token = authHeader.split('Bearer ')[1];
-        await adminAuth().verifyIdToken(token);
-
-        // Verify API Key
-        if (!genAI) {
-            return NextResponse.json({ message: 'AI Hints are not configured (Missing GEMINI_API_KEY)' }, { status: 503 });
+        let decodedToken;
+        try {
+            decodedToken = await adminAuth().verifyIdToken(token);
+        } catch {
+            return NextResponse.json({ 
+                error: 'Unauthorized: Invalid token' 
+            }, { status: 401 });
         }
 
-        const { problemTitle, problemDescription, userCode, language } = await request.json();
+        const userId = decodedToken.uid;
 
-        if (!problemTitle || !problemDescription || !language) {
-            return NextResponse.json({ message: 'Missing problem context' }, { status: 400 });
+        // 2. Parse and validate request body
+        const body = await request.json();
+        const { challengeId, currentCode, language } = body;
+
+        // Validate required fields
+        if (!challengeId || typeof challengeId !== 'string' || challengeId.trim().length === 0) {
+            return NextResponse.json({ 
+                error: 'Missing or invalid required field: challengeId' 
+            }, { status: 400 });
         }
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        if (!currentCode || typeof currentCode !== 'string') {
+            return NextResponse.json({ 
+                error: 'Missing or invalid required field: currentCode' 
+            }, { status: 400 });
+        }
 
-        const prompt = `You are a helpful coding instructor helping a student. 
-The student is working on a coding challenge: "${problemTitle}".
-Challenge description: "${problemDescription}"
+        if (!language || typeof language !== 'string' || language.trim().length === 0) {
+            return NextResponse.json({ 
+                error: 'Missing or invalid required field: language' 
+            }, { status: 400 });
+        }
 
-The student is writing in ${language}. Here is their current code editor content:
-\`\`\`${language}
-${userCode}
-\`\`\`
+        // Validate language is supported
+        const supportedLanguages = ['javascript', 'python', 'java', 'cpp'];
+        if (!supportedLanguages.includes(language.toLowerCase())) {
+            return NextResponse.json({ 
+                error: `Unsupported language: ${language}. Supported languages: ${supportedLanguages.join(', ')}` 
+            }, { status: 400 });
+        }
 
-Give the student a short, highly contextual hint (maximum 3 sentences). 
-CRITICAL RULES:
-1. DO NOT give them the direct answer.
-2. DO NOT write the full code for them. 
-3. Focus on pointing them in the right direction, identifying a specific logic error, syntax error, or conceptual misunderstanding in their current code.
-4. If their code is empty or just the starter template, give them a hint on how to begin solving the problem conceptually.
-5. Keep a very encouraging, friendly tone. Use emojis!`;
+        // 3. Build hint request
+        const hintRequest: HintRequest = {
+            userId,
+            challengeId: challengeId.trim(),
+            currentCode,
+            language: language.toLowerCase()
+        };
 
-        const result = await model.generateContent(prompt);
-        const text = result.response.text();
+        // 4. Generate hint
+        const hintResponse = await generateHint(hintRequest);
 
-        return NextResponse.json({ hint: text });
+        // 5. Return success response
+        return NextResponse.json({
+            success: true,
+            hint: hintResponse.hint,
+            cached: hintResponse.cached,
+            mistakeContext: hintResponse.mistakeContext
+        }, { status: 200 });
 
     } catch (error: unknown) {
-        console.error('AI Hint Error:', error);
-        const err = error as Error;
-        return NextResponse.json({ message: err.message || 'Failed to generate hint' }, { status: 500 });
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        console.error('AI hint generation error:', error);
+        
+        // Handle specific error cases
+        if (message.includes('Challenge not found')) {
+            return NextResponse.json({ 
+                error: 'Challenge not found',
+                details: message 
+            }, { status: 404 });
+        }
+
+        if (message.includes('Failed to generate hint')) {
+            return NextResponse.json({ 
+                error: 'Failed to generate hint',
+                details: message 
+            }, { status: 500 });
+        }
+
+        return NextResponse.json({ 
+            error: 'Failed to generate hint', 
+            details: message 
+        }, { status: 500 });
     }
 }
+
+// Apply rate limiting for resource-intensive AI hint generation
+export const POST = withRateLimit(handler, INTENSIVE_RATE_LIMIT, 'ai-hint');

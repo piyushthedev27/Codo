@@ -1,12 +1,14 @@
-'use client';
+"use client";
+
 import { useRouter } from 'next/navigation';
+import { Palette, Zap, GitBranch } from 'lucide-react';
 
 export default function OnboardingPeerPage() {
     const router = useRouter();
     const peers = [
-        { name: 'SARAH', color: '#b060ff', specialty: 'FRONTEND SPECIALIST', emoji: '🎨', quote: "Let's build beautiful things together!" },
-        { name: 'ALEX', color: '#00d4ff', specialty: 'ALGORITHMS EXPERT', emoji: '⚡', quote: "Challenge accepted. Let's optimize!" },
-        { name: 'JORDAN', color: '#00ff88', specialty: 'SYSTEM DESIGN', emoji: '🏗️', quote: "Let's understand the fundamentals first." },
+        { name: 'SARAH', color: '#b060ff', specialty: 'FRONTEND SPECIALIST', icon: <Palette size={40} className="text-[#1a1a2e]" />, quote: "Let's build beautiful things together!" },
+        { name: 'ALEX', color: '#00d4ff', specialty: 'ALGORITHMS EXPERT', icon: <Zap size={40} className="text-[#1a1a2e]" />, quote: "Challenge accepted. Let's optimize!" },
+        { name: 'JORDAN', color: '#00ff88', specialty: 'SYSTEM DESIGN', icon: <GitBranch size={40} className="text-[#1a1a2e]" />, quote: "Let's understand the fundamentals first." },
     ];
 
     return (
@@ -25,7 +27,9 @@ export default function OnboardingPeerPage() {
                             onClick={() => router.push('/dashboard')}
                             className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-6 text-center hover:border-[#6c63ff] hover:glow-purple transition group"
                         >
-                            <div className="w-20 h-20 mx-auto mb-4 rounded" style={{ background: peer.color }} />
+                            <div className="w-20 h-20 mx-auto mb-4 rounded flex items-center justify-center transition-transform group-hover:scale-110" style={{ background: peer.color }}>
+                                {peer.icon}
+                            </div>
                             <div className="text-pixel text-sm mb-1" style={{ color: peer.color }}>{peer.name}</div>
                             <div className="text-retro text-[#8888aa] text-xs mb-3">{peer.specialty}</div>
                             <div className="text-mono text-[#e8e8f0] text-xs italic bg-[#12121a] border border-[#2a2a3e] rounded p-2">

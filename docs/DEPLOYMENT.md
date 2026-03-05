@@ -1,6 +1,6 @@
 # CODO Deployment Guide
 
-This guide details the steps to deploy the CODO Next.js backend to Vercel and configure the accompanying Firebase infrastructure.
+This guide details the steps to deploy the CODO Next.js application to Vercel and configure the accompanying Firebase infrastructure.
 
 ## 1. Firebase Project Setup
 
@@ -32,19 +32,25 @@ firebase deploy --only firestore
 
 ## 2. Environment Configuration
 
-The CODO backend requires strict environment configuration (handled by `lib/config/env.ts`).
+The CODO application requires environment configuration for both server-side (API routes) and client-side (frontend).
 
 Prepare the following environment variables:
 
+**Server-side (API Routes):**
 | Variable | Description | Example |
 |---|---|---|
 | `FIREBASE_PROJECT_ID` | Your Firebase project ID | `codo-production` |
 | `FIREBASE_CLIENT_EMAIL` | From the service account JSON | `firebase-adminsdk-...@...` |
 | `FIREBASE_PRIVATE_KEY` | From the service account JSON | `"-----BEGIN PRIVATE KEY-----\n..."` |
+
+**Client-side (Frontend):**
+| Variable | Description | Example |
+|---|---|---|
 | `NEXT_PUBLIC_FIREBASE_API_KEY` | For client-side auth | `AIzaSyB...` |
 | `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | For client-side auth | `codo-production.firebaseapp.com` |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Firebase project ID | `codo-production` |
 
-> Alternatively, you can supply `FIREBASE_SERVICE_ACCOUNT_KEY` with the stringified JSON file.
+> Alternatively, you can supply `FIREBASE_SERVICE_ACCOUNT_KEY` with the stringified JSON file for server-side configuration.
 
 ---
 
@@ -67,5 +73,10 @@ Vercel will automatically run `npm run build` and output the deployment URL.
 
 ## 4. Post-Deployment Verification
 1. Navigate to the Vercel deployment URL.
-2. Go to `https://<YOUR-VERCEL-URL>/api-docs` to access the Swagger API Explorer.
-3. Test a public endpoint (e.g., Global Leaderboards) or attempt to log in using the frontend to verify database connectivity.
+2. Test the application by:
+   - Creating a new account (sign up)
+   - Logging in
+   - Viewing challenges
+   - Submitting code
+3. Check Vercel logs for any errors.
+4. Verify Firebase Firestore shows data in the Firebase Console.

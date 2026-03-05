@@ -23,12 +23,13 @@ export default function InteractiveVideoPlayer({ states, token }: { states: Cine
     const [progress, setProgress] = useState(0); // 0 to 1
     const [showChoices, setShowChoices] = useState(false);
     const [typedCode, setTypedCode] = useState('');
+    const [audioAvailable, setAudioAvailable] = useState(true);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const animationRef = useRef<JSAnimation | null>(null);
     const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    const currentState = states.find(s => s.id === currentStateId) || states[0];
+    const currentState = states?.find(s => s.id === currentStateId) ?? states?.[0];
 
     const transitionToState = useCallback((nextId: string) => {
         setShowChoices(false);
@@ -109,7 +110,19 @@ export default function InteractiveVideoPlayer({ states, token }: { states: Cine
                     })
                 });
 
-                if (!res.ok) throw new Error('TTS failed');
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    console.warn('TTS failed, continuing without audio:', errorData.error);
+                    
+                    // Show user-friendly message for quota errors
+                    if (errorData.code === 'quota_exceeded') {
+                        console.info('💡 TTS quota exceeded - playing cinema without audio narration');
+                        setAudioAvailable(false);
+                    }
+                    
+                    // Continue without audio - just show visuals and text
+                    throw new Error('TTS unavailable');
+                }
 
                 const blob = await res.blob();
                 const url = URL.createObjectURL(blob);
@@ -118,7 +131,9 @@ export default function InteractiveVideoPlayer({ states, token }: { states: Cine
 
                 if (audioRef.current) {
                     audioRef.current.src = url;
-                    audioRef.current.play();
+                    audioRef.current.play().catch(err => {
+                        console.warn('Audio playback failed:', err);
+                    });
                 }
 
                 setProgress(0);
@@ -127,7 +142,7 @@ export default function InteractiveVideoPlayer({ states, token }: { states: Cine
 
             } catch (e) {
                 console.error('Failed to play TTS', e);
-                // Fallback: just wait for duration
+                // Fallback: just wait for duration without audio
                 setProgress(0);
                 startProgressTimer();
                 animateCodeTyping();
@@ -140,6 +155,15 @@ export default function InteractiveVideoPlayer({ states, token }: { states: Cine
 
         return () => { isCancelled = true; };
     }, [currentStateId, isPlaying, showChoices, token, currentState, animateCodeTyping, startProgressTimer]); // Dependencies added to satisfy lint bonus: now fully reactive
+
+    // Guard against undefined or empty states - moved after all hooks
+    if (!states || states.length === 0) {
+        return (
+            <div className="w-full max-w-4xl mx-auto mt-8 bg-[#0a0a0f] border-2 border-[#2a2a3e] rounded-lg overflow-hidden p-8 text-center">
+                <p className="text-[#8888aa] text-retro">Loading cinema content...</p>
+            </div>
+        );
+    }
 
     const togglePlay = () => {
         if (isPlaying) {
@@ -174,6 +198,14 @@ export default function InteractiveVideoPlayer({ states, token }: { states: Cine
 
             {/* Main Content Area */}
             <div className="flex-1 relative p-8 flex flex-col items-center justify-center pt-16">
+
+                {/* Audio Unavailable Notice */}
+                {!audioAvailable && (
+                    <div className="absolute top-4 right-4 bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 px-3 py-2 rounded text-xs text-mono flex items-center gap-2">
+                        <span>🔇</span>
+                        <span>Audio narration unavailable - visual mode</span>
+                    </div>
+                )}
 
                 {/* Narration Subs */}
                 <div className="text-center md:max-w-2xl bg-black/50 p-4 rounded-lg backdrop-blur mb-8 min-h-[80px] flex items-center justify-center border border-[#2a2a3e]/50">

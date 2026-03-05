@@ -16,7 +16,7 @@ interface ProfileEditModalProps {
     onSave: (data: { displayName: string; bio: string; avatar: string }) => void;
 }
 
-const AVATARS = [
+export const AVATARS = [
     { id: 'av-1', emoji: '⚔️', color: 'bg-red-500' },
     { id: 'av-2', emoji: '🧙', color: 'bg-blue-500' },
     { id: 'av-3', emoji: '🏹', color: 'bg-green-500' },

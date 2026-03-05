@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { motion, AnimatePresence } from 'motion/react';
 import { Edit3, Share2, Award, Zap, Target, Users, Copy, Check, X } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
-import ProfileEditModal from '@/components/ProfileEditModal';
+import ProfileEditModal, { AVATARS } from '@/components/ProfileEditModal';
 
 const ACHIEVEMENTS = [
     { id: '1', name: 'First Milestone', icon: '🎯', description: 'Complete your first coding challenge.', unlocked: true },
@@ -53,7 +53,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
                     {/* Avatar Container */}
                     <div className="relative group">
                         <div className="w-32 h-32 bg-[#12121a] rounded-2xl border-4 border-[#6c63ff] flex items-center justify-center text-5xl glow-purple transition-transform duration-300 group-hover:scale-105">
-                            ⚔️
+                            {AVATARS.find(a => a.id === profileData.avatar)?.emoji || '⚔️'}
                         </div>
                         <div className="absolute -bottom-2 -right-2 bg-[#ffd700] text-[#1a1a2e] px-3 py-1 rounded-full text-retro text-xs border-2 border-[#12121a] shadow-lg">
                             LVL 12
@@ -131,8 +131,8 @@ export default function ProfilePage({ params }: { params: { username: string } }
                                 <div
                                     key={ach.id}
                                     className={`relative group p-4 rounded-xl border-2 transition-all cursor-help ${ach.unlocked
-                                            ? 'bg-[#6c63ff10] border-[#6c63ff40] grayscale-0'
-                                            : 'bg-[#12121a] border-[#2a2a3e] grayscale'
+                                        ? 'bg-[#6c63ff10] border-[#6c63ff40] grayscale-0'
+                                        : 'bg-[#12121a] border-[#2a2a3e] grayscale'
                                         }`}
                                 >
                                     <div className="text-3xl mb-2 text-center">{ach.icon}</div>
