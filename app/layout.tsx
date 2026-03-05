@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/hooks/useAuth';
 import { Toaster } from 'sonner';
+import { ToastProvider } from '@/components/ui/ToastProvider';
 
 export const metadata: Metadata = {
     title: {
@@ -31,7 +32,9 @@ export default function RootLayout({
             </head>
             <body>
                 <AuthProvider>
-                    {children}
+                    <ToastProvider>
+                        {children}
+                    </ToastProvider>
                     <Toaster
                         position="bottom-right"
                         toastOptions={{
