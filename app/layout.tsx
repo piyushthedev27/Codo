@@ -3,6 +3,7 @@ import './globals.css';
 import { AuthProvider } from '@/hooks/useAuth';
 import { Toaster } from 'sonner';
 import { ToastProvider } from '@/components/ui/ToastProvider';
+import { RewardsProvider } from '@/hooks/useRewards';
 
 export const metadata: Metadata = {
     title: {
@@ -32,21 +33,23 @@ export default function RootLayout({
             </head>
             <body>
                 <AuthProvider>
-                    <ToastProvider>
-                        {children}
-                    </ToastProvider>
-                    <Toaster
-                        position="bottom-right"
-                        toastOptions={{
-                            style: {
-                                background: '#12121a',
-                                border: '1px solid #2a2a3e',
-                                color: '#e8e8f0',
-                                fontFamily: 'VT323, monospace',
-                                fontSize: '18px',
-                            },
-                        }}
-                    />
+                    <RewardsProvider>
+                        <ToastProvider>
+                            {children}
+                        </ToastProvider>
+                        <Toaster
+                            position="bottom-right"
+                            toastOptions={{
+                                style: {
+                                    background: '#12121a',
+                                    border: '1px solid #2a2a3e',
+                                    color: '#e8e8f0',
+                                    fontFamily: 'VT323, monospace',
+                                    fontSize: '18px',
+                                },
+                            }}
+                        />
+                    </RewardsProvider>
                 </AuthProvider>
             </body>
         </html>

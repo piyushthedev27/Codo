@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, Map, Film, Swords, Brain, TrendingUp, Search, Bell, Coins, Zap, Castle, Settings, HelpCircle, X, User, LogOut, ChevronDown, Trophy, Scroll, Star, Lightbulb, ShoppingBag, PawPrint, Diamond, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useRewards } from '@/hooks/useRewards';
 import { AnimatePresence, motion } from 'motion/react';
 
 function NavItem({ href, icon, label, isCollapsed }: { href: string; icon: React.ReactNode; label: string; isCollapsed?: boolean }) {
@@ -68,6 +69,7 @@ const SEARCH_INDEX = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { user, logout } = useAuth();
+    const { coins, xp } = useRewards();
     const router = useRouter();
 
     /* ── Dropdown state ── */
@@ -292,13 +294,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     {/* Coins → Shop */}
                     <Link href="/shop" className="flex items-center gap-2 text-retro text-lg hover:opacity-80 transition">
                         <Coins size={20} className="text-[#ffd700]" />
-                        <span className="text-[#ffd700]">0</span>
+                        <span className="text-[#ffd700]">{coins}</span>
                     </Link>
 
                     {/* XP */}
                     <div className="flex items-center gap-2 text-retro text-lg">
                         <Zap size={20} className="text-[#6c63ff]" />
-                        <span className="text-[#6c63ff]">0 XP</span>
+                        <span className="text-[#6c63ff]">{xp} XP</span>
                     </div>
 
                     {/* User Avatar Dropdown */}

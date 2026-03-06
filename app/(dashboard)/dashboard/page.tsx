@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Flame, Zap, BookOpen, Coins, X, Send, Map, Film, Swords, TrendingUp, Scroll, Cat } from 'lucide-react';
+import { Flame, Zap, BookOpen, Coins, X, Send, Map, Film, Swords, TrendingUp, Scroll, Cat, Users, Network } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
 import { motion, AnimatePresence } from 'motion/react';
 import CreateGuildModal from '@/components/CreateGuildModal';
@@ -10,7 +10,7 @@ import JoinGuildModal from '@/components/JoinGuildModal';
 import LevelUpModal from '@/components/ui/LevelUpModal';
 import { auth } from '@/lib/firebase/client';
 
-type Peer = { name: string; color: string; msg: string; status: string };
+type Peer = { name: string; color: string; msg: string; status: string; avatar?: string };
 
 function PeerChatDrawer({ peer, onClose }: { peer: Peer; onClose: () => void }) {
     const [input, setInput] = useState('');
@@ -37,7 +37,7 @@ function PeerChatDrawer({ peer, onClose }: { peer: Peer; onClose: () => void }) 
                     ...(token ? { Authorization: `Bearer ${token}` } : {})
                 },
                 body: JSON.stringify({
-                    history: messages.slice(-5).map(m => ({ role: m.role, text: m.text })), // limit history for tokens
+                    history: newHistory.slice(-5).map(m => ({ role: m.role, text: m.text })), // limit history for tokens
                     peerName: peer.name,
                     currentTopic: "general coding and advice"
                 })
@@ -64,7 +64,11 @@ function PeerChatDrawer({ peer, onClose }: { peer: Peer; onClose: () => void }) 
             >
                 {/* Header */}
                 <div className="flex items-center gap-3 p-4 border-b border-[#2a2a3e]">
-                    <div className="w-10 h-10 rounded" style={{ background: peer.color }} />
+                    {peer.avatar ? (
+                        <img src={peer.avatar} alt={peer.name} className="w-10 h-10 rounded object-cover" />
+                    ) : (
+                        <div className="w-10 h-10 rounded" style={{ background: peer.color }} />
+                    )}
                     <div className="flex-1">
                         <div className="text-retro text-[#e8e8f0]">{peer.name}</div>
                         <div className="text-mono text-[#00ff88] text-xs">● Online</div>
@@ -123,9 +127,9 @@ export default function DashboardPage() {
     const [isLevelUpOpen, setIsLevelUpOpen] = useState(false);
 
     const PEERS: Peer[] = [
-        { name: 'SARAH', color: '#b060ff', msg: "Ready to learn together?", status: 'online' },
-        { name: 'ALEX', color: '#00d4ff', msg: "Let's beat the leaderboard!", status: 'online' },
-        { name: 'JORDAN', color: '#00ff88', msg: "Whenever you're ready...", status: 'busy' },
+        { name: 'SARAH', color: '#b060ff', avatar: '/avatars/sarah.png', msg: "Ready to learn together?", status: 'online' },
+        { name: 'ALEX', color: '#00d4ff', avatar: '/avatars/alex.png', msg: "Let's beat the leaderboard!", status: 'online' },
+        { name: 'JORDAN', color: '#00ff88', avatar: '/avatars/jordan.png', msg: "Whenever you're ready...", status: 'busy' },
     ];
 
     return (
@@ -174,8 +178,8 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Two Column Layout */}
-                <div className="grid lg:grid-cols-[1fr_350px] gap-4">
-                    <div className="space-y-4">
+                <div className="grid lg:grid-cols-[1fr_350px] gap-4 items-stretch">
+                    <div className="flex flex-col gap-4 h-full">
                         {/* Continue Learning */}
                         <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4 hover:border-[#6c63ff] transition-all">
                             <h3 className="text-pixel text-sm mb-3">CONTINUE LEARNING</h3>
@@ -217,14 +221,16 @@ export default function DashboardPage() {
                         </div>
 
                         {/* Features Quick-access */}
-                        <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4 hover:border-[#6c63ff] transition-all">
+                        <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4 hover:border-[#6c63ff] transition-all flex flex-col flex-1">
                             <h3 className="text-pixel text-sm mb-3">QUICK ACCESS</h3>
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-2 gap-3 flex-1">
                                 {[
                                     { href: '/cinema', icon: <Film size={24} className="text-[#8888aa]" />, title: 'AI Cinema', desc: 'Watch code explained' },
                                     { href: '/duel', icon: <Swords size={24} className="text-[#8888aa]" />, title: 'Code Duel', desc: 'Vs AI peers' },
                                     { href: '/map', icon: <Map size={24} className="text-[#8888aa]" />, title: 'World Map', desc: 'Explore topics' },
                                     { href: '/progress', icon: <TrendingUp size={24} className="text-[#8888aa]" />, title: 'Progress', desc: 'View your stats' },
+                                    { href: '/guild', icon: <Users size={24} className="text-[#8888aa]" />, title: 'My Guild', desc: 'Team dashboard' },
+                                    { href: '/knowledge', icon: <Network size={24} className="text-[#8888aa]" />, title: 'Knowledge Graph', desc: 'Your brain map' },
                                 ].map((item, i) => (
                                     <Link key={i} href={item.href} className="bg-[#12121a] border border-[#2a2a3e] rounded p-3 hover:border-[#6c63ff] transition cursor-pointer block">
                                         <div className="mb-2">{item.icon}</div>
@@ -237,7 +243,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Right Column */}
-                    <div className="space-y-4">
+                    <div className="flex flex-col gap-4 h-full">
                         {/* Your Squad */}
                         <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4 hover:border-[#6c63ff] transition-all">
                             <h3 className="text-pixel text-sm mb-3">YOUR SQUAD</h3>
@@ -245,7 +251,11 @@ export default function DashboardPage() {
                                 {PEERS.map((peer, i) => (
                                     <div key={i} className="border-b border-[#2a2a3e] pb-3 last:border-0 last:pb-0">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <div className="w-10 h-10 rounded" style={{ background: peer.color }} />
+                                            {peer.avatar ? (
+                                                <img src={peer.avatar} alt={peer.name} className="w-10 h-10 rounded object-cover" />
+                                            ) : (
+                                                <div className="w-10 h-10 rounded" style={{ background: peer.color }} />
+                                            )}
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-retro text-[#e8e8f0]">{peer.name}</span>
@@ -302,9 +312,11 @@ export default function DashboardPage() {
                         </div>
 
                         {/* Guild */}
-                        <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4 hover:border-[#6c63ff] transition-all">
+                        <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4 hover:border-[#6c63ff] transition-all flex flex-col flex-1">
                             <h3 className="text-pixel text-sm mb-4">GUILDS</h3>
-                            <p className="text-mono text-[#8888aa] text-sm mb-4">Join or create a guild to compete as a team!</p>
+                            <div className="flex-1 flex flex-col justify-center">
+                                <p className="text-mono text-[#8888aa] text-sm mb-4">Join or create a guild to compete as a team!</p>
+                            </div>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setIsJoinGuildOpen(true)}

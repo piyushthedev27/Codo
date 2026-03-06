@@ -5,11 +5,15 @@ import Image from 'next/image';
 import { auth } from '@/lib/firebase/client';
 import InteractiveVideoPlayer, { CinemaState } from '@/components/cinema/InteractiveVideoPlayer';
 import { featuredVideos, FeaturedVideo } from '@/lib/data/featured-cinema';
+import { useRewards } from '@/hooks/useRewards';
+import { useToast } from '@/components/ui/ToastProvider';
 
 export default function CinemaPage() {
     const [topic, setTopic] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [sessionData, setSessionData] = useState<{ states: CinemaState[], sessionId: string, token: string } | null>(null);
+    const { addCoins, addXp } = useRewards();
+    const { showSuccess } = useToast();
 
     const handleGenerate = async (overrideTopic?: string) => {
         const topicToUse = overrideTopic || topic;
@@ -48,6 +52,11 @@ export default function CinemaPage() {
                 sessionId: data.script.title || 'cinema-session',
                 token
             });
+
+            // Reward for generating an AI Cinema
+            addXp(50);
+            addCoins(20);
+            showSuccess('Video Synthesised! 🎬', '+50 XP · +20 Coins');
         } catch (error: unknown) {
             console.error('Failed to generate cinema:', error);
             const err = error as Error;
@@ -69,6 +78,12 @@ export default function CinemaPage() {
                 sessionId: video.title,
                 token
             });
+
+            // Reward for watching featured content
+            const xpAmount = video.xp ? parseInt(video.xp.replace(/\D/g, ''), 10) : 20;
+            addXp(xpAmount);
+            addCoins(10);
+            showSuccess('Cinema Started! 🍿', `+${xpAmount} XP · +10 Coins`);
         } catch (e) {
             console.error(e);
         }
