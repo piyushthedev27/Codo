@@ -12,9 +12,8 @@ async function handler(req: NextRequest) {
         }
 
         const token = authHeader.split('Bearer ')[1];
-        let decodedToken;
         try {
-            decodedToken = await adminAuth().verifyIdToken(token);
+            await adminAuth().verifyIdToken(token);
         } catch (error) {
             console.error('Token verification failed:', error);
             return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
@@ -32,10 +31,10 @@ async function handler(req: NextRequest) {
         const responseText = await AIService.generateChatResponse(history, peerName, currentTopic);
 
         return NextResponse.json({ text: responseText });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Chat generation API error:', error);
 
-        const message = error.message || String(error);
+        const message = error instanceof Error ? error.message : String(error);
 
         if (message.includes('Too Many Requests') || message.includes('429')) {
             return NextResponse.json({

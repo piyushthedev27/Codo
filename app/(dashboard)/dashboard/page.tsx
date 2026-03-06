@@ -47,7 +47,7 @@ function PeerChatDrawer({ peer, onClose }: { peer: Peer; onClose: () => void }) 
             if (!res.ok) throw new Error(data.error || 'Failed to get chat');
 
             setMessages((p) => [...p, { role: 'peer', text: data.text }]);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Chat error:", error);
             setMessages((p) => [...p, { role: 'peer', text: "Sorry, I lost my connection for a second. Try again!" }]);
         } finally {
