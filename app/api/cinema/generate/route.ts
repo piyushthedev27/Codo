@@ -77,6 +77,13 @@ async function handler(request: NextRequest) {
             }, { status: 400 });
         }
 
+        if (message.includes('Too Many Requests') || message.includes('429')) {
+            return NextResponse.json({
+                error: 'AI Rate Limit Reached. Please wait a minute and try again.',
+                details: message
+            }, { status: 429 });
+        }
+
         if (message.includes('Topic is required')) {
             return NextResponse.json({
                 error: 'Topic is required for cinema generation',
@@ -86,20 +93,20 @@ async function handler(request: NextRequest) {
 
         if (message.includes('Invalid cinema script format')) {
             return NextResponse.json({
-                error: 'Failed to generate valid cinema script',
+                error: 'Failed to generate valid cinema script. AI returned badly formatted data.',
                 details: message
             }, { status: 500 });
         }
 
         if (message.includes('must have an intro state')) {
             return NextResponse.json({
-                error: 'Failed to generate valid cinema script',
+                error: 'Failed to generate valid cinema script. AI response was incomplete.',
                 details: message
             }, { status: 500 });
         }
 
         return NextResponse.json({
-            error: 'Failed to generate cinema script',
+            error: 'AI Engine Error: ' + message,
             details: message
         }, { status: 500 });
     }
