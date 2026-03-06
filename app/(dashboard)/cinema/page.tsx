@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Play, Loader2, Film } from 'lucide-react';
 import Image from 'next/image';
 import { auth } from '@/lib/firebase/client';
@@ -9,10 +10,22 @@ import { useRewards } from '@/hooks/useRewards';
 import { useToast } from '@/components/ui/ToastProvider';
 
 export default function CinemaPage() {
+    return (
+        <Suspense fallback={<div className="p-6 text-mono text-[#e8e8f0]">Loading Cinema Engine...</div>}>
+            <CinemaContent />
+        </Suspense>
+    );
+}
+
+function CinemaContent() {
+    const searchParams = useSearchParams();
+    const initialTopic = searchParams.get('topic');
+    const autoGenRef = useRef(false);
+
     const [topic, setTopic] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [sessionData, setSessionData] = useState<{ states: CinemaState[], sessionId: string, token: string } | null>(null);
-    const { addCoins, addXp } = useRewards();
+    const { addCoins, addXp, addLesson } = useRewards();
     const { showSuccess } = useToast();
 
     const handleGenerate = async (overrideTopic?: string) => {
@@ -56,6 +69,7 @@ export default function CinemaPage() {
             // Reward for generating an AI Cinema
             addXp(50);
             addCoins(20);
+            addLesson();
             showSuccess('Video Synthesised! 🎬', '+50 XP · +20 Coins');
         } catch (error: unknown) {
             console.error('Failed to generate cinema:', error);
@@ -65,6 +79,14 @@ export default function CinemaPage() {
             setIsGenerating(false);
         }
     };
+
+    useEffect(() => {
+        if (initialTopic && !autoGenRef.current) {
+            autoGenRef.current = true;
+            handleGenerate(initialTopic);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initialTopic]);
 
     const handlePlayFeatured = async (video: FeaturedVideo) => {
         if (isGenerating) return;
@@ -83,6 +105,7 @@ export default function CinemaPage() {
             const xpAmount = video.xp ? parseInt(video.xp.replace(/\D/g, ''), 10) : 20;
             addXp(xpAmount);
             addCoins(10);
+            addLesson();
             showSuccess('Cinema Started! 🍿', `+${xpAmount} XP · +10 Coins`);
         } catch (e) {
             console.error(e);

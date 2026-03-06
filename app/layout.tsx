@@ -4,6 +4,7 @@ import { AuthProvider } from '@/hooks/useAuth';
 import { Toaster } from 'sonner';
 import { ToastProvider } from '@/components/ui/ToastProvider';
 import { RewardsProvider } from '@/hooks/useRewards';
+import GlobalLevelUp from '@/components/ui/GlobalLevelUp';
 
 export const metadata: Metadata = {
     title: {
@@ -36,6 +37,7 @@ export default function RootLayout({
                     <RewardsProvider>
                         <ToastProvider>
                             {children}
+                            <GlobalLevelUp />
                         </ToastProvider>
                         <Toaster
                             position="bottom-right"

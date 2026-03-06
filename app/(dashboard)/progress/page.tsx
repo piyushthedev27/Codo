@@ -1,11 +1,17 @@
-import { BarChart3 } from 'lucide-react';
+'use client';
+import { BarChart3, ChevronRight, PlayCircle } from 'lucide-react';
+import { useRewards } from '@/hooks/useRewards';
+import Link from 'next/link';
 
 export default function ProgressPage() {
+    const { xp, streak, lessonsDone } = useRewards();
+    const currentLevel = Math.floor(xp / 1000) + 1;
+
     const stats = [
-        { label: 'Challenges Solved', value: '0', color: '#6c63ff' },
-        { label: 'Total XP Earned', value: '0', color: '#ffd700' },
-        { label: 'Current Level', value: '1', color: '#00d4ff' },
-        { label: 'Day Streak', value: '0', color: '#00ff88' },
+        { label: 'Challenges Solved', value: lessonsDone.toString(), color: '#6c63ff' },
+        { label: 'Total XP Earned', value: xp.toLocaleString(), color: '#ffd700' },
+        { label: 'Current Level', value: currentLevel.toString(), color: '#00d4ff' },
+        { label: 'Day Streak', value: streak.toString(), color: '#00ff88' },
     ];
 
     return (
@@ -56,6 +62,37 @@ export default function ProgressPage() {
                             </div>
                         ))}
                     </div>
+                </div>
+            </div>
+            <div className="mt-6 bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4">
+                <h3 className="text-pixel text-sm mb-4 text-[#ffd700]">RECOMMENDED FOR YOU</h3>
+                <p className="text-mono text-[#8888aa] text-xs mb-4">Click any topic to generate an instant AI lesson.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {[
+                        { title: 'React Hooks', desc: 'Master useState and useEffect', color: '#00d4ff' },
+                        { title: 'TypeScript Interfaces', desc: 'Strongly type your objects', color: '#6c63ff' },
+                        { title: 'CSS Grid Layout', desc: 'Build complex 2D layouts', color: '#ff4d6d' },
+                        { title: 'REST vs GraphQL', desc: 'API design patterns', color: '#00ff88' },
+                        { title: 'Docker Basics', desc: 'Containerize your applications', color: '#00d4ff' },
+                        { title: 'Big O Notation', desc: 'Algorithm time complexity', color: '#ffd700' },
+                    ].map((topic, i) => (
+                        <Link
+                            key={i}
+                            href={`/cinema?topic=${encodeURIComponent(topic.title)}`}
+                            className="group bg-[#12121a] border border-[#2a2a3e] rounded p-3 hover:border-[#6c63ff] transition-all hover:-translate-y-1 flex items-center justify-between"
+                        >
+                            <div className="flex items-center gap-3 overflow-hidden">
+                                <div className="min-w-8 h-8 rounded-full flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity" style={{ backgroundColor: `${topic.color}22`, color: topic.color }}>
+                                    <PlayCircle size={16} />
+                                </div>
+                                <div className="truncate">
+                                    <div className="text-retro text-sm text-[#e8e8f0] truncate">{topic.title}</div>
+                                    <div className="text-mono text-[10px] text-[#8888aa] truncate">{topic.desc}</div>
+                                </div>
+                            </div>
+                            <ChevronRight size={16} className="text-[#444466] group-hover:text-[#6c63ff] transition-colors ml-2 shrink-0" />
+                        </Link>
+                    ))}
                 </div>
             </div>
         </div>

@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import { Coins, ShoppingBag, User, PawPrint, Zap, Palette, Star, CheckCircle2, Trophy, Ghost, Cat, Snowflake } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
 import ConfirmModal from '@/components/ui/ConfirmModal';
+import { useRewards } from '@/hooks/useRewards';
 
 type Category = 'all' | 'avatars' | 'pets' | 'powerups' | 'themes';
 
@@ -45,10 +46,10 @@ const CATEGORY_LABELS: Record<Category, { label: string; icon: React.ReactNode }
 
 export default function ShopPage() {
     const { showSuccess, showError } = useToast();
+    const { coins, addCoins } = useRewards();
     const [activeCategory, setActiveCategory] = useState<Category>('all');
     const [confirmItem, setConfirmItem] = useState<ShopItem | null>(null);
     const [ownedItems, setOwnedItems] = useState<Set<string>>(new Set());
-    const userCoins = 750; // Mock value
 
     const filtered = activeCategory === 'all'
         ? SHOP_ITEMS
@@ -59,8 +60,8 @@ export default function ShopPage() {
             showError('Already Owned', 'You already own this item!');
             return;
         }
-        if (userCoins < item.cost) {
-            showError('Not Enough Coins', `You need ${item.cost - userCoins} more coins.`);
+        if (coins < item.cost) {
+            showError('Not Enough Coins', `You need ${item.cost - coins} more coins.`);
             return;
         }
         setConfirmItem(item);
@@ -68,6 +69,7 @@ export default function ShopPage() {
 
     const confirmPurchase = () => {
         if (!confirmItem) return;
+        addCoins(-confirmItem.cost);
         setOwnedItems((prev) => new Set([...prev, confirmItem.id]));
         showSuccess(`${confirmItem.name} purchased! 🎉`, 'Item added to your inventory.');
         setConfirmItem(null);
@@ -86,7 +88,7 @@ export default function ShopPage() {
                     </div>
                     <div className="flex items-center gap-2 bg-[#1a1a2e] border-2 border-[#ffd700] rounded px-4 py-2">
                         <Coins size={20} className="text-[#ffd700]" />
-                        <span className="text-pixel text-[#ffd700] text-xl">{userCoins.toLocaleString()}</span>
+                        <span className="text-pixel text-[#ffd700] text-xl">{coins.toLocaleString()}</span>
                     </div>
                 </div>
 
@@ -173,7 +175,7 @@ export default function ShopPage() {
             <ConfirmModal
                 isOpen={!!confirmItem}
                 title={`Buy ${confirmItem?.name}?`}
-                message={`This will cost you ${confirmItem?.cost} coins. You currently have ${userCoins} coins.`}
+                message={`This will cost you ${confirmItem?.cost} coins. You currently have ${coins} coins.`}
                 confirmLabel="CONFIRM PURCHASE"
                 cancelLabel="Cancel"
                 onConfirm={confirmPurchase}

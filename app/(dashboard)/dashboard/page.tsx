@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Flame, Zap, BookOpen, Coins, X, Send, Map, Film, Swords, TrendingUp, Scroll, Cat, Users, Network } from 'lucide-react';
 import { useToast } from '@/components/ui/ToastProvider';
+import { useRewards } from '@/hooks/useRewards';
 import { motion, AnimatePresence } from 'motion/react';
 import CreateGuildModal from '@/components/CreateGuildModal';
 import JoinGuildModal from '@/components/JoinGuildModal';
-import LevelUpModal from '@/components/ui/LevelUpModal';
 import { auth } from '@/lib/firebase/client';
 
 type Peer = { name: string; color: string; msg: string; status: string; avatar?: string };
@@ -121,10 +121,10 @@ function PeerChatDrawer({ peer, onClose }: { peer: Peer; onClose: () => void }) 
 
 export default function DashboardPage() {
     const { showSuccess, showAchievement } = useToast();
+    const { streak, xp, lessonsDone, coinsSpent, addXp } = useRewards();
     const [activePeer, setActivePeer] = useState<Peer | null>(null);
     const [isCreateGuildOpen, setIsCreateGuildOpen] = useState(false);
     const [isJoinGuildOpen, setIsJoinGuildOpen] = useState(false);
-    const [isLevelUpOpen, setIsLevelUpOpen] = useState(false);
 
     const PEERS: Peer[] = [
         { name: 'SARAH', color: '#b060ff', avatar: '/avatars/sarah.png', msg: "Ready to learn together?", status: 'online' },
@@ -140,22 +140,24 @@ export default function DashboardPage() {
                     <div className="flex items-center justify-between flex-wrap gap-4">
                         <div>
                             <h1 className="text-pixel text-xl mb-2">WELCOME BACK, HERO!</h1>
-                            <div className="text-retro text-[#8888aa]">Day 1 Streak 🔥 · Start learning today!</div>
+                            <div className="text-retro text-[#8888aa]">
+                                {streak > 0 ? `Day ${streak} Streak 🔥 · Keep it up!` : 'Day 0 Streak · Start learning today!'}
+                            </div>
                         </div>
                         <div className="flex-1 max-w-md min-w-[250px]">
                             <div className="flex justify-between items-center mb-2">
-                                <div className="text-retro text-[#8888aa] text-sm">Level 1 → Level 2</div>
+                                <div className="text-retro text-[#8888aa] text-sm">Level {Math.floor(xp / 1000) + 1} &rarr; Level {Math.floor(xp / 1000) + 2}</div>
                                 <button
-                                    onClick={() => setIsLevelUpOpen(true)}
+                                    onClick={() => addXp(1000 - (xp % 1000))}
                                     className="text-[10px] text-[#ffd700] hover:underline"
                                 >
                                     DEMO LEVEL UP
                                 </button>
                             </div>
                             <div className="bg-[#2a2a3e] h-3 rounded overflow-hidden border-2 border-[#3a3a4e]">
-                                <div className="bg-[#6c63ff] h-full transition-all" style={{ width: '0%' }} />
+                                <div className="bg-[#6c63ff] h-full transition-all" style={{ width: `${(xp % 1000) / 10}%` }} />
                             </div>
-                            <div className="text-retro text-[#8888aa] text-xs mt-1">0 / 1,000 XP</div>
+                            <div className="text-retro text-[#8888aa] text-xs mt-1">{xp % 1000} / 1,000 XP</div>
                         </div>
                     </div>
                 </div>
@@ -163,10 +165,10 @@ export default function DashboardPage() {
                 {/* Stat Cards Row */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                     {[
-                        { icon: <Flame className="text-[#8888aa]" size={28} />, number: '0', label: 'DAY STREAK', sub: 'Start today!', color: '#e8e8f0' },
-                        { icon: <Zap className="text-[#8888aa]" size={28} />, number: '0', label: 'XP THIS WEEK', sub: 'Complete lessons', color: '#e8e8f0' },
-                        { icon: <BookOpen className="text-[#8888aa]" size={28} />, number: '0', label: 'LESSONS DONE', sub: 'Start learning!', color: '#e8e8f0' },
-                        { icon: <Coins className="text-[#8888aa]" size={28} />, number: '0', label: 'GOLD COINS', sub: 'Spend in Shop', color: '#e8e8f0' },
+                        { icon: <Flame className="text-[#8888aa]" size={28} />, number: streak.toString(), label: 'DAY STREAK', sub: streak > 0 ? `${streak} in a row!` : 'Start today!', color: streak > 0 ? '#ff6b35' : '#e8e8f0' },
+                        { icon: <Zap className="text-[#8888aa]" size={28} />, number: xp.toLocaleString(), label: 'XP THIS WEEK', sub: 'Complete lessons', color: xp > 0 ? '#00d4ff' : '#e8e8f0' },
+                        { icon: <BookOpen className="text-[#8888aa]" size={28} />, number: lessonsDone.toString(), label: 'LESSONS DONE', sub: lessonsDone > 0 ? 'Keep it up!' : 'Start learning!', color: lessonsDone > 0 ? '#00ff88' : '#e8e8f0' },
+                        { icon: <Coins className="text-[#8888aa]" size={28} />, number: coinsSpent.toLocaleString(), label: 'COINS SPENT', sub: 'In the Shop', color: coinsSpent > 0 ? '#ffd700' : '#e8e8f0' },
                     ].map((card, i) => (
                         <div key={i} className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-4 hover:border-[#6c63ff] transition">
                             <div className="mb-3">{card.icon}</div>
@@ -353,17 +355,6 @@ export default function DashboardPage() {
                 isOpen={isJoinGuildOpen}
                 onClose={() => setIsJoinGuildOpen(false)}
                 onJoin={(id) => console.log('Joining Guild:', id)}
-            />
-            <LevelUpModal
-                isOpen={isLevelUpOpen}
-                onClose={() => setIsLevelUpOpen(false)}
-                oldLevel={1}
-                newLevel={2}
-                rewards={[
-                    { icon: '💎', label: '100 Gems' },
-                    { icon: '🛡️', label: 'Iron Shield' },
-                    { icon: '🏷️', label: 'Elite Title' },
-                ]}
             />
         </>
     );
