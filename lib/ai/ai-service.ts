@@ -12,7 +12,7 @@ export class AIService {
      * Generates a video script for the cinema feature with fallback.
      */
     static async generateVideoScript(topic: string) {
-        const prompt = `You are an expert programming instructor creating an interactive, branching video lesson about "${topic}".
+        const prompt = `You are an expert programming instructor creating an interactive, branching video lesson strictly about "${topic}". DO NOT deviate from this topic.
 
 Generate a JSON object representing the video states. 
 A state represents a scene in the video.
@@ -22,22 +22,29 @@ Rules for the JSON:
 - Must have a "states" array.
 - Each state MUST have:
   - "id": string (unique identifier)
-  - "narration": string (the exact script the AI voice will say. Keep it conversational and energetic, 2-4 sentences max per state).
-  - "codeSnippet": string or null (code to show on screen while narrating).
-  - "duration": number (estimated seconds to read narration).
-- The state can transition in two ways:
-  - Linear: specify "next" with the ID of the next state, and "choices": null.
-  - Branching: specify "next": null, and "choices" as an array of objects { "label": "Text on button", "nextState": "id of next state" }.
+  - "narration": string (the exact script the AI voice will say. Keep it conversational and energetic. STRICT RULE: MAXIMUM 2 short sentences per state. Rely on visual code to explain).
+  - "codeSnippet": string or null (code to show on screen while narrating. This should do the heavy lifting of teaching).
+  - "duration": number (estimated seconds to read narration. Keep most states between 5-8 seconds).
+- The state can transition in three ways:
+  - Linear: specify "next" with the ID of the next state, "choices": null, and "blockBuilder": null.
+  - Branching: specify "next": null, "choices" as an array of objects { "label": "Text", "nextState": "id" }, and "blockBuilder": null.
+  - Block Builder: specify "next": null, "choices": null, and "blockBuilder" as an object that tests the user on the code just explained.
+- If using "blockBuilder", the object MUST have:
+  - "shuffledBlocks": array of strings (the code sentence broken into 3-5 randomized blocks, e.g. ["=", "x", "5"])
+  - "correctSequence": array of strings (the exact correct order, e.g. ["x", "=", "5"])
+  - "successNextState": string (the ID of the state to go to if they build it correctly)
 - The first state MUST have id "intro".
-- Create exactly 1 branching point with 2 choices.
-- Create 1 final state for each branch that has "next": null and "choices": null.
+- OVERALL LENGTH: The core video path should take roughly 25-30 seconds total (sum of duration of main path).
+- INTERACTIVITY: Create exactly 1 multiple-choice branch AND exactly 1-2 blockBuilder interactions throughout the video to test their understanding.
+- Branches/interactive success states should provide brief feedback, then link back to the main flow to continue the lesson.
+- Create 1 final state at the very end of the main flow that has "next": null, "choices": null, and "blockBuilder": null.
 
 Return ONLY raw JSON. No markdown backticks.`;
 
         return this.withFallback(
             async () => {
                 if (!genAI) throw new Error('Gemini not configured');
-                const model = genAI.getGenerativeModel({ 
+                const model = genAI.getGenerativeModel({
                     model: 'gemini-2.0-flash',
                     generationConfig: {
                         maxOutputTokens: 2000, // Cost control: cap at 2000 tokens

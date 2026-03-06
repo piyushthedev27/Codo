@@ -14,6 +14,11 @@ export interface CinemaState {
         label: string;
         nextState: string;
     }> | null;
+    blockBuilder?: {
+        shuffledBlocks: string[];
+        correctSequence: string[];
+        successNextState: string;
+    } | null;
 }
 
 export interface CinemaScript {
@@ -47,8 +52,8 @@ const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
  * Generate a cache key based on topic
  */
 function generateCacheKey(topic: string): string {
-    // Normalize topic to lowercase and remove extra spaces
-    return topic.toLowerCase().trim().replace(/\s+/g, '_');
+    // Normalize topic to lowercase and remove extra spaces. Add v2 for blockBuilder format.
+    return topic.toLowerCase().trim().replace(/\s+/g, '_') + '_v2';
 }
 
 /**
@@ -122,7 +127,7 @@ export async function generateCinemaScript(request: CinemaRequest): Promise<Cine
     // Check cache first
     const cacheKey = generateCacheKey(topic);
     const cachedScript = getCachedScript(cacheKey);
-    
+
     if (cachedScript) {
         return {
             script: cachedScript,

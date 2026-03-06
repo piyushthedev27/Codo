@@ -1,25 +1,22 @@
 'use client';
 import { useState } from 'react';
 import { Play, Loader2, Film } from 'lucide-react';
+import Image from 'next/image';
 import { auth } from '@/lib/firebase/client';
 import InteractiveVideoPlayer, { CinemaState } from '@/components/cinema/InteractiveVideoPlayer';
+import { featuredVideos, FeaturedVideo } from '@/lib/data/featured-cinema';
 
 export default function CinemaPage() {
     const [topic, setTopic] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [sessionData, setSessionData] = useState<{ states: CinemaState[], sessionId: string, token: string } | null>(null);
 
-    const featured = [
-        { title: 'Closures & Scope Explained', duration: '8 min', views: '2.3k', xp: '+150 XP', tags: ['JavaScript', 'Intermediate'] },
-        { title: 'How Async/Await Works', duration: '12 min', views: '4.1k', xp: '+200 XP', tags: ['JavaScript', 'Advanced'] },
-        { title: 'Python List Comprehensions', duration: '6 min', views: '1.8k', xp: '+100 XP', tags: ['Python', 'Beginner'] },
-        { title: 'React Hooks Deep Dive', duration: '15 min', views: '5.2k', xp: '+250 XP', tags: ['React', 'Advanced'] },
-    ];
-
-    const handleGenerate = async () => {
-        if (!topic.trim()) return;
+    const handleGenerate = async (overrideTopic?: string) => {
+        const topicToUse = overrideTopic || topic;
+        if (!topicToUse.trim()) return;
         setIsGenerating(true);
         setSessionData(null);
+        if (overrideTopic) setTopic(overrideTopic);
 
         try {
             const token = await auth.currentUser?.getIdToken();
@@ -35,7 +32,7 @@ export default function CinemaPage() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ topic })
+                body: JSON.stringify({ topic: topicToUse })
             });
 
             const data = await res.json();
@@ -60,8 +57,25 @@ export default function CinemaPage() {
         }
     };
 
+    const handlePlayFeatured = async (video: FeaturedVideo) => {
+        if (isGenerating) return;
+        setTopic(video.title);
+
+        try {
+            const token = await auth.currentUser?.getIdToken() || 'demo-token';
+            // Instantly load the pre-generated script without hitting the AI API
+            setSessionData({
+                states: video.script.states,
+                sessionId: video.title,
+                token
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     return (
-        <div className="p-6 h-[calc(100vh-3.5rem)] overflow-y-auto">
+        <div className="p-6 h-[calc(100vh-3.5rem)] overflow-y-auto w-full">
             <div className="mb-6">
                 <h1 className="text-pixel text-2xl text-[#e8e8f0] mb-2 flex items-center gap-2">
                     <Film className="text-[#6c63ff]" size={28} /> AI CODE CINEMA
@@ -81,7 +95,7 @@ export default function CinemaPage() {
                     disabled={isGenerating}
                 />
                 <button
-                    onClick={handleGenerate}
+                    onClick={() => handleGenerate()}
                     disabled={isGenerating || !topic.trim()}
                     className="px-6 py-3 bg-[#6c63ff] text-white rounded text-retro text-lg hover:bg-[#7c73ff] transition disabled:opacity-50 disabled:hover:bg-[#6c63ff] flex items-center gap-2"
                 >
@@ -101,26 +115,37 @@ export default function CinemaPage() {
 
             {/* Featured */}
             {!sessionData && (
-                <div>
+                <div className="max-w-6xl mx-auto">
                     <h2 className="text-pixel text-sm mb-4">FEATURED VIDEOS</h2>
-                    <div className="grid md:grid-cols-2 gap-4">
-                        {featured.map((video, i) => (
-                            <div key={i} className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded hover:border-[#6c63ff] transition group">
-                                <div className="bg-[#0a0a0f] aspect-video flex items-center justify-center border-b-2 border-[#2a2a3e]">
-                                    <button className="w-16 h-16 bg-[#6c63ff] rounded-full flex items-center justify-center group-hover:scale-110 transition glow-purple">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {featuredVideos.map((video, i) => (
+                            <div
+                                key={i}
+                                onClick={() => handlePlayFeatured(video)}
+                                className={`bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded hover:border-[#6c63ff] transition group cursor-pointer overflow-hidden ${isGenerating ? 'opacity-50 pointer-events-none' : ''}`}
+                            >
+                                <div className="bg-[#0a0a0f] aspect-video flex items-center justify-center border-b-2 border-[#2a2a3e] relative overflow-hidden">
+                                    <Image
+                                        src={video.image}
+                                        alt={video.title}
+                                        fill
+                                        style={{ objectFit: 'cover' }}
+                                        className="opacity-70 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500"
+                                    />
+                                    <button className="w-16 h-16 bg-[#6c63ff] rounded-full flex items-center justify-center group-hover:scale-110 transition glow-purple z-10 shadow-[0_0_30px_#6c63ff]">
                                         <Play className="text-white ml-1" size={24} />
                                     </button>
                                 </div>
-                                <div className="p-4">
+                                <div className="p-4 relative bg-[#1a1a2e] z-10">
                                     <div className="flex gap-2 mb-2 flex-wrap">
                                         {video.tags.map((tag, j) => (
-                                            <span key={j} className="px-2 py-0.5 bg-[#2a2a3e] text-mono text-[#6c63ff] text-xs rounded">{tag}</span>
+                                            <span key={j} className="px-2 py-0.5 bg-[#2a2a3e] text-mono text-[#00ff88] text-xs rounded border border-[#00ff88]/30">{tag}</span>
                                         ))}
                                     </div>
-                                    <h3 className="text-retro text-[#e8e8f0] text-lg mb-2">{video.title}</h3>
-                                    <div className="flex items-center justify-between text-mono text-[#8888aa] text-xs">
-                                        <span>⏱ {video.duration} · 👁 {video.views} views</span>
-                                        <span className="text-[#ffd700]">{video.xp}</span>
+                                    <h3 className="text-retro text-[#e8e8f0] text-xl mb-2">{video.title}</h3>
+                                    <div className="flex items-center justify-between text-mono text-[#8888aa] text-sm">
+                                        <span>⏱ {video.duration} · 👁 {video.views}</span>
+                                        <span className="text-[#ffd700] text-pixel text-[10px]">{video.xp}</span>
                                     </div>
                                 </div>
                             </div>

@@ -38,6 +38,7 @@ module.exports = {
                 float: 'float 3s ease-in-out infinite',
                 'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
                 marquee: 'marquee 20s linear infinite',
+                shake: 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
             },
             keyframes: {
                 float: {
@@ -51,6 +52,12 @@ module.exports = {
                 marquee: {
                     '0%': { transform: 'translateX(0)' },
                     '100%': { transform: 'translateX(-50%)' },
+                },
+                shake: {
+                    '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                    '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                    '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                    '40%, 60%': { transform: 'translate3d(4px, 0, 0)' },
                 },
             },
         },
