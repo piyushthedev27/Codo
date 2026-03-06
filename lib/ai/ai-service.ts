@@ -13,8 +13,9 @@ export class AIService {
      */
     static async generateVideoScript(topic: string) {
         const prompt = `You are an expert programming instructor creating an interactive, branching video lesson strictly about "${topic}". DO NOT deviate from this topic.
+If the topic is NOT a valid programming, computer science, or technology concept, DO NOT generate a lesson. Instead, return a JSON object with a single property "error" containing a brief, polite message explaining that you only teach coding topics.
 
-Generate a JSON object representing the video states. 
+Otherwise, generate a JSON object representing the video states. 
 A state represents a scene in the video.
 
 Rules for the JSON:
