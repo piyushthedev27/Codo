@@ -139,6 +139,11 @@ export async function generateCinemaScript(request: CinemaRequest): Promise<Cine
     // The AI service already has a generateVideoScript method that returns the correct format
     const scriptData = await AIService.generateVideoScript(topic);
 
+    // Check if AI explicitly rejected the topic
+    if (scriptData && scriptData.error) {
+        throw new Error(`AI_REFUSAL: ${scriptData.error}`);
+    }
+
     // Validate the script structure
     if (!scriptData || !scriptData.title || !Array.isArray(scriptData.states)) {
         throw new Error('Invalid cinema script format received from AI');

@@ -8,17 +8,17 @@ async function handler(request: NextRequest) {
         // 1. Authenticate user
         const authHeader = request.headers.get('Authorization');
         if (!authHeader?.startsWith('Bearer ')) {
-            return NextResponse.json({ 
-                error: 'Unauthorized: Missing or invalid token' 
+            return NextResponse.json({
+                error: 'Unauthorized: Missing or invalid token'
             }, { status: 401 });
         }
-        
+
         const token = authHeader.split('Bearer ')[1];
         try {
             await adminAuth().verifyIdToken(token);
         } catch {
-            return NextResponse.json({ 
-                error: 'Unauthorized: Invalid token' 
+            return NextResponse.json({
+                error: 'Unauthorized: Invalid token'
             }, { status: 401 });
         }
 
@@ -30,22 +30,22 @@ async function handler(request: NextRequest) {
 
         // Validate required fields
         if (!topic || typeof topic !== 'string' || topic.trim().length === 0) {
-            return NextResponse.json({ 
-                error: 'Missing or invalid required field: topic' 
+            return NextResponse.json({
+                error: 'Missing or invalid required field: topic'
             }, { status: 400 });
         }
 
         // Validate topic length (reasonable limit)
         if (topic.length > 500) {
-            return NextResponse.json({ 
-                error: 'Topic exceeds maximum length of 500 characters' 
+            return NextResponse.json({
+                error: 'Topic exceeds maximum length of 500 characters'
             }, { status: 400 });
         }
 
         // Validate optional challengeId if provided
         if (challengeId !== undefined && (typeof challengeId !== 'string' || challengeId.trim().length === 0)) {
-            return NextResponse.json({ 
-                error: 'Invalid challengeId: must be a non-empty string if provided' 
+            return NextResponse.json({
+                error: 'Invalid challengeId: must be a non-empty string if provided'
             }, { status: 400 });
         }
 
@@ -68,32 +68,39 @@ async function handler(request: NextRequest) {
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : 'Unknown error';
         console.error('Cinema script generation error:', error);
-        
+
         // Handle specific error cases
+        if (message.includes('AI_REFUSAL:')) {
+            const friendlyMessage = message.split('AI_REFUSAL:')[1]?.trim() || 'AI refused to generate for this topic.';
+            return NextResponse.json({
+                error: friendlyMessage
+            }, { status: 400 });
+        }
+
         if (message.includes('Topic is required')) {
-            return NextResponse.json({ 
+            return NextResponse.json({
                 error: 'Topic is required for cinema generation',
-                details: message 
+                details: message
             }, { status: 400 });
         }
 
         if (message.includes('Invalid cinema script format')) {
-            return NextResponse.json({ 
+            return NextResponse.json({
                 error: 'Failed to generate valid cinema script',
-                details: message 
+                details: message
             }, { status: 500 });
         }
 
         if (message.includes('must have an intro state')) {
-            return NextResponse.json({ 
+            return NextResponse.json({
                 error: 'Failed to generate valid cinema script',
-                details: message 
+                details: message
             }, { status: 500 });
         }
 
-        return NextResponse.json({ 
-            error: 'Failed to generate cinema script', 
-            details: message 
+        return NextResponse.json({
+            error: 'Failed to generate cinema script',
+            details: message
         }, { status: 500 });
     }
 }
