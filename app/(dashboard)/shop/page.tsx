@@ -119,36 +119,44 @@ export default function ShopPage() {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: idx * 0.04 }}
-                                className={`bg-[#1a1a2e] border-2 rounded p-4 flex flex-col items-center text-center transition ${isOwned
+                                className={`bg-[#1a1a2e] border-2 rounded p-4 flex flex-col items-center text-center transition h-full ${isOwned
                                     ? 'border-[#00ff88] opacity-70'
                                     : 'border-[#2a2a3e] hover:border-[#6c63ff] hover:-translate-y-0.5'
                                     }`}
                                 style={{ boxShadow: item.popular ? `0 0 12px ${item.color}40` : undefined, borderColor: item.popular && !isOwned ? item.color : undefined }}
                             >
-                                {item.popular && (
-                                    <div className="text-mono text-[8px] px-1.5 py-0.5 rounded mb-2 flex items-center gap-1" style={{ background: item.color + '30', color: item.color, border: `1px solid ${item.color}60` }}>
-                                        <Star size={8} fill="currentColor" /> POPULAR
+                                {/* Tag Space - reserved to keep alignment consistent */}
+                                <div className="h-6 mb-2 flex items-center justify-center">
+                                    {item.popular && (
+                                        <div className="text-mono text-[8px] px-1.5 py-0.5 rounded flex items-center gap-1" style={{ background: item.color + '30', color: item.color, border: `1px solid ${item.color}60` }}>
+                                            <Star size={8} fill="currentColor" /> POPULAR
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Main Content Wrapper - grows to push button down */}
+                                <div className="flex-1 flex flex-col items-center w-full">
+                                    {/* Preview */}
+                                    <div
+                                        className="w-16 h-16 rounded-lg flex items-center justify-center text-4xl mb-3 border-2 shrink-0"
+                                        style={{ background: item.color + '20', borderColor: item.color + '60' }}
+                                    >
+                                        <div className="text-[#8888aa]">
+                                            {item.icon}
+                                        </div>
                                     </div>
-                                )}
-                                {/* Preview */}
-                                <div
-                                    className="w-16 h-16 rounded-lg flex items-center justify-center text-4xl mb-3 border-2"
-                                    style={{ background: item.color + '20', borderColor: item.color + '60' }}
-                                >
-                                    <div className="text-[#8888aa]">
-                                        {item.icon}
+                                    <div className="text-retro text-[#e8e8f0] text-sm mb-1">{item.name}</div>
+                                    <div className="text-mono text-[#8888aa] text-xs mb-3 line-clamp-2 min-h-[2.5rem]">{item.description}</div>
+                                    <div className="flex items-center gap-1.5 mb-4">
+                                        <Coins size={14} className="text-[#ffd700]" />
+                                        <span className="text-pixel text-[#ffd700] text-lg">{item.cost}</span>
                                     </div>
                                 </div>
-                                <div className="text-retro text-[#e8e8f0] text-sm mb-1">{item.name}</div>
-                                <div className="text-mono text-[#8888aa] text-xs mb-3">{item.description}</div>
-                                <div className="flex items-center gap-1.5 mb-3">
-                                    <Coins size={14} className="text-[#ffd700]" />
-                                    <span className="text-pixel text-[#ffd700] text-lg">{item.cost}</span>
-                                </div>
+
                                 <button
                                     onClick={() => handleBuy(item)}
                                     disabled={isOwned}
-                                    className={`w-full py-1.5 rounded text-retro text-sm transition ${isOwned
+                                    className={`w-full py-1.5 rounded text-retro text-sm transition mt-auto ${isOwned
                                         ? 'bg-[#00ff88] text-[#0a0a0f] cursor-default'
                                         : 'bg-[#6c63ff] text-white hover:bg-[#7c73ff]'
                                         }`}
