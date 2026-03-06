@@ -123,6 +123,55 @@ CRITICAL RULES:
             }
         );
     }
+    /**
+     * Generates a conversational response from a squad peer (Sarah, Alex, Jordan) with their distinct personality.
+     */
+    static async generateChatResponse(history: { role: 'user' | 'peer', text: string }[], peerName: string, currentTopic: string = "coding") {
+        let systemPersonality = `You are ${peerName}, a coding tutor.`;
+
+        if (peerName === 'SARAH') {
+            systemPersonality = `You are SARAH, a brilliant coding tutor with a slightly flirty, very stylish, and playful personality. You use terms of endearment (like 'babe', 'hero', 'cutie') and emojis (like 💅, ✨, 😘) subtly. You are extremely smart but explain complex coding topics in a fun, breezy, conversational way. Do not be overly robotic. Never break character.`;
+        } else if (peerName === 'ALEX') {
+            systemPersonality = `You are ALEX, a coding tutor and the ultimate hype 'bro'. You use slang (like 'bro', 'dude', 'let's go', 'crushed it') and emphasize competing, winning, and hyping the user up like they are at the gym or playing an intense video game. You use emojis like 🔥, 🚀, 💪. You explain coding topics with high energy and sports/gaming analogies. Never break character.`;
+        } else if (peerName === 'JORDAN') {
+            systemPersonality = `You are JORDAN, a coding tutor and the user's supportive, warm best friend. You are extremely encouraging, patient, and use casual, friendly language. You use emojis like 💛, 😊, 👋. You explain coding topics gently and always make sure the user feels confident and safe to ask questions. Never break character.`;
+        }
+
+        const historyContext = history.map(h => `${h.role === 'user' ? 'User' : peerName}: ${h.text}`).join('\n');
+
+        const prompt = `${systemPersonality}
+The current learning context/topic is: ${currentTopic}.
+
+Here is the recent conversation history:
+${historyContext}
+
+Write a short, engaging response to the User's last message. Keep it under 3 sentences. Stay entirely in character. Do NOT include thought processing, XML tags, or markdown headers. Just return the raw text of what ${peerName} says.`;
+
+        return this.withFallback(
+            async () => {
+                if (!genAI) throw new Error('Gemini not configured');
+                const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+                const result = await model.generateContent(prompt);
+                return result.response.text().trim();
+            },
+            async () => {
+                if (!openai) throw new Error('OpenAI not configured');
+                const response = await openai.chat.completions.create({
+                    model: 'gpt-4o-mini',
+                    messages: [{ role: 'user', content: prompt }],
+                });
+                return response.choices[0].message.content?.trim() || "Hmm, let me think about that.";
+            },
+            async () => {
+                if (!groq) throw new Error('Groq not configured');
+                const response = await groq.chat.completions.create({
+                    model: 'llama-3.3-70b-versatile',
+                    messages: [{ role: 'user', content: prompt }],
+                });
+                return response.choices[0].message.content?.trim() || "Hmm, let me think about that.";
+            }
+        );
+    }
 
     /**
      * Helper to execute functions with fallback.

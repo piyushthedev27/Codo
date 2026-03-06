@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import CreateGuildModal from '@/components/CreateGuildModal';
 import JoinGuildModal from '@/components/JoinGuildModal';
 import LevelUpModal from '@/components/ui/LevelUpModal';
+import { auth } from '@/lib/firebase/client';
 
 type Peer = { name: string; color: string; msg: string; status: string };
 
@@ -22,14 +23,36 @@ function PeerChatDrawer({ peer, onClose }: { peer: Peer; onClose: () => void }) 
         if (!input.trim() || sending) return;
         const userMsg = input.trim();
         setInput('');
-        setMessages((p) => [...p, { role: 'user', text: userMsg }]);
+
+        const newHistory: { role: 'user' | 'peer'; text: string }[] = [...messages, { role: 'user', text: userMsg }];
+        setMessages(newHistory);
         setSending(true);
-        await new Promise((r) => setTimeout(r, 900));
-        setMessages((p) => [...p, {
-            role: 'peer',
-            text: `Great question! As your ${peer.name === 'SARAH' ? 'Python' : peer.name === 'ALEX' ? 'JavaScript' : 'System Design'} tutor, I'd suggest starting with the fundamentals. Would you like me to show you an example?`,
-        }]);
-        setSending(false);
+
+        try {
+            const token = auth.currentUser ? await auth.currentUser.getIdToken() : '';
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify({
+                    history: messages.slice(-5).map(m => ({ role: m.role, text: m.text })), // limit history for tokens
+                    peerName: peer.name,
+                    currentTopic: "general coding and advice"
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to get chat');
+
+            setMessages((p) => [...p, { role: 'peer', text: data.text }]);
+        } catch (error: any) {
+            console.error("Chat error:", error);
+            setMessages((p) => [...p, { role: 'peer', text: "Sorry, I lost my connection for a second. Try again!" }]);
+        } finally {
+            setSending(false);
+        }
     };
 
     return (
