@@ -152,6 +152,7 @@ export default function CatchGame({ onGameOver }: CatchGameProps) {
 
         animationFrameId = requestAnimationFrame(main);
         return () => cancelAnimationFrame(animationFrameId);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameOver]);
 
     const handleGameOver = () => {

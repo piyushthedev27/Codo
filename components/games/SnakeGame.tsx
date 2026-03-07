@@ -164,6 +164,7 @@ export default function SnakeGame({ onGameOver }: SnakeGameProps) {
 
         animationFrameId = requestAnimationFrame(main);
         return () => cancelAnimationFrame(animationFrameId);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameOver]); // Depend on gameOver to stop the loop
 
     const handleGameOver = () => {

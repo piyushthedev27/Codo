@@ -5,7 +5,7 @@ import { useToast } from '@/components/ui/ToastProvider';
 
 export default function CodeDuelPage() {
     const { addXp } = useRewards();
-    const { showSuccess, showError, showInfo } = useToast();
+    const { showSuccess, showError } = useToast();
 
     const [code, setCode] = useState('// Write your solution here\nfunction reverse(str) {\n  \n}');
     const [timeLeft, setTimeLeft] = useState(300);
@@ -29,7 +29,7 @@ export default function CodeDuelPage() {
     }, [started, showError]);
 
     const executeCode = () => {
-        let logs: string[] = [];
+        const logs: string[] = [];
         const originalLog = console.log;
 
         console.log = (...args) => {
@@ -40,8 +40,9 @@ export default function CodeDuelPage() {
             const fn = new Function(code);
             fn();
             setOutput(logs.join('\n') || 'Code executed. No output.');
-        } catch (error: any) {
-            setOutput(`Error: ${error.message}`);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            setOutput(`Error: ${errorMessage}`);
         } finally {
             console.log = originalLog;
         }
@@ -75,9 +76,10 @@ export default function CodeDuelPage() {
                 setOutput(`Testing test case: reverse("hello")\nExpected: "olleh"\nGot: ${JSON.stringify(userResult)}\n\n[FAILED] Try again.`);
             }
 
-        } catch (error: any) {
-            showError("Syntax/Runtime Error", error.message);
-            setOutput(`Error during execution:\n${error.message}`);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            showError("Syntax/Runtime Error", errorMessage);
+            setOutput(`Error during execution:\n${errorMessage}`);
         }
     };
 
