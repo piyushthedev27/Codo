@@ -50,7 +50,7 @@ export default function LandingPage() {
                         <span className="text-pixel text-[#6c63ff] text-xl md:text-2xl transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#00ff88] drop-shadow-[0_0_8px_rgba(108,99,255,0.4)]">{"}"}</span>
                     </Link>
                     <div className="hidden md:flex items-center gap-8 text-retro text-lg">
-                        <a href="#features" className="text-[#8888aa] hover:text-[#6c63ff] transition">Courses</a>
+                        <a href="#courses" className="text-[#8888aa] hover:text-[#6c63ff] transition">Courses</a>
                         <a href="#features" className="text-[#8888aa] hover:text-[#6c63ff] transition">Features</a>
                         <a href="#leaderboard" className="text-[#8888aa] hover:text-[#6c63ff] transition">Leaderboard</a>
                         <a href="#community" className="text-[#8888aa] hover:text-[#6c63ff] transition">Community</a>
@@ -123,12 +123,13 @@ export default function LandingPage() {
                         <div className="bg-[#1a1a2e] border-2 border-[#2a2a3e] rounded p-6 animate-float">
                             <div className="grid grid-cols-3 gap-4">
                                 {[
-                                    { name: 'SARAH', color: '#b060ff', msg: "Let's build something!" },
-                                    { name: 'ALEX', color: '#00d4ff', msg: "I found a bug!" },
-                                    { name: 'JORDAN', color: '#00ff88', msg: "Here's a better approach..." },
+                                    { name: 'SARAH', color: '#b060ff', msg: "Let's build something!", img: '/avatars/sarah.png' },
+                                    { name: 'ALEX', color: '#00d4ff', msg: "I found a bug!", img: '/avatars/alex.png' },
+                                    { name: 'JORDAN', color: '#00ff88', msg: "Here's a better approach...", img: '/avatars/jordan.png' },
                                 ].map((peer, i) => (
                                     <div key={i} className="text-center">
-                                        <div className="w-16 h-16 mx-auto mb-2 rounded" style={{ background: peer.color }} />
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={peer.img} alt={peer.name} className="w-16 h-16 mx-auto mb-2 rounded border-2 border-[#2a2a3e] object-cover" />
                                         <div className="text-pixel text-xs mb-2" style={{ color: peer.color }}>{peer.name}</div>
                                         <div className="bg-[#12121a] border-2 border-[#2a2a3e] rounded p-2 text-mono text-[#8888aa] text-xs">
                                             &quot;{peer.msg}&quot;
@@ -149,7 +150,7 @@ export default function LandingPage() {
             </div>
 
             {/* Problem Section */}
-            <section id="problem" className="py-20 bg-[#12121a]">
+            <section id="courses" className="py-20 bg-[#12121a]">
                 <div className="max-w-6xl mx-auto px-6">
                     <h2 className="text-pixel text-3xl text-center mb-16">THE OLD WAY IS BROKEN</h2>
                     <div className="grid md:grid-cols-2 gap-8 mb-12">
@@ -203,7 +204,7 @@ export default function LandingPage() {
             </section>
 
             {/* Detailed Info Section */}
-            <section className="py-20 bg-[#12121a] border-y border-[#2a2a3e]">
+            <section id="leaderboard" className="py-20 bg-[#12121a] border-y border-[#2a2a3e]">
                 <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
                     <div>
                         <h2 className="text-pixel text-2xl text-[#6c63ff] mb-6">WHY CODO?</h2>
@@ -248,7 +249,7 @@ export default function LandingPage() {
             </section>
 
             {/* Footer */}
-            <footer className="bg-[#0a0a0f] border-t border-[#2a2a3e] py-12">
+            <footer id="community" className="bg-[#0a0a0f] border-t border-[#2a2a3e] py-12">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="grid md:grid-cols-4 gap-8 mb-8">
                         {[

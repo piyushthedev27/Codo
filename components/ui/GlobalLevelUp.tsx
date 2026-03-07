@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { useRewards } from '@/hooks/useRewards';
 import LevelUpModal from './LevelUpModal';
 
 export default function GlobalLevelUp() {
+    const pathname = usePathname();
     const { xp } = useRewards();
     const currentLevel = Math.floor(xp / 1000) + 1;
 
@@ -26,7 +28,12 @@ export default function GlobalLevelUp() {
             // Level decreased (e.g. storage cleared or manipulated)
             setPrevLevel(currentLevel);
         }
-    }, [currentLevel, prevLevel]);
+    }, [currentLevel, prevLevel, pathname]);
+
+    // Do not show level ups on public pages
+    if (pathname === '/' || pathname === '/login' || pathname === '/sign-up') {
+        return null;
+    }
 
     return (
         <LevelUpModal
