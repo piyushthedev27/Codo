@@ -1,18 +1,85 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useRewards } from '@/hooks/useRewards';
+import { useToast } from '@/components/ui/ToastProvider';
 
 export default function CodeDuelPage() {
-    const [code, setCode] = useState('// Write your solution here\n');
+    const { addXp } = useRewards();
+    const { showSuccess, showError, showInfo } = useToast();
+
+    const [code, setCode] = useState('// Write your solution here\nfunction reverse(str) {\n  \n}');
     const [timeLeft, setTimeLeft] = useState(300);
     const [started, setStarted] = useState(false);
+    const [output, setOutput] = useState('');
 
     useEffect(() => {
         if (!started) return;
         const interval = setInterval(() => {
-            setTimeLeft((t) => (t > 0 ? t - 1 : 0));
+            setTimeLeft((t) => {
+                if (t <= 1) {
+                    clearInterval(interval);
+                    setStarted(false);
+                    showError("Time's Up!", "You didn't solve it in time.");
+                    return 0;
+                }
+                return t - 1;
+            });
         }, 1000);
         return () => clearInterval(interval);
-    }, [started]);
+    }, [started, showError]);
+
+    const executeCode = () => {
+        let logs: string[] = [];
+        const originalLog = console.log;
+
+        console.log = (...args) => {
+            logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+        };
+
+        try {
+            const fn = new Function(code);
+            fn();
+            setOutput(logs.join('\n') || 'Code executed. No output.');
+        } catch (error: any) {
+            setOutput(`Error: ${error.message}`);
+        } finally {
+            console.log = originalLog;
+        }
+    };
+
+    const submitCode = () => {
+        if (!started) {
+            setStarted(true);
+            return;
+        }
+
+        try {
+            const evalCode = `
+                ${code}
+                if (typeof reverse === 'function') {
+                    return reverse("hello");
+                }
+                return undefined;
+            `;
+
+            const fn = new Function(evalCode);
+            const userResult = fn();
+
+            if (userResult === "olleh") {
+                showSuccess("Victory!", "You reversed the string first! +150 XP");
+                setStarted(false);
+                addXp(150);
+                setOutput(`Testing test case: reverse("hello")\nExpected: "olleh"\nGot: "olleh"\n\n[SUCCESS] +150 XP awarded.`);
+            } else {
+                showError("Failed", `Expected "olleh" but got ${JSON.stringify(userResult)}`);
+                setOutput(`Testing test case: reverse("hello")\nExpected: "olleh"\nGot: ${JSON.stringify(userResult)}\n\n[FAILED] Try again.`);
+            }
+
+        } catch (error: any) {
+            showError("Syntax/Runtime Error", error.message);
+            setOutput(`Error during execution:\n${error.message}`);
+        }
+    };
 
     const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
     const secs = (timeLeft % 60).toString().padStart(2, '0');
@@ -71,10 +138,10 @@ export default function CodeDuelPage() {
                 <div className="border-b border-[#2a2a3e] px-4 py-2 flex justify-between items-center bg-[#12121a]">
                     <span className="text-retro text-[#8888aa]">JavaScript</span>
                     <div className="flex gap-3">
-                        <button className="px-4 py-1 border border-[#2a2a3e] text-[#8888aa] rounded text-retro text-sm hover:border-[#6c63ff] transition">▶ RUN</button>
+                        <button onClick={executeCode} className="px-4 py-1 border border-[#2a2a3e] text-[#8888aa] rounded text-retro text-sm hover:border-[#6c63ff] hover:text-[#e8e8f0] transition">▶ RUN</button>
                         <button
-                            onClick={() => setStarted(true)}
-                            className="px-4 py-1 bg-[#6c63ff] text-white rounded text-retro text-sm hover:bg-[#7c73ff] glow-purple transition"
+                            onClick={submitCode}
+                            className={`px-4 py-1 rounded text-retro text-sm transition ${started ? 'bg-[#00ff88] text-[#0a0a0f] hover:bg-[#00cc6a] shadow-[0_0_10px_#00ff8840]' : 'bg-[#6c63ff] text-white hover:bg-[#7c73ff] glow-purple'}`}
                         >
                             {started ? '✓ SUBMIT' : '▶ START DUEL'}
                         </button>
@@ -83,10 +150,22 @@ export default function CodeDuelPage() {
                 <textarea
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    rows={10}
+                    rows={8}
                     className="w-full bg-[#0a0a0f] text-mono text-[#e8e8f0] text-sm p-4 resize-none focus:outline-none font-mono"
                     spellCheck={false}
                 />
+
+                {/* Console Output Block */}
+                <div className="border-t border-[#2a2a3e] bg-[#12121a] p-4 font-mono text-sm max-h-40 overflow-y-auto">
+                    <span className="text-[#8888aa] mb-2 block">&gt; Console Output</span>
+                    {output ? (
+                        <pre className={`whitespace-pre-wrap ${output.includes('Error') || output.includes('FAILED') ? 'text-[#ff4d6d]' : output.includes('SUCCESS') ? 'text-[#00ff88]' : 'text-[#e8e8f0]'}`}>
+                            {output}
+                        </pre>
+                    ) : (
+                        <span className="text-[#555570]">Run your code or submit it to see the output.</span>
+                    )}
+                </div>
             </div>
         </div>
     );

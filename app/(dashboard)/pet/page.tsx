@@ -1,6 +1,8 @@
 'use client';
 
 import { useToast } from '@/components/ui/ToastProvider';
+import { useRewards } from '@/hooks/useRewards';
+import RandomGameModal from '@/components/games/RandomGameModal';
 import { PawPrint, Apple, Gamepad2, Pencil, BarChart3, Zap, Egg, Bird, CheckCircle2, Lock, Smile, Calendar, Cat } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState } from 'react';
@@ -24,6 +26,7 @@ interface PetStats {
 
 export default function PetPage() {
     const { showSuccess, showInfo } = useToast();
+    const { addXp } = useRewards();
     const [stats, setStats] = useState<PetStats>({
         xp: 120,
         level: 1,
@@ -34,8 +37,8 @@ export default function PetPage() {
     const [petName, setPetName] = useState('ByteBear');
     const [isEditingName, setIsEditingName] = useState(false);
     const [nameInput, setNameInput] = useState(petName);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [clickScore, setClickScore] = useState(0);
+    const [isGameModalOpen, setIsGameModalOpen] = useState(false);
+    const [gamesPlayed, setGamesPlayed] = useState(1);
 
     const feed = () => {
         if (stats.hunger >= 100) {
@@ -51,23 +54,30 @@ export default function PetPage() {
     };
 
     const handlePetClick = () => {
-        if (!isPlaying) return;
-        setClickScore((p) => p + 1);
         setStats((prev) => ({
             ...prev,
-            happiness: Math.min(100, prev.happiness + 2),
-            xp: prev.xp + 3,
+            happiness: Math.min(100, prev.happiness + 1),
         }));
     };
 
-    const startGame = () => {
-        setIsPlaying(true);
-        setClickScore(0);
-        showInfo('Minigame Started!', 'Click ByteBear as fast as you can! (10 seconds)');
-        setTimeout(() => {
-            setIsPlaying(false);
-            showSuccess('Game Over!', `You clicked ${clickScore} times! +${clickScore * 3} XP earned 🎮`);
-        }, 10000);
+    const handleGameComplete = (score: number) => {
+        setIsGameModalOpen(false);
+        setGamesPlayed(p => p + 1);
+        if (score > 0) {
+            const earnedXp = Math.floor(score / 5);
+            const happinessGain = Math.min(100 - stats.happiness, Math.max(5, Math.floor(score / 20)));
+
+            setStats((prev) => ({
+                ...prev,
+                happiness: prev.happiness + happinessGain,
+                xp: prev.xp + earnedXp,
+            }));
+            addXp(earnedXp);
+
+            showSuccess('Game Complete!', `ByteBear gained +${earnedXp} XP and +${happinessGain} Happiness! 🎮`);
+        } else {
+            showInfo('Game Over', `You didn't score any points. Keep practicing!`);
+        }
     };
 
     const saveName = () => {
@@ -95,7 +105,7 @@ export default function PetPage() {
                             onClick={handlePetClick}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className={`w-40 h-40 bg-gradient-to-b from-[#1a1a2e] to-[#12121a] border-2 border-[#6c63ff40] rounded-full mx-auto mb-6 flex items-center justify-center text-[#e8e8f0] ${isPlaying ? 'cursor-pointer' : ''} ${isPlaying ? 'shadow-[0_0_30px_#6c63ff60]' : 'shadow-xl'} transition-all duration-300 relative group`}
+                            className={`w-40 h-40 bg-gradient-to-b from-[#1a1a2e] to-[#12121a] border-2 border-[#6c63ff40] rounded-full mx-auto mb-6 flex items-center justify-center text-[#e8e8f0] cursor-pointer shadow-xl hover:shadow-[0_0_30px_#6c63ff60] transition-all duration-300 relative group`}
                         >
                             <div className="absolute inset-0 bg-[#6c63ff10] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                             <Cat size={80} className="relative z-10" />
@@ -122,16 +132,6 @@ export default function PetPage() {
 
                         <div className="text-retro text-[#8888aa] mb-1">Level {stats.level} · {stats.stage}</div>
 
-                        {isPlaying && (
-                            <motion.div
-                                initial={{ scale: 0.8 }}
-                                animate={{ scale: 1 }}
-                                className="text-pixel text-[#00ff88] text-xl mb-4"
-                            >
-                                CLICKS: {clickScore} <Gamepad2 size={24} className="inline ml-1" />
-                            </motion.div>
-                        )}
-
                         <div className="flex gap-4 justify-center mt-6">
                             <button
                                 onClick={feed}
@@ -139,18 +139,12 @@ export default function PetPage() {
                             >
                                 <Apple size={20} /> FEED
                             </button>
-                            {!isPlaying ? (
-                                <button
-                                    onClick={startGame}
-                                    className="px-6 py-2.5 bg-[#1a1a2e] border-2 border-[#6c63ff] text-[#6c63ff] rounded flex items-center gap-2 text-retro text-lg hover:bg-[#6c63ff] hover:text-[#ffffff] hover:shadow-[0_0_15px_#6c63ff60] transition-all"
-                                >
-                                    <Gamepad2 size={20} /> PLAY
-                                </button>
-                            ) : (
-                                <div className="px-6 py-2.5 bg-[#ffd700] text-[#0a0a0f] rounded flex items-center gap-2 text-retro text-lg animate-pulse cursor-pointer shadow-[0_0_20px_#ffd700] transition-all hover:scale-105" onClick={handlePetClick}>
-                                    <Zap size={20} /> CLICK ME!
-                                </div>
-                            )}
+                            <button
+                                onClick={() => setIsGameModalOpen(true)}
+                                className="px-6 py-2.5 bg-[#1a1a2e] border-2 border-[#6c63ff] text-[#6c63ff] rounded flex items-center gap-2 text-retro text-lg hover:bg-[#6c63ff] hover:text-[#ffffff] hover:shadow-[0_0_15px_#6c63ff60] transition-all"
+                            >
+                                <Gamepad2 size={20} /> PLAY
+                            </button>
                         </div>
                     </div>
 
@@ -233,11 +227,17 @@ export default function PetPage() {
                             <div><Calendar size={12} className="inline mr-1" /> Adopted: Day 1</div>
                             <div><Zap size={12} className="inline mr-1" /> Total XP earned: {stats.xp}</div>
                             <div><Apple size={12} className="inline mr-1" /> Times fed: 3</div>
-                            <div><Gamepad2 size={12} className="inline mr-1" /> Games played: 1</div>
+                            <div><Gamepad2 size={12} className="inline mr-1" /> Games played: {gamesPlayed}</div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <RandomGameModal
+                isOpen={isGameModalOpen}
+                onClose={() => setIsGameModalOpen(false)}
+                onGameComplete={handleGameComplete}
+            />
         </div>
     );
 }

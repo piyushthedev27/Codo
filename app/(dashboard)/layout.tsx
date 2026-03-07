@@ -10,10 +10,19 @@ import { AnimatePresence, motion } from 'motion/react';
 
 function NavItem({ href, icon, label, isCollapsed }: { href: string; icon: React.ReactNode; label: string; isCollapsed?: boolean }) {
     const pathname = usePathname();
-    const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
+    const exactMatchOnly = ['/dashboard', '/progress'];
+    const isActive = pathname === href || (!exactMatchOnly.includes(href) && pathname.startsWith(href));
+
+    const playClickSound = () => {
+        const audio = new Audio('/click.mp3');
+        audio.volume = 0.5;
+        audio.play().catch(e => console.error("Audio play failed:", e));
+    };
+
     return (
         <Link
             href={href}
+            onClick={playClickSound}
             title={isCollapsed ? label : undefined}
             className={`flex items-center py-3 rounded transition-all duration-300 overflow-hidden ${isCollapsed ? 'justify-center px-0' : 'px-4'} ${isActive
                 ? 'bg-[#1a1a2e] text-[#6c63ff] border-l-2 border-[#6c63ff] glow-purple'
@@ -123,7 +132,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Sidebar */}
             <aside className={`fixed left-0 top-0 bottom-0 bg-[#12121a] border-r-2 border-[#2a2a3e] z-50 flex flex-col transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-72'}`}>
                 {/* Logo & Toggle */}
-                <div className="p-6 border-b border-[#2a2a3e] relative flex items-center justify-center min-h-[73px] overflow-hidden">
+                <div className="p-6 border-b border-[#2a2a3e] relative flex items-center justify-center min-h-[73px]">
                     <Link href="/" className="flex items-center justify-center gap-1.5 group">
                         <span className="text-pixel text-[#6c63ff] text-xl transition-all duration-300 group-hover:-translate-x-1 group-hover:text-[#00d4ff] drop-shadow-[0_0_8px_rgba(108,99,255,0.4)]">{"{"}</span>
                         <AnimatePresence initial={false} mode="popLayout">
