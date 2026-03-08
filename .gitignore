@@ -10,6 +10,8 @@ yarn.lock
 
 # Build output
 dist/
+docs/
+.kiro/
 build/
 .next/
 out/
@@ -50,8 +52,10 @@ codo-firebase-key.json
 # Testing
 coverage/
 .nyc_output/
+__tests__/
 
 # Temporary files
 tmp/
 temp/
 *.tmp
+

@@ -57,6 +57,32 @@ export default function TetrisGame({ onGameOver }: TetrisGameProps) {
     const dropIntervalRef = useRef(1000);
     const lastTimeRef = useRef(0);
 
+    const scoreRef = useRef(score);
+    useEffect(() => { scoreRef.current = score; }, [score]);
+
+    const onGameOverRef = useRef(onGameOver);
+    useEffect(() => { onGameOverRef.current = onGameOver; }, [onGameOver]);
+
+    const handleGameOver = useCallback(() => {
+        setGameOver(true);
+        setTimeout(() => {
+            onGameOverRef.current(scoreRef.current);
+        }, 500);
+    }, []);
+
+    const collide = useCallback((grid: number[][], player: { matrix: number[][], x: number, y: number }) => {
+        const [m, o] = [player.matrix, { x: player.x, y: player.y }];
+        for (let y = 0; y < m.length; ++y) {
+            for (let x = 0; x < m[y].length; ++x) {
+                if (m[y][x] !== 0 &&
+                    (grid[y + o.y] && grid[y + o.y][x + o.x]) !== 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }, []);
+
     const spawnPiece = useCallback(() => {
         const typeId = Math.floor(Math.random() * 7) + 1;
         const matrix = SHAPES[typeId];
@@ -71,7 +97,7 @@ export default function TetrisGame({ onGameOver }: TetrisGameProps) {
         if (collide(gridRef.current, pieceRef.current)) {
             handleGameOver();
         }
-    }, []);
+    }, [collide, handleGameOver]);
 
     const resetGame = useCallback(() => {
         gridRef.current = createEmptyGrid();
@@ -86,21 +112,7 @@ export default function TetrisGame({ onGameOver }: TetrisGameProps) {
         spawnPiece();
     }, [spawnPiece]);
 
-    // Collision detection
-    const collide = (grid: number[][], player: { matrix: number[][], x: number, y: number }) => {
-        const [m, o] = [player.matrix, { x: player.x, y: player.y }];
-        for (let y = 0; y < m.length; ++y) {
-            for (let x = 0; x < m[y].length; ++x) {
-                if (m[y][x] !== 0 &&
-                    (grid[y + o.y] && grid[y + o.y][x + o.x]) !== 0) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    };
-
-    const merge = (grid: number[][], player: { matrix: number[][], x: number, y: number }) => {
+    const merge = useCallback((grid: number[][], player: { matrix: number[][], x: number, y: number }) => {
         player.matrix.forEach((row, y) => {
             row.forEach((value, x) => {
                 if (value !== 0) {
@@ -108,55 +120,9 @@ export default function TetrisGame({ onGameOver }: TetrisGameProps) {
                 }
             });
         });
-    };
+    }, []);
 
-    const playerDrop = () => {
-        pieceRef.current.y++;
-        if (collide(gridRef.current, pieceRef.current)) {
-            pieceRef.current.y--; // undo
-            merge(gridRef.current, pieceRef.current);
-            arenaSweep();
-            spawnPiece();
-        }
-        dropCounterRef.current = 0;
-    };
-
-    const playerMove = (offset: number) => {
-        pieceRef.current.x += offset;
-        if (collide(gridRef.current, pieceRef.current)) {
-            pieceRef.current.x -= offset;
-        }
-    };
-
-    const playerRotate = () => {
-        const pos = pieceRef.current.x;
-        let offset = 1;
-        rotate(pieceRef.current.matrix);
-        while (collide(gridRef.current, pieceRef.current)) {
-            pieceRef.current.x += offset;
-            offset = -(offset + (offset > 0 ? 1 : -1));
-            if (offset > pieceRef.current.matrix[0].length) {
-                rotate(pieceRef.current.matrix, -1);
-                pieceRef.current.x = pos;
-                return;
-            }
-        }
-    };
-
-    const rotate = (matrix: number[][], dir = 1) => {
-        for (let y = 0; y < matrix.length; ++y) {
-            for (let x = 0; x < y; ++x) {
-                [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
-            }
-        }
-        if (dir > 0) {
-            matrix.forEach(row => row.reverse());
-        } else {
-            matrix.reverse();
-        }
-    };
-
-    const arenaSweep = () => {
+    const arenaSweep = useCallback(() => {
         let rowCount = 0;
         outer: for (let y = gridRef.current.length - 1; y > 0; --y) {
             for (let x = 0; x < gridRef.current[y].length; ++x) {
@@ -174,7 +140,53 @@ export default function TetrisGame({ onGameOver }: TetrisGameProps) {
             setScore(prev => prev + points);
             dropIntervalRef.current = Math.max(200, dropIntervalRef.current - 20); // speed up
         }
-    };
+    }, []);
+
+    const playerDrop = useCallback(() => {
+        pieceRef.current.y++;
+        if (collide(gridRef.current, pieceRef.current)) {
+            pieceRef.current.y--; // undo
+            merge(gridRef.current, pieceRef.current);
+            arenaSweep();
+            spawnPiece();
+        }
+        dropCounterRef.current = 0;
+    }, [collide, merge, arenaSweep, spawnPiece]);
+
+    const playerMove = useCallback((offset: number) => {
+        pieceRef.current.x += offset;
+        if (collide(gridRef.current, pieceRef.current)) {
+            pieceRef.current.x -= offset;
+        }
+    }, [collide]);
+
+    const rotate = useCallback((matrix: number[][], dir = 1) => {
+        for (let y = 0; y < matrix.length; ++y) {
+            for (let x = 0; x < y; ++x) {
+                [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
+            }
+        }
+        if (dir > 0) {
+            matrix.forEach(row => row.reverse());
+        } else {
+            matrix.reverse();
+        }
+    }, []);
+
+    const playerRotate = useCallback(() => {
+        const pos = pieceRef.current.x;
+        let offset = 1;
+        rotate(pieceRef.current.matrix);
+        while (collide(gridRef.current, pieceRef.current)) {
+            pieceRef.current.x += offset;
+            offset = -(offset + (offset > 0 ? 1 : -1));
+            if (offset > pieceRef.current.matrix[0].length) {
+                rotate(pieceRef.current.matrix, -1);
+                pieceRef.current.x = pos;
+                return;
+            }
+        }
+    }, [collide, rotate]);
 
     // Input listening
     useEffect(() => {
@@ -196,7 +208,7 @@ export default function TetrisGame({ onGameOver }: TetrisGameProps) {
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [gameOver]);
+    }, [gameOver, playerMove, playerDrop, playerRotate]);
 
     // Game Loop
     useEffect(() => {
@@ -265,14 +277,7 @@ export default function TetrisGame({ onGameOver }: TetrisGameProps) {
 
         animationFrameId = requestAnimationFrame(main);
         return () => cancelAnimationFrame(animationFrameId);
-    }, [gameOver]);
-
-    const handleGameOver = () => {
-        setGameOver(true);
-        setTimeout(() => {
-            onGameOver(score);
-        }, 500);
-    };
+    }, [gameOver, playerDrop]);
 
     return (
         <div className="flex flex-col items-center">
